@@ -1,6 +1,6 @@
 Since the Git extension is mid, heres some of the commands we'll use that you can copy/paste.
 
-## Update ALL Branches
+## Update ALL Branches (do this as often as possible. If working on a commit -> git stash push -m "Your descriptive message")
 ./fetch
 
 ## To merge latest changes from MAIN branch to your REMOTE branch
