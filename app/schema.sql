@@ -9,16 +9,16 @@ CREATE TABLE User (
     RegistrationDate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- User-created groups
-CREATE TABLE Group (
-    GroupID INTEGER PRIMARY KEY AUTOINCREMENT,
-    GroupName TEXT NOT NULL,
+-- User-created team
+CREATE TABLE Team (
+    TeamID INTEGER PRIMARY KEY AUTOINCREMENT,
+    TeamName TEXT NOT NULL,
     Description TEXT,
     CreatorID INTEGER NOT NULL,
     FOREIGN KEY (CreatorID) REFERENCES User(UserID)
 );
 
--- Messages between users or groups
+-- Messages between users or teams
 CREATE TABLE Message (
     MessageID INTEGER PRIMARY KEY AUTOINCREMENT,
     SenderID INTEGER NOT NULL,
@@ -36,14 +36,14 @@ CREATE TABLE Project (
     ProjectName TEXT NOT NULL,
     Description TEXT,
     ResourceDir TEXT NOT NULL, --Reference to directory in the file system
-    GroupID INTEGER NOT NULL,
+    TeamID INTEGER NOT NULL,
     CreatorID INTEGER NOT NULL,
     IsPrivate BOOLEAN DEFAULT 0,
-    FOREIGN KEY (GroupID) REFERENCES Group(GroupID),
+    FOREIGN KEY (TeamID) REFERENCES Team(TeamID),
     FOREIGN KEY (CreatorID) REFERENCES User(UserID)
 );
 
--- Group members contribution to the project
+-- Team members contribution to the project
 CREATE TABLE Draft (
     DraftID INTEGER PRIMARY KEY AUTOINCREMENT,
     DraftName TEXT NOT NULL,
