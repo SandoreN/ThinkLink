@@ -4,7 +4,7 @@ CREATE TABLE User (
     Username TEXT NOT NULL UNIQUE,
     Email TEXT NOT NULL UNIQUE,
     PasswordHash TEXT NOT NULL,
-    Confirmed BOOLEAN DEFAULT 0,
+    IsConfirmed BOOLEAN DEFAULT 0,
     IsAdmin BOOLEAN DEFAULT 0,
     RegistrationDate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -75,7 +75,7 @@ CREATE TABLE Task (
     ProjectID INTEGER NOT NULL,
     CreatorID INTEGER NOT NULL,
     DueDate DATETIME,
-    Completed BOOLEAN DEFAULT 0,
+    IsCompleted BOOLEAN DEFAULT 0,
     FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID),
     FOREIGN KEY (CreatorID) REFERENCES User(UserID)
 );
