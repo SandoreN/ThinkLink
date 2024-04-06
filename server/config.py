@@ -13,6 +13,8 @@ class Config:
         'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    #File System configuration
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
     # Other configurations
     # ...
 

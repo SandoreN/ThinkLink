@@ -1,11 +1,12 @@
-import os
-from flask import jsonify, request, send_file
+from flask import jsonify, request
 from app import app, db
 from models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
-from server.utils.file_manager import FileManager
+from utils.file_manager import FileManager
+from config import Config
+from utils.auth import register_new_user
 
 # Instantiate FileManager with the appropriate base folder
-file_manager = FileManager('/path/to/base/folder')
+file_manager = FileManager(Config.UPLOAD_FOLDER)
 
 
 # Routes for User CRUD operations
@@ -24,15 +25,13 @@ def get_user(user_id):
 @app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.json
-    new_user = User(
-        username=data['username'],
-        email=data['email'],
-        password_hash=data['password_hash'],
-        is_confirmed=data.get('is_confirmed', False),
-        is_admin=data.get('is_admin', False)
-    )
-    db.session.add(new_user)
-    db.session.commit()
+    username = data['username']
+    email = data['email']
+    password = data['password']
+
+    # Register the user
+    new_user = register_new_user(username, email, password, is_confirmed=True, is_admin=False)
+
     return jsonify(new_user.serialize()), 201
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
@@ -505,54 +504,3 @@ def delete_publication(publication_id):
     db.session.commit()
     return jsonify({'message': 'Publication deleted successfully'}), 200
 
-
-
-##
-##
-##
-#THESE MAY OR MAY NOT BE NECESSARY, AS OF RIGHT NOW, ONLY THE ROUTE.
-# Route for uploading a file
-@app.route('/api/upload', methods=['POST'])
-def upload_file():
-    team_name = request.form.get('team_name')
-    project_name = request.form.get('project_name')
-    uploaded_file = request.files['file']
-
-    # Call FileManager's upload_file method
-    file_manager.upload_file(
-        file=uploaded_file,
-        team_name=team_name,
-        project_name=project_name,
-        filename=uploaded_file.filename
-    )
-
-    return jsonify({'message': 'File uploaded successfully'}), 201
-
-# Route for downloading a file
-@app.route('/api/download', methods=['GET'])
-def download_file():
-    team_name = request.args.get('team_name')
-    project_name = request.args.get('project_name')
-    filename = request.args.get('filename')
-
-    # Call FileManager's download_file method
-    file_path = file_manager.download_file(team_name, project_name, filename)
-
-    if file_path:
-        # Return the file as an attachment
-        return send_file(file_path, as_attachment=True)
-    else:
-        return jsonify({'error': 'File not found'}), 404
-
-# Route for deleting a file
-@app.route('/api/delete', methods=['DELETE'])
-def delete_file():
-    team_name = request.form.get('team_name')
-    project_name = request.form.get('project_name')
-    filename = request.form.get('filename')
-
-    # Call FileManager's delete_file method
-    if file_manager.delete_file(team_name, project_name, filename):
-        return jsonify({'message': 'File deleted successfully'}), 200
-    else:
-        return jsonify({'error': 'File not found'}), 404

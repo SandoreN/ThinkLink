@@ -1,18 +1,14 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from config import Config
 
 app = Flask(__name__)
 
-# Define the upload folder path relative to the current directory
-UPLOAD_FOLDER = 'uploads'
-# Configure Flask app to use the specified upload folder
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Use other configurations from Config class
+app.config.from_object(Config)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+# Initialize SQLAlchemy database 
 db = SQLAlchemy(app)
-from server.app import routes  # Import routes after initializing Flask app
 
 if __name__ == '__main__':
     app.run(debug=True)

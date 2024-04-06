@@ -1,81 +1,100 @@
 from datetime import datetime
-from server.app import db
+from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from app import db  
 
-# Define SQLAlchemy models
 class User(db.Model):
-    UserID = db.Column(db.Integer, primary_key=True)
-    Username = db.Column(db.String(50), nullable=False, unique=True)
-    Email = db.Column(db.String(100), nullable=False, unique=True)
-    PasswordHash = db.Column(db.String(255), nullable=False)
-    IsConfirmed = db.Column(db.Boolean, default=False)
-    IsAdmin = db.Column(db.Boolean, default=False)
-    RegistrationDate = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = 'User'
+
+    UserID = Column(Integer, primary_key=True)
+    Username = Column(String(50), nullable=False, unique=True)
+    Email = Column(String(100), nullable=False, unique=True)
+    PasswordHash = Column(String(255), nullable=False)
+    IsConfirmed = Column(Boolean, default=False)
+    IsAdmin = Column(Boolean, default=False)
+    RegistrationDate = Column(DateTime, default=datetime.utcnow)
 
 class Team(db.Model):
-    TeamID = db.Column(db.Integer, primary_key=True)
-    TeamName = db.Column(db.String(100), nullable=False)
-    Description = db.Column(db.Text)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    creator = db.relationship('User', backref='teams')
+    __tablename__ = 'Team'
+
+    TeamID = Column(Integer, primary_key=True)
+    TeamName = Column(String(100), nullable=False)
+    Description = Column(Text)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    creator = relationship('User', backref='teams')
 
 class Message(db.Model):
-    MessageID = db.Column(db.Integer, primary_key=True)
-    SenderID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    RecipientID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    Subject = db.Column(db.String(100))
-    MessageText = db.Column(db.Text, nullable=False)
-    SentDate = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = 'Message'
+
+    MessageID = Column(Integer, primary_key=True)
+    SenderID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    RecipientID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    Subject = Column(String(100))
+    MessageText = Column(Text, nullable=False)
+    SentDate = Column(DateTime, default=datetime.utcnow)
 
 class Project(db.Model):
-    ProjectID = db.Column(db.Integer, primary_key=True)
-    ProjectName = db.Column(db.String(100), nullable=False)
-    Description = db.Column(db.Text)
-    ResourceDir = db.Column(db.String(255), nullable=False)
-    TeamID = db.Column(db.Integer, db.ForeignKey('team.TeamID'), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    IsPrivate = db.Column(db.Boolean, default=False)
-    team = db.relationship('Team', backref='projects')
-    creator = db.relationship('User', backref='created_projects')
+    __tablename__ = 'Project'
+
+    ProjectID = Column(Integer, primary_key=True)
+    ProjectName = Column(String(100), nullable=False)
+    Description = Column(Text)
+    ResourceDir = Column(String(255), nullable=False)
+    TeamID = Column(Integer, ForeignKey('Team.TeamID'), nullable=False)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    IsPrivate = Column(Boolean, default=False)
+    team = relationship('Team', backref='projects')
+    creator = relationship('User', backref='created_projects')
 
 class Draft(db.Model):
-    DraftID = db.Column(db.Integer, primary_key=True)
-    DraftName = db.Column(db.String(100), nullable=False)
-    Content = db.Column(db.Text, nullable=False)
-    ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    UploadDate = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = 'Draft'
+
+    DraftID = Column(Integer, primary_key=True)
+    DraftName = Column(String(100), nullable=False)
+    Content = Column(Text, nullable=False)
+    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    UploadDate = Column(DateTime, default=datetime.utcnow)
 
 class Resource(db.Model):
-    ResourceID = db.Column(db.Integer, primary_key=True)
-    ResourceName = db.Column(db.String(100), nullable=False)
-    FilePath = db.Column(db.String(255), nullable=False)
-    ResourceType = db.Column(db.String(50), nullable=False)
-    ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
+    __tablename__ = 'Resource'
+
+    ResourceID = Column(Integer, primary_key=True)
+    ResourceName = Column(String(100), nullable=False)
+    FilePath = Column(String(255), nullable=False)
+    ResourceType = Column(String(50), nullable=False)
+    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
 
 class Task(db.Model):
-    TaskID = db.Column(db.Integer, primary_key=True)
-    TaskName = db.Column(db.String(100), nullable=False)
-    Description = db.Column(db.Text)
-    ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    DueDate = db.Column(db.DateTime)
-    IsCompleted = db.Column(db.Boolean, default=False)
+    __tablename__ = 'Task'
+
+    TaskID = Column(Integer, primary_key=True)
+    TaskName = Column(String(100), nullable=False)
+    Description = Column(Text)
+    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    DueDate = Column(DateTime)
+    IsCompleted = Column(Boolean, default=False)
 
 class Proposal(db.Model):
-    ProposalID = db.Column(db.Integer, primary_key=True)
-    ProposalTitle = db.Column(db.String(100), nullable=False)
-    FilePath = db.Column(db.String(255), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    SubmissionDate = db.Column(db.DateTime, default=datetime.utcnow)
-    Flags = db.Column(db.Integer, nullable=False, default=0)
+    __tablename__ = 'Proposal'
+
+    ProposalID = Column(Integer, primary_key=True)
+    ProposalTitle = Column(String(100), nullable=False)
+    FilePath = Column(String(255), nullable=False)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    SubmissionDate = Column(DateTime, default=datetime.utcnow)
+    Flags = Column(Integer, nullable=False, default=0)
 
 class Publication(db.Model):
-    PublicationID = db.Column(db.Integer, primary_key=True)
-    PublicationName = db.Column(db.String(100), nullable=False)
-    FilePath = db.Column(db.String(255), nullable=False)
-    ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    PublicationDate = db.Column(db.DateTime, default=datetime.utcnow)
-    Flags = db.Column(db.Integer, nullable=False, default=0)
+    __tablename__ = 'Publication'
+
+    PublicationID = Column(Integer, primary_key=True)
+    PublicationName = Column(String(100), nullable=False)
+    FilePath = Column(String(255), nullable=False)
+    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
+    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    PublicationDate = Column(DateTime, default=datetime.utcnow)
+    Flags = Column(Integer, nullable=False, default=0)
 
