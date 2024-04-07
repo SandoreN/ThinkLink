@@ -17,7 +17,7 @@ class FileManager:
         
         # Ensure directories exist
         os.makedirs(project_folder, exist_ok=True)
-        
+
         # Save the uploaded file to the specified upload folder
         file.save(file_path)
 

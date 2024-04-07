@@ -1,7 +1,7 @@
-from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from app import db  
+from app import db
+import time
 
 class User(db.Model):
     __tablename__ = 'User'
@@ -12,7 +12,7 @@ class User(db.Model):
     PasswordHash = Column(String(255), nullable=False)
     IsConfirmed = Column(Boolean, default=False)
     IsAdmin = Column(Boolean, default=False)
-    RegistrationDate = Column(DateTime, default=datetime.utcnow)
+    RegistrationDate = Column(DateTime, default=time.time())
 
 class Team(db.Model):
     __tablename__ = 'Team'
@@ -31,7 +31,7 @@ class Message(db.Model):
     RecipientID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
     Subject = Column(String(100))
     MessageText = Column(Text, nullable=False)
-    SentDate = Column(DateTime, default=datetime.utcnow)
+    SentDate = Column(DateTime, default=time.time())
 
 class Project(db.Model):
     __tablename__ = 'Project'
@@ -54,7 +54,7 @@ class Draft(db.Model):
     Content = Column(Text, nullable=False)
     ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
     CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    UploadDate = Column(DateTime, default=datetime.utcnow)
+    UploadDate = Column(DateTime, default=time.time())
 
 class Resource(db.Model):
     __tablename__ = 'Resource'
@@ -84,7 +84,7 @@ class Proposal(db.Model):
     ProposalTitle = Column(String(100), nullable=False)
     FilePath = Column(String(255), nullable=False)
     CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    SubmissionDate = Column(DateTime, default=datetime.utcnow)
+    SubmissionDate = Column(DateTime, default=time.time())
     Flags = Column(Integer, nullable=False, default=0)
 
 class Publication(db.Model):
@@ -95,6 +95,6 @@ class Publication(db.Model):
     FilePath = Column(String(255), nullable=False)
     ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
     CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    PublicationDate = Column(DateTime, default=datetime.utcnow)
+    PublicationDate = Column(DateTime, default=time.time())
     Flags = Column(Integer, nullable=False, default=0)
 

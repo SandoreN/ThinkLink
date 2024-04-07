@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User
-from app import db
+from .models import User
+from app import *
 
 auth_bp = Blueprint('auth', __name__)
 

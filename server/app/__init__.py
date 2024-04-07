@@ -1,14 +1,19 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from config import Config
+from .config import Config
+
+
+db = SQLAlchemy()
 
 app = Flask(__name__)
 
 # Use other configurations from Config class
 app.config.from_object(Config)
 
-# Initialize SQLAlchemy database 
-db = SQLAlchemy(app)
+db.init_app(app)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+from .routes import *
+from .models import *
+
+with app.app_context():
+    db.create_all()

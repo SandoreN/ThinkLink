@@ -1,9 +1,10 @@
 from flask import jsonify, request
 from app import app, db
-from models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
-from utils.file_manager import FileManager
-from config import Config
-from utils.auth import register_new_user
+from .models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
+from .file_manager import FileManager
+from .config import Config
+from .auth import register_new_user
+
 
 # Instantiate FileManager with the appropriate base folder
 file_manager = FileManager(Config.UPLOAD_FOLDER)
