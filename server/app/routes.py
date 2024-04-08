@@ -26,12 +26,13 @@ def get_user(user_id):
 @app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.json
+    user_name = data['user_name']
     username = data['username']
-    email = data['email']
+    email_address = data['email_address']
     password = data['password']
 
     # Register the user
-    new_user = register_new_user(username, email, password, is_confirmed=False, is_admin=False)
+    new_user = register_new_user(user_name, username, email_address, password, is_confirmed=False, is_admin=False)
 
     return jsonify(new_user.serialize()), 201
 
@@ -41,8 +42,9 @@ def update_user(user_id):
     if not user:
         return jsonify({'error': 'User not found'}), 404
     data = request.json
+    user.user_name = data.get('user_name', user.user_name)
     user.username = data.get('username', user.username)
-    user.email = data.get('email', user.email)
+    user.email_address = data.get('email_address', user.email_address)
     user.password_hash = data.get('password_hash', user.password_hash)
     user.is_confirmed = data.get('is_confirmed', user.is_confirmed)
     user.is_admin = data.get('is_admin', user.is_admin)
@@ -76,7 +78,7 @@ def create_team():
     data = request.json
     new_team = Team(
         team_name=data['team_name'],
-        description=data.get('description', ''),
+        team_description=data.get('team_description', ''),
         creator_id=data['creator_id']
     )
     db.session.add(new_team)
@@ -90,7 +92,7 @@ def update_team(team_id):
         return jsonify({'error': 'Team not found'}), 404
     data = request.json
     team.team_name = data.get('team_name', team.team_name)
-    team.description = data.get('description', team.description)
+    team.team_description = data.get('team_description', team.team_description)
     db.session.commit()
     return jsonify(team.serialize())
 
@@ -122,7 +124,7 @@ def create_message():
     new_message = Message(
         sender_id=data['sender_id'],
         recipient_id=data['recipient_id'],
-        subject=data.get('subject', ''),
+        message_subject=data.get('message_subject', ''),
         message_text=data['message_text']
     )
     db.session.add(new_message)
@@ -137,7 +139,7 @@ def update_message(message_id):
     data = request.json
     message.sender_id = data.get('sender_id', message.sender_id)
     message.recipient_id = data.get('recipient_id', message.recipient_id)
-    message.subject = data.get('subject', message.subject)
+    message.message_subject = data.get('message_subject', message.message_subject)
     message.message_text = data.get('message_text', message.message_text)
     db.session.commit()
     return jsonify(message.serialize())
@@ -169,11 +171,12 @@ def create_project():
     data = request.json
     new_project = Project(
         project_name=data['project_name'],
-        description=data.get('description', ''),
+        project_description=data.get('project_description', ''),
         resource_dir=data['resource_dir'],
         team_id=data['team_id'],
         creator_id=data['creator_id'],
-        is_private=data.get('is_private', False)
+        is_published=data.get('is_published', False),
+        is_proposal=data.get('is_proposal', False)
     )
     db.session.add(new_project)
     db.session.commit()
@@ -186,11 +189,12 @@ def update_project(project_id):
         return jsonify({'error': 'Project not found'}), 404
     data = request.json
     project.project_name = data.get('project_name', project.project_name)
-    project.description = data.get('description', project.description)
+    project.project_description = data.get('project_description', project.project_description)
     project.resource_dir = data.get('resource_dir', project.resource_dir)
     project.team_id = data.get('team_id', project.team_id)
     project.creator_id = data.get('creator_id', project.creator_id)
-    project.is_private = data.get('is_private', project.is_private)
+    project.is_published = data.get('is_published', project.is_published)
+    project.is_proposal = data.get('is_proposal', project.is_proposal)
     db.session.commit()
     return jsonify(project.serialize())
 
@@ -221,7 +225,7 @@ def create_draft():
     data = request.json
     new_draft = Draft(
         draft_name=data['draft_name'],
-        content=data['content'],
+        draft_content=data['draft_content'],
         project_id=data['project_id'],
         creator_id=data['creator_id']
     )
@@ -236,7 +240,7 @@ def update_draft(draft_id):
         return jsonify({'error': 'Draft not found'}), 404
     data = request.json
     draft.draft_name = data.get('draft_name', draft.draft_name)
-    draft.content = data.get('content', draft.content)
+    draft.draft_content = data.get('draft_content', draft.draft_content)
     draft.project_id = data.get('project_id', draft.project_id)
     draft.creator_id = data.get('creator_id', draft.creator_id)
     db.session.commit()
@@ -335,7 +339,7 @@ def create_task():
     data = request.json
     new_task = Task(
         task_name=data['task_name'],
-        description=data.get('description', ''),
+        task_description=data.get('task_description', ''),
         project_id=data['project_id'],
         creator_id=data['creator_id'],
         due_date=data.get('due_date', None),
@@ -352,7 +356,7 @@ def update_task(task_id):
         return jsonify({'error': 'Task not found'}), 404
     data = request.json
     task.task_name = data.get('task_name', task.task_name)
-    task.description = data.get('description', task.description)
+    task.task_description = data.get('task_description', task.task_description)
     task.project_id = data.get('project_id', task.project_id)
     task.creator_id = data.get('creator_id', task.creator_id)
     task.due_date = data.get('due_date', task.due_date)
@@ -384,20 +388,11 @@ def get_proposal(proposal_id):
 
 @app.route('/api/proposals', methods=['POST'])
 def create_proposal():
-    data = request.form
-    uploaded_file = request.files['file']
-
-    # Call FileManager's upload_file method
-    file_manager.upload_file(
-        file=uploaded_file,
-        team_name=data['team_name'],
-        project_name=data['project_name'],
-        filename=uploaded_file.filename
-    )
-
+    data = request.formS
     new_proposal = Proposal(
         proposal_title=data['proposal_title'],
-        file_path=file_manager.download_file(data['team_name'], data['project_name'], uploaded_file.filename),
+        file_path=data['file_path'],
+        project_id=data['project_id'],
         creator_id=data['creator_id']
     )
     db.session.add(new_proposal)
@@ -410,19 +405,11 @@ def update_proposal(proposal_id):
     if not proposal:
         return jsonify({'error': 'Proposal not found'}), 404
     data = request.form
-    uploaded_file = request.files['file']
-
-    # Call FileManager's upload_file method
-    file_manager.upload_file(
-        file=uploaded_file,
-        team_name=data['team_name'],
-        project_name=data['project_name'],
-        filename=uploaded_file.filename
-    )
-
     proposal.proposal_title = data.get('proposal_title', proposal.proposal_title)
-    proposal.file_path = file_manager.download_file(data['team_name'], data['project_name'], uploaded_file.filename)
+    proposal.file_path = data.get('file_path', proposal.file_path)
+    proposal.project_id = data.get('project_id', proposal.project_id)
     proposal.creator_id = data.get('creator_id', proposal.creator_id)
+    proposal.flag_count = data.get('flag_count', proposal.flag_count)
     db.session.commit()
     return jsonify(proposal.serialize())
 
@@ -431,7 +418,6 @@ def delete_proposal(proposal_id):
     proposal = Proposal.query.get(proposal_id)
     if not proposal:
         return jsonify({'error': 'Proposal not found'}), 404
-    file_manager.delete_file(proposal.file_path)  # Delete associated file
     db.session.delete(proposal)
     db.session.commit()
     return jsonify({'message': 'Proposal deleted successfully'}), 200
@@ -452,19 +438,9 @@ def get_publication(publication_id):
 @app.route('/api/publications', methods=['POST'])
 def create_publication():
     data = request.form
-    uploaded_file = request.files['file']
-
-    # Call FileManager's upload_file method
-    file_manager.upload_file(
-        file=uploaded_file,
-        team_name=data['team_name'],
-        project_name=data['project_name'],
-        filename=uploaded_file.filename
-    )
-
     new_publication = Publication(
         publication_title=data['publication_title'],
-        file_path=file_manager.download_file(data['team_name'], data['project_name'], uploaded_file.filename),
+        file_path=data['file_path'],
         project_id=data['project_id'],
         creator_id=data['creator_id']
     )
@@ -478,20 +454,11 @@ def update_publication(publication_id):
     if not publication:
         return jsonify({'error': 'Publication not found'}), 404
     data = request.form
-    uploaded_file = request.files['file']
-
-    # Call FileManager's upload_file method
-    file_manager.upload_file(
-        file=uploaded_file,
-        team_name=data['team_name'],
-        project_name=data['project_name'],
-        filename=uploaded_file.filename
-    )
-
     publication.publication_title = data.get('publication_title', publication.publication_title)
-    publication.file_path = file_manager.download_file(data['team_name'], data['project_name'], uploaded_file.filename)
+    publication.file_path = data.get('file_path', publication.file_path)
     publication.project_id = data.get('project_id', publication.project_id)
     publication.creator_id = data.get('creator_id', publication.creator_id)
+    publication.flag_count = data.get('flag_count', publication.flag_count)
     db.session.commit()
     return jsonify(publication.serialize())
 
@@ -500,7 +467,6 @@ def delete_publication(publication_id):
     publication = Publication.query.get(publication_id)
     if not publication:
         return jsonify({'error': 'Publication not found'}), 404
-    file_manager.delete_file(publication.file_path)  # Delete associated file
     db.session.delete(publication)
     db.session.commit()
     return jsonify({'message': 'Publication deleted successfully'}), 200
