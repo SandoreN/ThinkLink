@@ -1,100 +1,196 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
-import time
+import datetime
 
 class User(db.Model):
     __tablename__ = 'User'
 
-    UserID = Column(Integer, primary_key=True)
-    Username = Column(String(50), nullable=False, unique=True)
-    Email = Column(String(100), nullable=False, unique=True)
-    PasswordHash = Column(String(255), nullable=False)
-    IsConfirmed = Column(Boolean, default=False)
-    IsAdmin = Column(Boolean, default=False)
-    RegistrationDate = Column(DateTime, default=time.time())
+    user_id = Column(Integer, primary_key=True)
+    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(100), nullable=False, unique=True)
+    password_hash = Column(String(255), nullable=False)
+    is_confirmed = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
+    registration_date = Column(DateTime, default=datetime.datetime.now())
+
+    def serialize(self):
+        return {
+            'user_id': self.user_id,
+            'username': self.username,
+            'email': self.email,
+            'is_confirmed': self.is_confirmed,
+            'is_admin': self.is_admin,
+            'registration_date': self.registration_date.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
 
 class Team(db.Model):
     __tablename__ = 'Team'
 
-    TeamID = Column(Integer, primary_key=True)
-    TeamName = Column(String(100), nullable=False)
-    Description = Column(Text)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    team_id = Column(Integer, primary_key=True)
+    team_name = Column(String(100), nullable=False)
+    description = Column(Text)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
     creator = relationship('User', backref='teams')
+
+    def serialize(self):
+        return {
+            'team_id': self.team_id,
+            'team_name': self.team_name,
+            'description': self.description,
+            'creator_id': self.creator_id
+        }
+
 
 class Message(db.Model):
     __tablename__ = 'Message'
 
-    MessageID = Column(Integer, primary_key=True)
-    SenderID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    RecipientID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    Subject = Column(String(100))
-    MessageText = Column(Text, nullable=False)
-    SentDate = Column(DateTime, default=time.time())
+    message_id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    recipient_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    subject = Column(String(100))
+    message_text = Column(Text, nullable=False)
+    sent_date = Column(DateTime, default=datetime.datetime.now())
+
+    def serialize(self):
+        return {
+            'message_id': self.message_id,
+            'sender_id': self.sender_id,
+            'recipient_id': self.recipient_id,
+            'subject': self.subject,
+            'message_text': self.message_text,
+            'sent_date': self.sent_date.strftime('%Y-%m-%d %H:%M:%S')
+        }
 
 class Project(db.Model):
     __tablename__ = 'Project'
 
-    ProjectID = Column(Integer, primary_key=True)
-    ProjectName = Column(String(100), nullable=False)
-    Description = Column(Text)
-    ResourceDir = Column(String(255), nullable=False)
-    TeamID = Column(Integer, ForeignKey('Team.TeamID'), nullable=False)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    IsPrivate = Column(Boolean, default=False)
+    project_id = Column(Integer, primary_key=True)
+    project_name = Column(String(100), nullable=False)
+    description = Column(Text)
+    resource_dir = Column(String(255), nullable=False)
+    team_id = Column(Integer, ForeignKey('Team.team_id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    is_private = Column(Boolean, default=False)
     team = relationship('Team', backref='projects')
     creator = relationship('User', backref='created_projects')
+
+    def serialize(self):
+        return {
+            'project_id': self.project_id,
+            'project_name': self.project_name,
+            'description': self.description,
+            'resource_dir': self.resource_dir,
+            'team_id': self.team_id,
+            'creator_id': self.creator_id,
+            'is_private': self.is_private
+        }
+
 
 class Draft(db.Model):
     __tablename__ = 'Draft'
 
-    DraftID = Column(Integer, primary_key=True)
-    DraftName = Column(String(100), nullable=False)
-    Content = Column(Text, nullable=False)
-    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    UploadDate = Column(DateTime, default=time.time())
+    draft_id = Column(Integer, primary_key=True)
+    draft_name = Column(String(100), nullable=False)
+    content = Column(Text, nullable=False)
+    project_id = Column(Integer, ForeignKey('Project.project_id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    upload_date = Column(DateTime, default=datetime.datetime.now())
+
+    def serialize(self):
+        return {
+            'draft_id': self.draft_id,
+            'draft_name': self.draft_name,
+            'content': self.content,
+            'project_id': self.project_id,
+            'creator_id': self.creator_id,
+            'upload_date': self.upload_date.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
 
 class Resource(db.Model):
     __tablename__ = 'Resource'
 
-    ResourceID = Column(Integer, primary_key=True)
-    ResourceName = Column(String(100), nullable=False)
-    FilePath = Column(String(255), nullable=False)
-    ResourceType = Column(String(50), nullable=False)
-    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
+    resource_id = Column(Integer, primary_key=True)
+    resource_name = Column(String(100), nullable=False)
+    file_path = Column(String(255), nullable=False)
+    resource_type = Column(String(50), nullable=False)
+    project_id = Column(Integer, ForeignKey('Project.project_id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+
+    def serialize(self):
+        return {
+            'resource_id': self.resource_id,
+            'resource_name': self.resource_name,
+            'file_path': self.file_path,
+            'resource_type': self.resource_type,
+            'project_id': self.project_id,
+            'creator_id': self.creator_id
+        }
 
 class Task(db.Model):
     __tablename__ = 'Task'
 
-    TaskID = Column(Integer, primary_key=True)
-    TaskName = Column(String(100), nullable=False)
-    Description = Column(Text)
-    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    DueDate = Column(DateTime)
-    IsCompleted = Column(Boolean, default=False)
+    task_id = Column(Integer, primary_key=True)
+    task_name = Column(String(100), nullable=False)
+    description = Column(Text)
+    project_id = Column(Integer, ForeignKey('Project.project_id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    due_date = Column(DateTime)
+    is_completed = Column(Boolean, default=False)
+
+    def serialize(self):
+        return {
+            'task_id': self.task_id,
+            'task_name': self.task_name,
+            'description': self.description,
+            'project_id': self.project_id,
+            'creator_id': self.creator_id,
+            'due_date': self.due_date.strftime('%Y-%m-%d %H:%M:%S') if self.due_date else None,
+            'is_completed': self.is_completed
+        }
+
 
 class Proposal(db.Model):
     __tablename__ = 'Proposal'
 
-    ProposalID = Column(Integer, primary_key=True)
-    ProposalTitle = Column(String(100), nullable=False)
-    FilePath = Column(String(255), nullable=False)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    SubmissionDate = Column(DateTime, default=time.time())
-    Flags = Column(Integer, nullable=False, default=0)
+    proposal_id = Column(Integer, primary_key=True)
+    proposal_title = Column(String(100), nullable=False)
+    file_path = Column(String(255), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    submission_date = Column(DateTime, default=datetime.datetime.now())
+    flags = Column(Integer, nullable=False, default=0)
+
+    def serialize(self):
+        return {
+            'proposal_id': self.proposal_id,
+            'proposal_title': self.proposal_title,
+            'file_path': self.file_path,
+            'creator_id': self.creator_id,
+            'submission_date': self.submission_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'flags': self.flags
+        }
+
 
 class Publication(db.Model):
     __tablename__ = 'Publication'
 
-    PublicationID = Column(Integer, primary_key=True)
-    PublicationName = Column(String(100), nullable=False)
-    FilePath = Column(String(255), nullable=False)
-    ProjectID = Column(Integer, ForeignKey('Project.ProjectID'), nullable=False)
-    CreatorID = Column(Integer, ForeignKey('User.UserID'), nullable=False)
-    PublicationDate = Column(DateTime, default=time.time())
-    Flags = Column(Integer, nullable=False, default=0)
+    publication_id = Column(Integer, primary_key=True)
+    publication_title = Column(String(100), nullable=False)
+    file_path = Column(String(255), nullable=False)
+    project_id = Column(Integer, ForeignKey('Project.project_id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.user_id'), nullable=False)
+    publication_date = Column(DateTime, default=datetime.datetime.now())
+    flags = Column(Integer, nullable=False, default=0)
 
+    def serialize(self):
+        return {
+            'publication_id': self.publication_id,
+            'publication_title': self.publication_title,
+            'file_path': self.file_path,
+            'project_id': self.project_id,
+            'creator_id': self.creator_id,
+            'publication_date': self.publication_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'flags': self.flags
+        }

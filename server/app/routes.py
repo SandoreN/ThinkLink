@@ -31,7 +31,7 @@ def create_user():
     password = data['password']
 
     # Register the user
-    new_user = register_new_user(username, email, password, is_confirmed=True, is_admin=False)
+    new_user = register_new_user(username, email, password, is_confirmed=False, is_admin=False)
 
     return jsonify(new_user.serialize()), 201
 
@@ -463,7 +463,7 @@ def create_publication():
     )
 
     new_publication = Publication(
-        publication_name=data['publication_name'],
+        publication_title=data['publication_title'],
         file_path=file_manager.download_file(data['team_name'], data['project_name'], uploaded_file.filename),
         project_id=data['project_id'],
         creator_id=data['creator_id']
@@ -488,7 +488,7 @@ def update_publication(publication_id):
         filename=uploaded_file.filename
     )
 
-    publication.publication_name = data.get('publication_name', publication.publication_name)
+    publication.publication_title = data.get('publication_title', publication.publication_title)
     publication.file_path = file_manager.download_file(data['team_name'], data['project_name'], uploaded_file.filename)
     publication.project_id = data.get('project_id', publication.project_id)
     publication.creator_id = data.get('creator_id', publication.creator_id)
