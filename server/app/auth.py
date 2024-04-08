@@ -5,12 +5,12 @@ from app import *
 
 auth_bp = Blueprint('auth', __name__)
 
-def register_new_user(user_name, username, email_address, password, is_confirmed=False, is_admin=False):
+def register_new_user(name, username, email, password, is_confirmed=False, is_admin=False):
     # Generate password hash
     hashed_password = generate_password_hash(password)
     
     # Create a new user object and add it to the database
-    new_user = User(user_name=user_name, username=username, email_address=email_address, password_hash=hashed_password,
+    new_user = User(name=name, username=username, email=email, password_hash=hashed_password,
                     is_confirmed=is_confirmed, is_admin=is_admin)
     db.session.add(new_user)
     db.session.commit()
@@ -20,11 +20,11 @@ def register_new_user(user_name, username, email_address, password, is_confirmed
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    email_address = data['email_address']
+    email = data['email']
     password = data['password']
     
     # Query the database to find the user by email
-    user = User.query.filter_by(email_address=email_address).first()
+    user = User.query.filter_by(email=email).first()
     
     if user and check_password_hash(user.password_hash, password):
         # Authentication successful
