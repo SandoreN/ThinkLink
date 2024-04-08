@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from app import app, db
-from .models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication, Author
+from .models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
 from .file_manager import FileManager
 from .config import Config
 from .auth import register_new_user
@@ -171,7 +171,8 @@ def create_project():
     data = request.json
     new_project = Project(
         name=data['name'],
-        project_description=data.get('project_description', ''),
+        description=data['description'],
+        category=data['category'],
         resource_dir=data['resource_dir'],
         team_id=data['team_id'],
         creator_id=data['creator_id'],
@@ -189,7 +190,8 @@ def update_project(project_id):
         return jsonify({'error': 'Project not found'}), 404
     data = request.json
     project.name = data.get('name', project.name)
-    project.project_description = data.get('project_description', project.project_description)
+    project.description = data.get('description', project.description)
+    project.category = data.get('category', project.category)   
     project.resource_dir = data.get('resource_dir', project.resource_dir)
     project.team_id = data.get('team_id', project.team_id)
     project.creator_id = data.get('creator_id', project.creator_id)
@@ -224,8 +226,8 @@ def get_draft(draft_id):
 def create_draft():
     data = request.json
     new_draft = Draft(
-        draft_name=data['draft_name'],
-        draft_content=data['draft_content'],
+        name=data['name'],
+        content=data['content'],
         project_id=data['project_id'],
         creator_id=data['creator_id']
     )
@@ -239,8 +241,8 @@ def update_draft(draft_id):
     if not draft:
         return jsonify({'error': 'Draft not found'}), 404
     data = request.json
-    draft.draft_name = data.get('draft_name', draft.draft_name)
-    draft.draft_content = data.get('draft_content', draft.draft_content)
+    draft.name = data.get('name', draft.name)
+    draft.content = data.get('content', draft.content)
     draft.project_id = data.get('project_id', draft.project_id)
     draft.creator_id = data.get('creator_id', draft.creator_id)
     db.session.commit()
@@ -381,9 +383,9 @@ def get_proposals():
         'id': proposal.id,
         'title': proposal.title,
         'description': proposal.description,
-        'resource_ID': proposal.resource_ID,
-        'project_ID': proposal.project_ID,
-        'authors': [author.serialize() for author in proposal.authors]
+        'resource_id': proposal.resource_id,
+        'project_id': proposal.project_id,
+        'team': proposal.team
     } for proposal in proposals])
 
 @app.route('/api/proposals/<int:proposal_id>', methods=['GET'])
@@ -395,9 +397,9 @@ def get_proposal(proposal_id):
         'id': proposal.id,
         'title': proposal.title,
         'description': proposal.description,
-        'resource_ID': proposal.resource_ID,
-        'project_ID': proposal.project_ID,
-        'authors': [author.serialize() for author in proposal.authors]
+        'resource_id': proposal.resource_id,
+        'project_id': proposal.project_id,
+        'team': proposal.team
     })
 
 @app.route('/api/proposals', methods=['POST'])
@@ -406,8 +408,9 @@ def create_proposal():
     new_proposal = Proposal(
         title=data['title'],
         description=data['description'],
-        resource_ID=data['resource_ID'],
-        project_ID=data['project_ID']
+        resource_id=data['resource_id'],
+        project_id=data['project_id'],
+        team=data['team'] # This is a relationship field
     )
     db.session.add(new_proposal)
     db.session.commit()
@@ -421,8 +424,9 @@ def update_proposal(proposal_id):
     data = request.form
     proposal.title = data.get('title', proposal.title)
     proposal.description = data.get('description', proposal.description)
-    proposal.resource_ID = data.get('resource_ID', proposal.resource_ID)
-    proposal.project_ID = data.get('project_ID', proposal.project_ID)
+    proposal.resource_id = data.get('resource_id', proposal.resource_id)
+    proposal.project_id = data.get('project_id', proposal.project_id)
+    proposal.team = data.get('team', proposal.team) # This is a relationship field
     db.session.commit()
     return jsonify(proposal.serialize())
 
@@ -443,9 +447,9 @@ def get_publications():
         'id': publication.id,
         'title': publication.title,
         'description': publication.description,
-        'resource_ID': publication.resource_ID,
-        'project_ID': publication.project_ID,
-        'authors': [author.serialize() for author in publication.authors]
+        'resource_id': publication.resource_id,
+        'project_id': publication.project_id,
+        'team': publication.team
     } for publication in publications])
 
 @app.route('/api/publications/<int:publication_id>', methods=['GET'])
@@ -457,9 +461,9 @@ def get_publication(publication_id):
         'id': publication.id,
         'title': publication.title,
         'description': publication.description,
-        'resource_ID': publication.resource_ID,
-        'project_ID': publication.project_ID,
-        'authors': [author.serialize() for author in publication.authors]
+        'resource_id': publication.resource_id,
+        'project_id': publication.project_id,
+        'team': publication.team
     })
 
 @app.route('/api/publications', methods=['POST'])
@@ -468,8 +472,9 @@ def create_publication():
     new_publication = Publication(
         title=data['title'],
         description=data['description'],
-        resource_ID=data['resource_ID'],
-        project_ID=data['project_ID']
+        resource_id=data['resource_id'],
+        project_id=data['project_id'],
+        team=data['team']
     )
     db.session.add(new_publication)
     db.session.commit()
@@ -483,8 +488,9 @@ def update_publication(publication_id):
     data = request.form
     publication.title = data.get('title', publication.title)
     publication.description = data.get('description', publication.description)
-    publication.resource_ID = data.get('resource_ID', publication.resource_ID)
-    publication.project_ID = data.get('project_ID', publication.project_ID)
+    publication.resource_id = data.get('resource_id', publication.resource_id)
+    publication.project_id = data.get('project_id', publication.project_id)
+    publication.team = data.get('team', publication.team)
     db.session.commit()
     return jsonify(publication.serialize())
 
@@ -496,51 +502,3 @@ def delete_publication(publication_id):
     db.session.delete(publication)
     db.session.commit()
     return jsonify({'message': 'Publication deleted successfully'}), 200
-
-# Routes for Author CRUD operations
-@app.route('/api/authors', methods=['GET'])
-def get_authors():
-    authors = Author.query.all()
-    return jsonify([author.serialize() for author in authors])
-
-@app.route('/api/authors/<int:author_id>', methods=['GET'])
-def get_author(author_id):
-    author = Author.query.get(author_id)
-    if not author:
-        return jsonify({'error': 'Author not found'}), 404
-    return jsonify(author.serialize())
-
-@app.route('/api/authors', methods=['POST'])
-def create_author():
-    data = request.json
-    new_author = Author(
-        name=data['name'],
-        affiliation=data.get('affiliation', ''),
-        email=data.get('email', ''),
-        location=data.get('location', '')
-    )
-    db.session.add(new_author)
-    db.session.commit()
-    return jsonify(new_author.serialize()), 201
-
-@app.route('/api/authors/<int:author_id>', methods=['PUT'])
-def update_author(author_id):
-    author = Author.query.get(author_id)
-    if not author:
-        return jsonify({'error': 'Author not found'}), 404
-    data = request.json
-    author.name = data.get('name', author.name)
-    author.affiliation = data.get('affiliation', author.affiliation)
-    author.email = data.get('email', author.email)
-    author.location = data.get('location', author.location)
-    db.session.commit()
-    return jsonify(author.serialize())
-
-@app.route('/api/authors/<int:author_id>', methods=['DELETE'])
-def delete_author(author_id):
-    author = Author.query.get(author_id)
-    if not author:
-        return jsonify({'error': 'Author not found'}), 404
-    db.session.delete(author)
-    db.session.commit()
-    return jsonify({'message': 'Author deleted successfully'}), 200

@@ -71,13 +71,14 @@ class Project(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
     description = Column(Text)
+    category = Column(Text)
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
     team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     is_published = Column(Boolean, default=False)
     is_proposal = Column(Boolean, default=False)
-    team = relationship('Team', backref='projects')
-    creator = relationship('User', backref='created_projects')
+    team = relationship('Team', backref='project')
+    creator = relationship('User', backref='project')
 
     def serialize(self):
         return {
@@ -162,20 +163,20 @@ class Proposal(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     description = Column(Text)
-    resource_ID = Column(Integer, ForeignKey('Resource.resource_id'), nullable=False)
-    project_ID = Column(Integer, ForeignKey('Project.project_id'), nullable=False)
-    authors = relationship('Author', secondary='proposal_author')
+    resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
+    project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
+    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
+    team = relationship('Team', backref='proposals')
 
     def serialize(self):
         return {
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'resource_ID': self.resource_ID,
-            'project_ID': self.project_ID,
-            'authors': [author.serialize() for author in self.authors]
+            'resource_id': self.resource_id,
+            'project_id': self.project_id,
+            'team': self.team.serialize()
         }
-
 
 class Publication(db.Model):
     __tablename__ = 'Publication'
@@ -183,34 +184,17 @@ class Publication(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     description = Column(Text)
-    resource_ID = Column(Integer, ForeignKey('Resource.resource_id'), nullable=False)
-    project_ID = Column(Integer, ForeignKey('Project.project_id'), nullable=False)
-    authors = relationship('Author', secondary='publication_author')
+    resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
+    project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
+    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
+    team = relationship('Team', backref='publication')
 
     def serialize(self):
         return {
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'resource_ID': self.resource_ID,
-            'project_ID': self.project_ID,
-            'authors': [author.serialize() for author in self.authors]
-        }
-    
-class Author(db.Model):
-    __tablename__ = 'Author'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
-    affiliation = Column(String(100))
-    email = Column(String(100))
-    location = Column(String(100))
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'affiliation': self.affiliation,
-            'email': self.email,
-            'location': self.location
+            'resource_id': self.resource_id,
+            'project_id': self.project_id,
+            'team': self.team.serialize()
         }
