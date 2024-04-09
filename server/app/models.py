@@ -71,12 +71,11 @@ class Project(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
     description = Column(Text)
-    category = Column(Text)
-    resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
-    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
-    creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
+    resource_dir = Column(String, nullable=False)
     is_published = Column(Boolean, default=False)
     is_proposal = Column(Boolean, default=False)
+    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     team = relationship('Team', backref='project')
     creator = relationship('User', backref='project')
 
@@ -85,11 +84,11 @@ class Project(db.Model):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'resource_id': self.resource_id,
+            'resource_dir': self.resource_dir,
+            'is_published': self.is_published,
+            'is_proposal': self.is_proposal,
             'team_id': self.team_id,
             'creator_id': self.creator_id,
-            'is_published': self.is_published,
-            'is_proposal': self.is_proposal
         }
 
 
@@ -163,8 +162,10 @@ class Proposal(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     description = Column(Text)
+    category = Column(String(50))
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
+    project = relationship('Project', backref='proposal', uselist=False),
     team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
     team = relationship('Team', backref='proposals')
 
@@ -173,9 +174,10 @@ class Proposal(db.Model):
             'id': self.id,
             'title': self.title,
             'description': self.description,
+            'category': self.category,
             'resource_id': self.resource_id,
-            'project_id': self.project_id,
-            'team': self.team.serialize()
+            'project_': self.project_id.serialize(),
+            'team': self.team_id.serialize()
         }
 
 class Publication(db.Model):
@@ -184,9 +186,12 @@ class Publication(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     description = Column(Text)
+    category = Column(String(50))
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
+    authors = Column(String)
+    project = relationship('Project', backref='publication', uselist=False)
     team = relationship('Team', backref='publication')
 
     def serialize(self):
@@ -194,7 +199,9 @@ class Publication(db.Model):
             'id': self.id,
             'title': self.title,
             'description': self.description,
+            'category': self.category,
             'resource_id': self.resource_id,
-            'project_id': self.project_id,
-            'team': self.team.serialize()
+            'project_id': self.project_id.serialize(),
+            'team_id': self.team_id.serialize(),
+            'authors': self.authors # this will make queries by author possible
         }
