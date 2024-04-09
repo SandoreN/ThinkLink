@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from app import db
 import datetime
 
+
 class User(db.Model):
     __tablename__ = 'User'
 
@@ -14,7 +15,8 @@ class User(db.Model):
     is_confirmed = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     registration_date = Column(DateTime, default=datetime.datetime.now())
-
+    teams = relationship('Team', secondary='team_members', backref='users')
+    projects = relationship('Project', secondary='project_members', backref='users')  
     def serialize(self):
         return {
             'id': self.id,
@@ -35,6 +37,7 @@ class Team(db.Model):
     description = Column(Text)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     creator = relationship('User', backref='teams')
+    projects = relationship('Project', backref='team')
 
     def serialize(self):
         return {
@@ -76,8 +79,11 @@ class Project(db.Model):
     is_proposal = Column(Boolean, default=False)
     team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    team = relationship('Team', backref='project')
-    creator = relationship('User', backref='project')
+    team = relationship('Team', backref='projects')
+    creator = relationship('User', backref='projects')
+    drafts = relationship('Draft', backref='project', lazy=True)
+    resources = relationship('Resource', backref='project', lazy=True)
+    tasks = relationship('Task', backref='project', lazy=True)
 
     def serialize(self):
         return {
