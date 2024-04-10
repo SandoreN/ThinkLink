@@ -239,3 +239,55 @@ def update_publication(publication_id):
 @app.route('/api/publications/<int:publication_id>', methods=['DELETE'])
 def delete_publication(publication_id):
     return delete(Publication, publication_id)
+
+# The code above has the exact same functionality as the code below:
+'''
+from flask import jsonify, request
+from flask.views import MethodView
+from app import app, db
+from .models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
+
+class CRUDView(MethodView):
+    model = None
+
+    def get(self, item_id=None):
+        if item_id is None:
+            return jsonify([item.serialize() for item in self.model.query.all()])
+        else:
+            item = self.model.query.get(item_id)
+            if not item:
+                return jsonify({'error': f'{self.model.__name__} not found'}), 404
+            return jsonify(item.serialize())
+
+    def post(self):
+        data = request.json
+        item = self.model(**data)
+        db.session.add(item)
+        db.session.commit()
+        return jsonify(item.serialize()), 201
+
+    def put(self, item_id):
+        data = request.json
+        item = self.model.query.get(item_id)
+        if not item:
+            return jsonify({'error': f'{self.model.__name__} not found'}), 404
+        for key, value in data.items():
+            setattr(item, key, value)
+        db.session.commit()
+        return jsonify(item.serialize())
+
+    def delete(self, item_id):
+        item = self.model.query.get(item_id)
+        if not item:
+            return jsonify({'error': f'{self.model.__name__} not found'}), 404
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({'message': f'{self.model.__name__} deleted successfully'}), 200
+
+models = [User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication]
+
+for model in models:
+    view = CRUDView.as_view(f'{model.__name__.lower()}s', model=model)
+    app.add_url_rule(f'/api/{model.__name__.lower()}s', view_func=view, methods=['GET', 'POST'])
+    app.add_url_rule(f'/api/{model.__name__.lower()}s/<int:item_id>', view_func=view, methods=['GET', 'PUT', 'DELETE'])
+    '''
