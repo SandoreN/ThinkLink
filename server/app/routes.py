@@ -15,7 +15,7 @@ def create(model, **kwargs):
     item = model(**kwargs)
     db.session.add(item)
     db.session.commit()
-    return item
+    return jsonify(item.serialize()), 201
 
 def update(model, item_id, **kwargs):
     item = model.query.get(item_id)
