@@ -4,6 +4,7 @@ from .models import User, Team, Message, Project, Draft, Resource, Task, Proposa
 from .file_manager import FileManager
 from .config import Config
 from .auth import register_new_user
+from werkzeug.security import generate_password_hash
 
 
 # Instantiate FileManager with the appropriate base folder
@@ -23,18 +24,22 @@ def get_user(user_id):
         return jsonify({'error': 'User not found'}), 404
     return jsonify(user.serialize())
 
-@app.route('/api/users', methods=['POST'])
-def create_user():
-    data = request.json
-    name = data['name']
-    username = data['username']
-    email = data['email']
-    password = data['password']
+def create_user(name, username, email, password, is_confirmed=False, is_admin=False):
+    password_hash = generate_password_hash(password)
 
-    # Register the user
-    new_user = register_new_user(name, username, email, password, is_confirmed=False, is_admin=False)
+    new_user = User(
+        name=name,
+        username=username,
+        email=email,
+        password_hash=password_hash,
+        is_confirmed=is_confirmed,
+        is_admin=is_admin
+    )
 
-    return jsonify(new_user.serialize()), 201
+    db.session.add(new_user)
+    db.session.commit()
+
+    return new_user
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
