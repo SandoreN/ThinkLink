@@ -1,12 +1,14 @@
 import os
 from werkzeug.utils import secure_filename
-
+from flask import request
+from app import app
+from app.routes import create_resource, update_resource
 
 class FileManager:
     def __init__(self, base_folder):
         self.base_folder = base_folder
 
-    def upload_file(self, file, team_name, project_name, filename):
+    def upload_file(self, file, team_name, project_name, filename, resource_data, resource_id=None):
         # Sanitize filename using Werkzeug's secure_filename
         s_filename = secure_filename(filename)
         
@@ -20,6 +22,21 @@ class FileManager:
 
         # Save the uploaded file to the specified upload folder
         file.save(file_path)
+
+        # Add the file path to the resource data
+        resource_data['file_path'] = file_path
+
+        # Call the appropriate function to create or update the resource in the database
+        if resource_id is None:
+            # If no resource_id is provided, create a new resource
+            with app.test_request_context():
+                request.json = resource_data
+                create_resource()
+        else:
+            # If a resource_id is provided, update the existing resource
+            with app.test_request_context():
+                request.json = resource_data
+                update_resource(resource_id)
 
     def download_file(self, team_name, project_name, filename):
         # Construct path based on team and project

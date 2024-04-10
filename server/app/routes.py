@@ -276,20 +276,10 @@ def get_resource(resource_id):
 @app.route('/api/resources', methods=['POST'])
 def create_resource():
     data = request.json
-    uploaded_file = request.files['file']
-    
-    # Call FileManager's upload_file method
-    file_manager.upload_file(
-        file=uploaded_file,
-        team_name=data['team_name'],
-        project_name=data['project_name'],
-        filename=uploaded_file.filename
-    )
-
     # Create a new resource instance in the database
     new_resource = Resource(
         name=data['name'],
-        file_path=uploaded_file.filename,  # Save the file path in the database
+        file_path=data['file_path'],  # Save the file path in the database
         type=data['type'],
         project_id=data['project_id'],
         creator_id=data['creator_id']
@@ -306,6 +296,7 @@ def update_resource(resource_id):
         return jsonify({'error': 'Resource not found'}), 404
     data = request.json
     resource.name = data.get('name', resource.name)
+    resource.file_path = data.get('file_path', resource.file_path)  
     resource.type = data.get('type', resource.type)
     resource.project_id = data.get('project_id', resource.project_id)
     resource.creator_id = data.get('creator_id', resource.creator_id)
