@@ -28,7 +28,6 @@ class User(db.Model):
     is_admin = Column(Boolean, default=False)
     registration_date = Column(DateTime, default=datetime.datetime.now)
     teams = relationship('Team', secondary=team_members, backref='users')
-    projects = relationship('Project', secondary=project_members, backref='users') 
 
     def serialize(self):
         return {
@@ -49,7 +48,6 @@ class Team(db.Model):
     name = Column(String(100), nullable=False)
     description = Column(Text)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    creator = relationship('User', backref='teams')
     projects = relationship('Project', backref='team')
     creation_date = Column(DateTime, default=datetime.datetime.now)
 
@@ -95,7 +93,6 @@ class Project(db.Model):
     is_proposal = Column(Boolean, default=False)
     team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    team = relationship('Team', backref='projects')
     creator = relationship('User', backref='projects')
     drafts = relationship('Draft', backref='project', lazy=True)
     resources = relationship('Resource', backref='project', lazy=True)
