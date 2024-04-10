@@ -2,7 +2,8 @@ import os
 from werkzeug.utils import secure_filename
 from flask import request
 from app import app
-from app.routes import create_resource, update_resource, create_publication, create_proposal, update_publication, update_proposal
+from server.app.views import CRUDView
+from server.app.models import Publication, Proposal, Resource
 
 class FileManager:
     def __init__(self, base_folder):
@@ -16,6 +17,14 @@ class FileManager:
         os.makedirs(self.resource_folder, exist_ok=True)
         os.makedirs(self.publications_folder, exist_ok=True)
         os.makedirs(self.proposals_folder, exist_ok=True)
+
+        # Create CRUDView instances for publications and proposals
+        self.publication_view = CRUDView()
+        self.publication_view.model = Publication  # Replace with your Publication model
+        self.proposal_view = CRUDView()
+        self.proposal_view.model = Proposal  # Replace with your Proposal model
+        self.resource_view = CRUDView()
+        self.resource_view.model = Resource  # Replace with your Resource model
 
     def upload_file(self, file, team_name, project_name, filename, resource_data, resource_id=None):
         # Sanitize filename using Werkzeug's secure_filename
@@ -40,12 +49,12 @@ class FileManager:
             # If no resource_id is provided, create a new resource
             with app.test_request_context():
                 request.json = resource_data
-                create_resource()
+                self.resource_view.post()
         else:
             # If a resource_id is provided, update the existing resource
             with app.test_request_context():
                 request.json = resource_data
-                update_resource(resource_id)
+                self.resource_view.put(resource_id)
 
     def download_file(self, team_name, project_name, filename):
         # Construct path based on team and project
@@ -87,14 +96,13 @@ class FileManager:
         if not os.path.exists(symlink_path):
             os.symlink(file_path, symlink_path)
 
-        # Call the appropriate function to create or update the publication in the database
+        # Call the appropriate method to create or update the publication in the database
         with app.test_request_context():
             request.json = publication_data
             if publication_id is None:
-                create_publication()
+                self.publication_view.post()
             else:
-                # I need to figure these out. should be ok though, I hope.
-                update_publication(publication_id)
+                self.publication_view.put(publication_id)
 
     def create_proposal_file(self, proposal_data, proposal_id=None):
         # Get the file path from the proposal data
@@ -111,11 +119,10 @@ class FileManager:
         if not os.path.exists(symlink_path):
             os.symlink(file_path, symlink_path)
 
-        # Call the appropriate function to create or update the proposal in the database
+        # Call the appropriate method to create or update the proposal in the database
         with app.test_request_context():
             request.json = proposal_data
             if proposal_id is None:
-                create_proposal()
+                self.proposal_view.post()
             else:
-                #not too sure what's going on here
-                update_proposal(proposal_id)
+                self.proposal_view.put(proposal_id)

@@ -10,7 +10,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
-from .routes import *  # Import the api blueprint
+from .views import *  # Import the api blueprint
 from .models import *
 
 with app.app_context():
