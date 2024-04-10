@@ -3,6 +3,18 @@ from sqlalchemy.orm import relationship
 from app import db
 import datetime
 
+team_members = db.Table('team_members',
+    db.Column('user_id', db.Integer, db.ForeignKey('User.id'), primary_key=True),
+    db.Column('team_id', db.Integer, db.ForeignKey('Team.id'), primary_key=True)
+)
+
+project_members = db.Table('project_members',
+    db.Column('user_id', db.Integer, db.ForeignKey('User.id'), primary_key=True),
+    db.Column('project_id', db.Integer, db.ForeignKey('Project.id'), primary_key=True)
+)
+
+teams = relationship('Team', secondary=team_members, backref='users')
+projects = relationship('Project', secondary=project_members, backref='users')
 
 class User(db.Model):
     __tablename__ = 'User'
@@ -14,9 +26,10 @@ class User(db.Model):
     password_hash = Column(String(255), nullable=False)
     is_confirmed = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
-    registration_date = Column(DateTime, default=datetime.datetime.now())
-    teams = relationship('Team', secondary='team_members', backref='users')
-    projects = relationship('Project', secondary='project_members', backref='users')  
+    registration_date = Column(DateTime, default=datetime.datetime.now)
+    teams = relationship('Team', secondary=team_members, backref='users')
+    projects = relationship('Project', secondary=project_members, backref='users') 
+
     def serialize(self):
         return {
             'id': self.id,
@@ -38,13 +51,15 @@ class Team(db.Model):
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     creator = relationship('User', backref='teams')
     projects = relationship('Project', backref='team')
+    creation_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'creator_id': self.creator_id
+            'creator_id': self.creator_id,
+            'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 
@@ -56,7 +71,7 @@ class Message(db.Model):
     recipient_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     subject = Column(String(100))
     text = Column(Text, nullable=False)
-    sent_date = Column(DateTime, default=datetime.datetime.now())
+    sent_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -84,6 +99,7 @@ class Project(db.Model):
     drafts = relationship('Draft', backref='project', lazy=True)
     resources = relationship('Resource', backref='project', lazy=True)
     tasks = relationship('Task', backref='project', lazy=True)
+    creation_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -95,6 +111,7 @@ class Project(db.Model):
             'is_proposal': self.is_proposal,
             'team_id': self.team_id,
             'creator_id': self.creator_id,
+            'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 
@@ -106,7 +123,7 @@ class Draft(db.Model):
     content = Column(Text, nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    upload_date = Column(DateTime, default=datetime.datetime.now())
+    creation_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -115,7 +132,7 @@ class Draft(db.Model):
             'content': self.content,
             'project_id': self.project_id,
             'creator_id': self.creator_id,
-            'upload_date': self.upload_date.strftime('%Y-%m-%d %H:%M:%S')
+            'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 
@@ -128,6 +145,7 @@ class Resource(db.Model):
     type = Column(String(50), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
+    upload_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -136,7 +154,8 @@ class Resource(db.Model):
             'file_path': self.file_path,
             'type': self.type,
             'project_id': self.project_id,
-            'creator_id': self.creator_id
+            'creator_id': self.creator_id,
+            'upload_date': self.upload_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 class Task(db.Model):
@@ -149,6 +168,7 @@ class Task(db.Model):
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     due_date = Column(DateTime)
     is_completed = Column(Boolean, default=False)
+    creation_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -158,7 +178,8 @@ class Task(db.Model):
             'project_id': self.project_id,
             'creator_id': self.creator_id,
             'due_date': self.due_date.strftime('%Y-%m-%d %H:%M:%S') if self.due_date else None,
-            'is_completed': self.is_completed
+            'is_completed': self.is_completed,
+            'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 
@@ -171,9 +192,10 @@ class Proposal(db.Model):
     category = Column(String(50))
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
-    project = relationship('Project', backref='proposal', uselist=False),
+    project = relationship('Project', backref='proposal', uselist=False)
     team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
     team = relationship('Team', backref='proposals')
+    proposal_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -182,8 +204,9 @@ class Proposal(db.Model):
             'description': self.description,
             'category': self.category,
             'resource_id': self.resource_id,
-            'project_': self.project_id.serialize(),
-            'team': self.team_id.serialize()
+            'project': self.project_id,
+            'team': self.team_id,
+            'proposal_date': self.proposal.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 class Publication(db.Model):
@@ -195,10 +218,10 @@ class Publication(db.Model):
     category = Column(String(50))
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
-    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
-    authors = Column(String)
+    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
     project = relationship('Project', backref='publication', uselist=False)
     team = relationship('Team', backref='publication')
+    publication_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -207,7 +230,7 @@ class Publication(db.Model):
             'description': self.description,
             'category': self.category,
             'resource_id': self.resource_id,
-            'project_id': self.project_id.serialize(),
-            'team_id': self.team_id.serialize(),
-            'authors': self.authors # this will make queries by author possible
+            'project_id': self.project_id,
+            'team_id': self.team_id,
+            'publication_date': self.publication_date.strftime('%Y-%m-%d %H:%M:%S')
         }
