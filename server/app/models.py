@@ -72,6 +72,7 @@ class Message(db.Model):
     subject = Column(String(100))
     text = Column(Text, nullable=False)
     sent_date = Column(DateTime, default=datetime.datetime.now)
+    parent_id = Column(Integer, ForeignKey('Message.id'))
 
     def serialize(self):
         return {
