@@ -3,7 +3,7 @@
 from flask import jsonify, request
 from flask.views import MethodView
 from app import app, db
-from .models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
+from app.models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
 
 class CRUDView(MethodView):
     model = None

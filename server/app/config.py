@@ -1,7 +1,7 @@
 import os
 
 # Define the base directory of the project
-#BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Flask app configuration
 class Config:
@@ -31,3 +31,5 @@ config_by_name = {
     'production': ProductionConfig,
     # Add more environments if needed
 }
+
+# app context???
