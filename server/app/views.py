@@ -11,14 +11,20 @@ class CRUDView(MethodView):
         if model:
             self.model = model
         
-    def get(self, filters=None):
-        if filters is None:
-            return jsonify([item.serialize() for item in self.model.query.all()])
+    def get(self, item_id=None):
+        if item_id is None:
+            if len(request.json) == 0:
+                return jsonify([item.serialize() for item in self.model.query.all()])
+            else:
+                item = self.model.query.filter_by(**request.json).first()
+                if not item:
+                    return jsonify({'error': f'{self.model.__name__} not found'}), 404
+                return jsonify(item.serialize())
         else:
-            items = self.model.query.filter_by(**filters).all()
-            if not items:
+            item = self.model.query.get(item_id)
+            if not item:
                 return jsonify({'error': f'{self.model.__name__} not found'}), 404
-            return jsonify([item.serialize() for item in items])
+            return jsonify(item.serialize()) 
     
     def post(self):
         data = request.json
