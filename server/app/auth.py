@@ -54,23 +54,29 @@ def register_new_user():
 def confirm_email(token):
     email = verify_confirmation_token(token)
     if email:
-        # In principle, this is incorrect, you should be using user_view.get() to 
-        user = User.query.filter_by(email=email).first()
+        # This is how you would filter by any particular "column_name": "value"
+        # Prepare the request.json to filter by email
+        request.json = {'email': email}
+        # Send a GET request to the /api/users endpoint
+        user = user_view.get()
         if user:
-            user.is_confirmed = True
-            db.session.commit()
+            # prepare a PATCH request to update the user's is_confirmed field
+            request.json = {'is_confirmed': True}
+            # send the PATCH request
+            user_view.patch(user['id'])
             return jsonify({'message': 'Email confirmed successfully.'}), 200
     return jsonify({'error': 'Invalid token or email not found.'}), 400
 
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.json
+    data = request.get_json()
     email = data['email']
     password = data['password']
     
     # Query the database to find the user by email
-    user = User.query.filter_by(email=email).first()
+    request.json = {'email': email}
+    user = user_view.get(serialized=False)
     
     if user and check_password_hash(user.password_hash, password):
         # Authentication successful

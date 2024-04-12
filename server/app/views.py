@@ -10,7 +10,7 @@ class CRUDView(MethodView):
     def __init__(self, model=None):
         if model:
             self.model = model
-        
+    '''    
     def get(self, item_id=None):
         if item_id is None:
             if len(request.json) == 0:
@@ -25,7 +25,15 @@ class CRUDView(MethodView):
             if not item:
                 return jsonify({'error': f'{self.model.__name__} not found'}), 404
             return jsonify(item.serialize()) 
-    
+    '''
+    # New method will return a json object by default, returns python object if serialized is False
+    def get(self, item_id=None, serialized=True):
+        query = self.model.query
+        item = query.get(item_id) if item_id else query.filter_by(**request.json).first() if request.json else query.all()
+        if not item:
+            return jsonify({'error': f'{self.model.__name__} not found'}), 404
+        return jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
+
     def post(self):
         data = request.json
         item = self.model(**data)
