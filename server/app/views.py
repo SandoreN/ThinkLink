@@ -5,29 +5,38 @@ from app import app, db
 from app.models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
 
 class CRUDView(MethodView):
+    """
+    A class that provides CRUD (Create, Read, Update, Delete) operations for a given model.
+
+    Attributes:
+        model: The model class associated with the CRUD operations.
+    """
+
     model = None
 
     def __init__(self, model=None):
+        """
+        Initializes the CRUDView instance.
+
+        Args:
+            model: The model class associated with the CRUD operations.
+        """
         if model:
             self.model = model
-    '''    
-    def get(self, item_id=None):
-        if item_id is None:
-            if len(request.json) == 0:
-                return jsonify([item.serialize() for item in self.model.query.all()])
-            else:
-                item = self.model.query.filter_by(**request.json).first()
-                if not item:
-                    return jsonify({'error': f'{self.model.__name__} not found'}), 404
-                return jsonify(item.serialize())
-        else:
-            item = self.model.query.get(item_id)
-            if not item:
-                return jsonify({'error': f'{self.model.__name__} not found'}), 404
-            return jsonify(item.serialize()) 
-    '''
-    # New method will return a json object by default, returns python object if serialized is False
+ 
     def get(self, item_id=None, serialized=True):
+        """
+        Retrieves an item from the database. Items can be found via parameter with the item.id, or by JSON in HTTP request.
+
+        Args:
+            item_id: The ID of the item to retrieve.
+            serialized: A boolean indicating whether to serialize the item or not.
+
+        Returns:
+            If the item is found AND serialized is True, returns a JSON representation of the item. 
+            If the item is found and serialized is False, returns the item as a Python object.
+            If the item is not found, returns a JSON response with an error message and status code 404.
+        """
         query = self.model.query
         item = query.get(item_id) if item_id else query.filter_by(**request.json).first() if request.json else query.all()
         if not item:
@@ -35,6 +44,13 @@ class CRUDView(MethodView):
         return jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
 
     def post(self):
+        """
+        Creates a new item in the database.
+
+        Returns:
+            If the item is created successfully, returns a JSON representation of the created item and status code 201.
+            If there is an integrity error, rolls back the session and raises an exception.
+        """
         data = request.json
         item = self.model(**data)
         try:
@@ -46,6 +62,16 @@ class CRUDView(MethodView):
         return jsonify(item.serialize()), 201
 
     def put(self, item_id):
+        """
+        Updates an existing item in the database.
+
+        Args:
+            item_id: The ID of the item to update.
+
+        Returns:
+            If the item is found and updated successfully, returns a JSON representation of the updated item.
+            If the item is not found, returns a JSON response with an error message and status code 404.
+        """
         data = request.json
         item = self.model.query.get(item_id)
         if not item:
@@ -54,8 +80,18 @@ class CRUDView(MethodView):
             setattr(item, key, value)
         db.session.commit()
         return jsonify(item.serialize())
-    
+
     def patch(self, item_id):
+        """
+        Partially updates an existing item in the database.
+
+        Args:
+            item_id: The ID of the item to update.
+
+        Returns:
+            If the item is found and updated successfully, returns a JSON representation of the updated item.
+            If the item is not found, returns a JSON response with an error message and status code 404.
+        """
         data = request.json
         item = self.model.query.get(item_id)
         if not item:
@@ -67,6 +103,16 @@ class CRUDView(MethodView):
         return jsonify(item.serialize())
 
     def delete(self, item_id):
+        """
+        Deletes an existing item from the database.
+
+        Args:
+            item_id: The ID of the item to delete.
+
+        Returns:
+            If the item is found and deleted successfully, returns a JSON response with a success message and status code 200.
+            If the item is not found, returns a JSON response with an error message and status code 404.
+        """
         item = self.model.query.get(item_id)
         if not item:
             return jsonify({'error': f'{self.model.__name__} not found'}), 404

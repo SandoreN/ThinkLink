@@ -13,7 +13,7 @@ class FileManager:
         #--library
         #----publications
         #----proposals
-        
+
         self.base_folder = app.config.BASE_DIR
         self.resource_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')
@@ -54,14 +54,14 @@ class FileManager:
         # check if resource exists
         if resource_id is None:
             # If no resource_id is provided, create a new resource
-            with app.test_request_context():
+            with app.app_context():
                 # only one request.json can exist per context
                 request.json = resource_data
                 # send HTTP POST request to /api/resources to 
                 self.resource_view.post()
         else:
             # If a resource_id is provided, update the existing resource
-            with app.test_request_context():
+            with app.app_context():
                 request.json = resource_data
                 self.resource_view.put(resource_id)
 
@@ -106,7 +106,7 @@ class FileManager:
             os.symlink(file_path, symlink_path)
 
         # Call the appropriate method to create or update the publication in the database
-        with app.test_request_context():
+        with app.app_context():
             request.json = publication_data
             if publication_id is None:
                 self.publication_view.post()
@@ -129,7 +129,7 @@ class FileManager:
             os.symlink(file_path, symlink_path)
 
         # Call the appropriate method to create or update the proposal in the database
-        with app.test_request_context():
+        with app.app_context():
             request.json = proposal_data
             if proposal_id is None:
                 self.proposal_view.post()
