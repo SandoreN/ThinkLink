@@ -37,7 +37,7 @@ def register_new_user():
     # Create a new user instance data
     new_user_data = {'name': name, 'email': email, 'password_hash': password_hash}
 
-    request.form = new_user_data
+    request.json = new_user_data
     # Use CRUDView to create the new user
     try:
         response = user_view.post()

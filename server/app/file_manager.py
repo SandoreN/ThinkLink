@@ -13,6 +13,7 @@ class FileManager:
         #--library
         #----publications
         #----proposals
+        
         self.base_folder = app.config.BASE_DIR
         self.resource_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')

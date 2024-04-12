@@ -7,6 +7,10 @@ from app.models import User, Team, Message, Project, Draft, Resource, Task, Prop
 class CRUDView(MethodView):
     model = None
 
+    def __init__(self, model=None):
+        if model:
+            self.model = model
+
     def get(self, item_id=None):
         if item_id is None:
             return jsonify([item.serialize() for item in self.model.query.all()])
