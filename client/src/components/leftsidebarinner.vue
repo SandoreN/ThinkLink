@@ -3,37 +3,36 @@
     id="sidebar"
     class="leftsidebarinner-sidebar"
     v-bind:class="rootClassName"
-    ><div class="leftsidebarinner-profile"
-      ><router-link to="/template5" class="leftsidebarinner-navlink"
-        ><div class="leftsidebarinner-container"
-          ><div class="leftsidebarinner-container1"
-            ><span id="name" class="leftsidebarinner-text">{{ text }}</span
-            ><span id="username" class="leftsidebarinner-text01"
-              >{{ text1 }}</span
-            ></div
-          ></div
-        ></router-link
+    ><div class="leftsidebarinner-sidebarheader"
+      ><div class="leftsidebarinner-container"
+        ><router-link to="/profile" class="leftsidebarinner-navlink button"
+          ><span id="user.name" class="leftsidebarinner-text"
+            >{{ userFirstName }}</span
+          ><span id="user.username" class="leftsidebarinner-text01"
+            >{{ userUsername }}</span
+          ></router-link
+        ></div
       ></div
-    ><div class="leftsidebarinner-container2"
+    ><div class="leftsidebarinner-container1"
       ><nav class="leftsidebarinner-nav"
-        ><div class="leftsidebarinner-container3"
-          ><button type="button" class="leftsidebarinner-button button"
+        ><div class="leftsidebarinner-container2"
+          ><router-link to="/dashboard" class="leftsidebarinner-navlink1 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon">
               <path
                 d="M512 128c0 0-263.936 227.84-411.435 351.232-8.661 7.851-15.232 19.285-15.232 32.768 0 23.595 19.072 42.667 42.667 42.667h85.333v298.667c0 23.595 19.072 42.667 42.667 42.667h128c23.595 0 42.667-19.115 42.667-42.667v-170.667h170.667v170.667c0 23.552 19.072 42.667 42.667 42.667h128c23.595 0 42.667-19.072 42.667-42.667v-298.667h85.333c23.595 0 42.667-19.072 42.667-42.667 0-13.483-6.571-24.917-16.341-32.768-146.475-123.392-410.325-351.232-410.325-351.232z"
               ></path></svg
-            ><span class="leftsidebarinner-text02">{{ text2 }}</span></button
+            ><span class="leftsidebarinner-text02">{{ text2 }}</span></router-link
           ></div
-        ><div class="leftsidebarinner-container4"
-          ><button type="button" class="leftsidebarinner-button1 button"
+        ><div class="leftsidebarinner-container3"
+          ><router-link to="/messages" class="leftsidebarinner-navlink2 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon02">
               <path
                 d="M896 298.667h-128c0-70.4-57.6-128-128-128h-512c-70.4 0-128 57.6-128 128v298.667c0 70.4 57.6 128 128 128v128l128-128c0 70.4 57.6 128 128 128h341.333l128 128v-128h42.667c70.4 0 128-57.6 128-128v-298.667c0-70.4-57.6-128-128-128zM128 640c-23.125 0-42.667-19.541-42.667-42.667v-298.667c0-23.125 19.541-42.667 42.667-42.667h512c23.125 0 42.667 19.541 42.667 42.667v42.667h-277.333c-58.837 0-106.667 47.829-106.667 106.667v192h-170.667zM938.667 725.333c0 23.125-19.541 42.667-42.667 42.667h-512c-23.125 0-42.667-19.541-42.667-42.667v-277.333c0-35.285 28.715-64 64-64h490.667c23.125 0 42.667 19.541 42.667 42.667v298.667z"
               ></path></svg
-            ><span class="leftsidebarinner-text03">{{ text3 }}</span></button
+            ><span class="leftsidebarinner-text03">Messages</span></router-link
           ></div
-        ><div class="leftsidebarinner-container5"
-          ><button type="button" class="leftsidebarinner-button2 button"
+        ><div class="leftsidebarinner-container4"
+          ><router-link to="/teams" class="leftsidebarinner-navlink3 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon04">
               <path
                 d="M512 597.333c117.931 0 213.333-95.488 213.333-213.333s-95.403-213.333-213.333-213.333-213.333 95.488-213.333 213.333 95.403 213.333 213.333 213.333zM512 256c70.571 0 128 57.429 128 128s-57.429 128-128 128-128-57.429-128-128 57.429-128 128-128z"
@@ -48,21 +47,17 @@
                 d="M170.667 640c58.923 0 106.667-47.744 106.667-106.667 0-58.837-47.744-106.667-106.667-106.667-58.965 0-106.667 47.829-106.667 106.667 0 58.923 47.701 106.667 106.667 106.667zM170.667 469.333c35.285 0 64 28.715 64 64s-28.715 64-64 64-64-28.715-64-64 28.715-64 64-64z"
               ></path></svg
             ><span class="leftsidebarinner-text04"
-              ><span>Teams</span><br /></span></button></div
-        ><div class="leftsidebarinner-container6"
-          ><button type="button" class="leftsidebarinner-button3 button"
+              ><span>Teams</span><br /></span></router-link></div
+        ><div class="leftsidebarinner-container5"
+          ><router-link to="/projects" class="leftsidebarinner-navlink4 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon09">
               <path
                 d="M768 256h-256c0-47.104-38.229-85.333-85.333-85.333h-170.667c-70.571 0-128 57.429-128 128v426.667c0 70.571 57.429 128 128 128h512c70.571 0 128-57.429 128-128v-341.333c0-70.571-57.429-128-128-128zM256 256h170.667c0 47.104 38.229 85.333 85.333 85.333h256c23.552 0 42.667 19.115 42.667 42.667h-597.333v-85.333c0-23.552 19.115-42.667 42.667-42.667zM768 768h-512c-23.552 0-42.667-19.115-42.667-42.667v-298.667h597.333v298.667c0 23.552-19.115 42.667-42.667 42.667z"
               ></path></svg
-            ><span class="leftsidebarinner-text07">{{ text4 }}</span></button
+            ><span class="leftsidebarinner-text07">{{ text4 }}</span></router-link
           ></div
-        ><div class="leftsidebarinner-container7"
-          ><a
-            href="/library"
-            target="_blank"
-            rel="noreferrer noopener"
-            class="leftsidebarinner-link button"
+        ><div class="leftsidebarinner-container6"
+          ><router-link to="/library" class="leftsidebarinner-navlink5 button"
             ><svg viewBox="0 0 1152 1024" class="leftsidebarinner-icon11">
               <path
                 d="M224 128h-192c-17.6 0-32 14.4-32 32v704c0 17.6 14.4 32 32 32h192c17.6 0 32-14.4 32-32v-704c0-17.6-14.4-32-32-32zM192 320h-128v-64h128v64z"
@@ -74,7 +69,7 @@
                 d="M765.088 177.48l-171.464 86.394c-15.716 7.918-22.096 27.258-14.178 42.976l287.978 571.548c7.918 15.718 27.258 22.098 42.976 14.178l171.464-86.392c15.716-7.92 22.096-27.26 14.178-42.974l-287.978-571.55c-7.92-15.718-27.26-22.1-42.976-14.18z"
               ></path></svg
             ><span class="leftsidebarinner-text08"
-              ><span>Library</span><br /></span></a></div></nav></div
+              ><span>Library</span><br /></span></router-link></div></nav></div
   ></section>
 </template>
 
@@ -83,11 +78,7 @@ export default {
   name: 'Leftsidebarinner',
   props: {
     rootClassName: String,
-    text3: {
-      type: String,
-      default: 'Messages',
-    },
-    text: {
+    userFirstName: {
       type: String,
       default: 'Chadley',
     },
@@ -95,11 +86,15 @@ export default {
       type: String,
       default: 'Projects',
     },
+    button: {
+      type: String,
+      default: 'Button',
+    },
     text2: {
       type: String,
       default: 'Dashboard',
     },
-    text1: {
+    userUsername: {
       type: String,
       default: 'RawR_XD_666',
     },
@@ -119,51 +114,44 @@ export default {
   justify-content: flex-start;
   background-color: rgba(4, 0, 72, 0.31);
 }
-.leftsidebarinner-profile {
+.leftsidebarinner-sidebarheader {
   width: 225px;
   height: 76px;
   display: flex;
   align-self: flex-start;
   align-items: center;
   margin-left: 0px;
-  padding-top: 0px;
-  border-color: var(--dl-color-gray-900);
-  border-width: 1px;
-  padding-left: 0px;
+  padding-top: 10px;
   flex-direction: column;
-  padding-bottom: 4px;
+  padding-bottom: 10px;
   justify-content: center;
   background-color: #d5d5e1;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 2px;
-}
-.leftsidebarinner-navlink {
-  display: contents;
 }
 .leftsidebarinner-container {
   width: 199px;
+  height: 100%;
   display: flex;
   align-self: center;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   vertical-align: center;
   justify-content: center;
-  text-decoration: none;
 }
-.leftsidebarinner-container1 {
-  width: auto;
+.leftsidebarinner-navlink {
+  flex: 1;
+  height: 100%;
   display: flex;
-  align-self: center;
-  align-items: flex-start;
-  margin-left: 0px;
-  margin-bottom: 0px;
+  padding: 0px;
+  align-self: stretch;
+  align-items: center;
+  border-width: 0px;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
+  text-decoration: none;
+  background-color: transparent;
 }
 .leftsidebarinner-text {
-  font-size: 1.15rem;
+  font-size: 20px;
   align-self: center;
   font-style: normal;
   text-align: center;
@@ -172,14 +160,13 @@ export default {
   margin-bottom: 0px;
 }
 .leftsidebarinner-text01 {
-  flex: 1;
   color: var(--dl-color-gray-500);
   align-self: center;
   text-align: center;
   margin-left: 0px;
   margin-bottom: 0px;
 }
-.leftsidebarinner-container2 {
+.leftsidebarinner-container1 {
   width: 225px;
   display: flex;
   align-items: flex-start;
@@ -187,9 +174,8 @@ export default {
   justify-content: flex-start;
 }
 .leftsidebarinner-nav {
-  flex: 0;
+  flex: 1;
   width: 199px;
-  height: 304px;
   display: flex;
   align-self: center;
   align-items: center;
@@ -198,7 +184,7 @@ export default {
   justify-content: flex-start;
   background-color: transparent;
 }
-.leftsidebarinner-container3 {
+.leftsidebarinner-container2 {
   flex: 0 0 auto;
   width: auto;
   height: auto;
@@ -210,7 +196,7 @@ export default {
   justify-content: center;
   background-color: transparent;
 }
-.leftsidebarinner-button {
+.leftsidebarinner-navlink1 {
   height: 50px;
   display: flex;
   position: relative;
@@ -239,11 +225,13 @@ export default {
 .leftsidebarinner-text02 {
   font-size: 22px;
   align-self: center;
+  font-style: normal;
   text-align: left;
-  font-family: "Arial Black";
+  font-family: "Inter";
+  font-weight: 700;
   margin-left: 8px;
 }
-.leftsidebarinner-container4 {
+.leftsidebarinner-container3 {
   flex: 0 0 auto;
   width: auto;
   height: auto;
@@ -255,7 +243,7 @@ export default {
   justify-content: center;
   background-color: transparent;
 }
-.leftsidebarinner-button1 {
+.leftsidebarinner-navlink2 {
   height: 50px;
   display: flex;
   position: relative;
@@ -284,11 +272,13 @@ export default {
 .leftsidebarinner-text03 {
   font-size: 22px;
   align-self: center;
+  font-style: normal;
   text-align: left;
-  font-family: "Arial Black";
+  font-family: "Inter";
+  font-weight: 700;
   margin-left: 8px;
 }
-.leftsidebarinner-container5 {
+.leftsidebarinner-container4 {
   flex: 0 0 auto;
   width: auto;
   height: auto;
@@ -300,7 +290,7 @@ export default {
   justify-content: center;
   background-color: transparent;
 }
-.leftsidebarinner-button2 {
+.leftsidebarinner-navlink3 {
   height: 50px;
   position: relative;
   align-self: center;
@@ -326,11 +316,13 @@ export default {
 }
 .leftsidebarinner-text04 {
   font-size: 22px;
+  font-style: normal;
   text-align: left;
-  font-family: "Arial Black";
+  font-family: "Inter";
+  font-weight: 700;
   margin-left: 8px;
 }
-.leftsidebarinner-container6 {
+.leftsidebarinner-container5 {
   flex: 0 0 auto;
   width: auto;
   height: auto;
@@ -342,7 +334,7 @@ export default {
   justify-content: center;
   background-color: transparent;
 }
-.leftsidebarinner-button3 {
+.leftsidebarinner-navlink4 {
   height: 50px;
   display: flex;
   position: relative;
@@ -371,11 +363,13 @@ export default {
 .leftsidebarinner-text07 {
   font-size: 22px;
   align-self: center;
+  font-style: normal;
   text-align: left;
-  font-family: "Arial Black";
+  font-family: "Inter";
+  font-weight: 700;
   margin-left: 8px;
 }
-.leftsidebarinner-container7 {
+.leftsidebarinner-container6 {
   flex: 0 0 auto;
   width: auto;
   height: auto;
@@ -387,7 +381,7 @@ export default {
   justify-content: center;
   background-color: transparent;
 }
-.leftsidebarinner-link {
+.leftsidebarinner-navlink5 {
   height: 50px;
   display: flex;
   position: relative;
@@ -411,8 +405,10 @@ export default {
 .leftsidebarinner-text08 {
   font-size: 22px;
   align-self: center;
+  font-style: normal;
   text-align: left;
-  font-family: "Arial Black";
+  font-family: "Inter";
+  font-weight: 700;
   margin-left: 8px;
 }
 .leftsidebarinner-root-class-name {
@@ -460,13 +456,13 @@ export default {
   align-self: flex-start;
 }
 @media(max-width: 991px) {
-  .leftsidebarinner-profile {
+  .leftsidebarinner-sidebarheader {
     padding-left: var(--dl-space-space-halfunit);
     padding-right: var(--dl-space-space-halfunit);
   }
 }
 @media(max-width: 479px) {
-  .leftsidebarinner-profile {
+  .leftsidebarinner-sidebarheader {
     width: auto;
     align-self: stretch;
     align-items: center;
@@ -475,12 +471,6 @@ export default {
   .leftsidebarinner-container {
     align-self: center;
     align-items: center;
-    justify-content: center;
-  }
-  .leftsidebarinner-container1 {
-    align-self: stretch;
-    align-items: center;
-    border-radius: var(--dl-radius-radius-radius4);
     justify-content: center;
   }
 }

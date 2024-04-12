@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from .config import Config
+from .auth import auth_bp
 
 db = SQLAlchemy()
 

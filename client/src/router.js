@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Meta from 'vue-meta'
 
+import Login from './views/login'
+import Projectworkspace from './views/projectworkspace'
 import Teams from './views/teams'
 import Projects from './views/projects'
 import Library from './views/library'
@@ -10,6 +12,7 @@ import Root from './views/root'
 import Profile from './views/profile'
 import Template from './views/template'
 import Dashboard from './views/dashboard'
+import Register from './views/register'
 import NotFound from './views/not-found'
 import './style.css'
 
@@ -19,23 +22,33 @@ export default new Router({
   mode: 'history',
   routes: [
     {
+      name: 'login',
+      path: '/login',
+      component: Login,
+    },
+    {
+      name: 'projectworkspace',
+      path: '/project_workspace',
+      component: Projectworkspace,
+    },
+    {
       name: 'teams',
-      path: '/template3',
+      path: '/teams',
       component: Teams,
     },
     {
       name: 'projects',
-      path: '/template',
+      path: '/projects',
       component: Projects,
     },
     {
       name: 'library',
-      path: '/template4',
+      path: '/library',
       component: Library,
     },
     {
       name: 'messages',
-      path: '/template2',
+      path: '/messages',
       component: Messages,
     },
     {
@@ -45,18 +58,23 @@ export default new Router({
     },
     {
       name: 'profile',
-      path: '/template5',
+      path: '/profile',
       component: Profile,
     },
     {
       name: 'template',
-      path: '/template6',
+      path: '/template',
       component: Template,
     },
     {
       name: 'dashboard',
-      path: '/template1',
+      path: '/dashboard',
       component: Dashboard,
+    },
+    {
+      name: 'register',
+      path: '/register',
+      component: Register,
     },
     {
       name: '404 - Not Found',
