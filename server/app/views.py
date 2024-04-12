@@ -1,7 +1,6 @@
-# The code above has the exact same functionality as the code below:
-
 from flask import jsonify, request
 from flask.views import MethodView
+from sqlalchemy.exc import IntegrityError
 from app import app, db
 from app.models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
 
@@ -20,8 +19,12 @@ class CRUDView(MethodView):
     def post(self):
         data = request.json
         item = self.model(**data)
-        db.session.add(item)
-        db.session.commit()
+        try:
+            db.session.add(item)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            raise
         return jsonify(item.serialize()), 201
 
     def put(self, item_id):

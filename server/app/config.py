@@ -1,7 +1,7 @@
 import os
 
 # Define the base directory of the project
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+#BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Flask app configuration
 class Config:
@@ -14,6 +14,12 @@ class Config:
 
     #File System configuration
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
+
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 465
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = 'boyztoilet@gmail.com'#os.environ.get('MAIL_USERNAME') 
+    MAIL_PASSWORD = 'uzbmdbkbhlmckivw'#os.environ.get('MAIL_PASSWORD')
 
 # Development configuration
 class DevelopmentConfig(Config):
@@ -31,5 +37,3 @@ config_by_name = {
     'production': ProductionConfig,
     # Add more environments if needed
 }
-
-# app context???
