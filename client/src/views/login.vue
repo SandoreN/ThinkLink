@@ -15,7 +15,34 @@
                 ><span class="login-text">Sign in</span></div
               ></div
             ><div class="login-container5"
-              ><form id="login_form" name="login_form" class="login-form"
+              ><form id="login_form" name="login_form" class="login-form">
+                <input
+                  type="text"
+                  id="email"
+                  name="email"
+                  placeholder="email"
+                  class="login-textinput input"
+                  v-model="email" />
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="password"
+                  class="login-textinput1 input"
+                  v-model="password" />
+                <button
+                  id="login_button"
+                  name="login_button"
+                  class="login-navlink button"
+                  @click.prevent="login">
+                  <span class="login-text1">
+      <span>Sign in</span>
+      <br />
+    </span>
+  </button>
+</form>
+              <!--
+               <form id="login_form" name="login_form" class="login-form"
                 ><input
                   type="text"
                   id="email"
@@ -33,19 +60,46 @@
                   class="login-navlink button"
                   ><span class="login-text1"
                     ><span>Sign in</span
-                    ><br /></span></router-link></form></div></div></div
+                    ><br /></span></router-link></form> 
+              --></div></div></div
         ><div class="login-rightsidebar"></div></div></div
   ></div>
 </template>
 
 <script>
+import axios from 'axios';
 import LoginHeader from '../components/login-header'
 
 export default {
   name: 'Login',
-  props: {},
   components: {
     LoginHeader,
+  },
+  data() {
+    return {
+      email: '',
+      password: '',
+    };
+  },
+  methods: {
+    login() {
+      axios.post(`${process.env.VUE_APP_URL}/login`, {
+        email: this.email,
+        password: this.password
+      })
+      .then(response => {
+      console.log(response.data);
+      // Login successful
+      // Here you might store a token in local storage or set a session cookie
+      localStorage.setItem('token', response.data.token);
+    })
+    .catch(error => {
+      console.log(error);
+      // Login failed
+      // Here you might show an error message
+      alert('Invalid email or password');
+    });
+    },
   },
   metaInfo: {
     title: 'login - ThinkLink',
@@ -56,7 +110,7 @@ export default {
       },
     ],
   },
-}
+};
 </script>
 
 <style scoped>

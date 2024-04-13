@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
 from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy.exc import IntegrityError
+import jwt
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -81,6 +82,8 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         # Authentication successful
         # Here you might generate a JWT token or set a session cookie
+        token = jwt.encode({'email': user.email}, 'secret', algorithm='HS256')
+
         return jsonify({'message': 'Login successful'}), 200
     else:
         # Authentication failed
