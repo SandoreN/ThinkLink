@@ -1,34 +1,16 @@
 <template>
   <div class="register-container"
     ><div class="register-container1"
-      ><header data-role="Header" class="register-header"
-        ><div class="register-main"
-          ><router-link to="/" class="register-navlink button"
-            ><img
-              alt="image"
-              src="3904a565-f753-4912-9d2d-a54dc279be92"
-              class="register-image"
-            />Button</router-link
-          ><div class="register-container2"
-            ><div class="register-container3"></div
-            ><div id="register_button_container" class="register-register"
-              ><button
-                id="login_register_button"
-                name="login_register_button"
-                type="button"
-                class="register-button button"
-                ><span class="register-text"
-                  ><span>Sign in</span
-                  ><br /></span></button></div></div></div></header
+      ><register-header></register-header
       ><div class="register-body"
         ><div class="register-sidebar"></div
         ><div class="register-pagemain"
-          ><div class="register-container4"
-            ><div class="register-container5"
-              ><div class="register-container6"
-                ><span class="register-text3">Register new user</span></div
+          ><div class="register-container2"
+            ><div class="register-container3"
+              ><div class="register-container4"
+                ><span class="register-text">Register new user</span></div
               ></div
-            ><div class="register-container7"
+            ><div class="register-container5"
               ><form id="login_form" name="login_form" class="register-form"
                 ><input
                   type="text"
@@ -50,22 +32,27 @@
                   id="password"
                   name="password"
                   placeholder="password"
-                  class="register-textinput3 input" /><button
+                  class="register-textinput3 input" /><router-link
+                  to="/dashboard"
                   id="register_login_button"
                   name="login_button"
-                  type="register_login_button"
-                  class="register-button1 button"
-                  ><span class="register-text4"
+                  class="register-navlink button"
+                  ><span class="register-text1"
                     ><span>Sign up</span
-                    ><br /></span></button></form></div></div></div
+                    ><br /></span></router-link></form></div></div></div
         ><div class="register-rightsidebar"></div></div></div
   ></div>
 </template>
 
 <script>
+import RegisterHeader from '../components/register-header'
+
 export default {
   name: 'Register',
   props: {},
+  components: {
+    RegisterHeader,
+  },
   metaInfo: {
     title: 'register - ThinkLink',
     meta: [
@@ -100,99 +87,6 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.register-header {
-  width: 100%;
-  height: 75px;
-  display: flex;
-  position: relative;
-  max-width: var(--dl-size-size-maxwidth);
-  align-self: flex-start;
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-  background-color: var(--dl-color-gray-white);
-}
-.register-main {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-self: flex-start;
-  align-items: center;
-  border-color: var(--dl-color-gray-700);
-  border-width: 1px;
-  justify-content: flex-start;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 2px;
-}
-.register-navlink {
-  color: transparent;
-  width: 225px;
-  height: 100%;
-  align-self: flex-start;
-  padding-top: 0px;
-  border-width: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-bottom: 0px;
-  text-decoration: none;
-}
-.register-image {
-  width: 200px;
-  align-self: center;
-  object-fit: cover;
-}
-.register-container2 {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-self: flex-start;
-  align-items: center;
-  flex-direction: row;
-  justify-content: flex-start;
-}
-.register-container3 {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-self: flex-start;
-  align-items: stretch;
-  justify-content: space-between;
-}
-.register-register {
-  width: 225px;
-  height: 100%;
-  display: flex;
-  padding: 10px;
-  position: relative;
-  align-self: flex-end;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-}
-.register-button {
-  color: var(--dl-color-gray-white);
-  width: 200px;
-  height: 100%;
-  font-size: 30px;
-  align-self: center;
-  font-style: normal;
-  font-weight: 700;
-  padding-top: 0px;
-  border-color: var(--dl-color-custom-primary2);
-  border-width: 2px;
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-bottom: 0px;
-  background-color: transparent;
-}
-.register-text {
-  color: var(--dl-color-custom-primary2);
-}
 .register-body {
   flex: 1;
   width: 100%;
@@ -222,7 +116,7 @@ export default {
   flex-direction: column;
   justify-content: center;
 }
-.register-container4 {
+.register-container2 {
   flex: 0 0 auto;
   width: 600px;
   height: 600px;
@@ -238,7 +132,7 @@ export default {
   justify-content: flex-start;
   background-color: var(--dl-color-gray-white);
 }
-.register-container5 {
+.register-container3 {
   width: 100%;
   height: 30%;
   display: flex;
@@ -248,7 +142,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.register-container6 {
+.register-container4 {
   flex: 1;
   width: 100%;
   height: 10%;
@@ -257,7 +151,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.register-text3 {
+.register-text {
   font-size: 30px;
   align-self: center;
   font-style: normal;
@@ -265,7 +159,7 @@ export default {
   font-family: "Inter";
   font-weight: 700;
 }
-.register-container7 {
+.register-container5 {
   flex: 1;
   width: 100%;
   height: 60%;
@@ -278,6 +172,7 @@ export default {
   width: 100%;
   height: 90%;
   display: flex;
+  align-self: center;
   align-items: center;
   padding-top: 0px;
   flex-direction: column;
@@ -323,19 +218,25 @@ export default {
   border-right-width: 0px;
   border-bottom-width: 1px;
 }
-.register-button1 {
+.register-navlink {
   color: var(--dl-color-gray-white);
   width: 65%;
   height: 70px;
+  padding: 15px;
+  align-self: center;
   margin-top: 30px;
+  text-align: center;
   border-width: 0px;
+  text-decoration: none;
   background-color: rgb(38, 20, 96);
 }
-.register-text4 {
+.register-text1 {
   font-size: 30px;
+  align-self: center;
   font-style: normal;
   text-align: center;
   font-weight: 700;
+  vertical-align: middle;
 }
 .register-rightsidebar {
   flex: 0 0 auto;
@@ -345,16 +246,5 @@ export default {
   align-self: stretch;
   align-items: flex-start;
   flex-direction: column;
-}
-@media(max-width: 767px) {
-  .register-header {
-    padding-left: var(--dl-space-space-twounits);
-    padding-right: var(--dl-space-space-twounits);
-  }
-}
-@media(max-width: 479px) {
-  .register-header {
-    padding: var(--dl-space-space-unit);
-  }
 }
 </style>

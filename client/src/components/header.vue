@@ -1,11 +1,13 @@
 <template>
   <header data-role="Header" class="header-header" v-bind:class="rootClassName"
     ><div class="header-main"
-      ><router-link to="/" class="header-navlink button"
-        ><img :alt="imageAlt" :src="imageSrc" class="header-image" />{{ button
-        }}</router-link
       ><div class="header-container"
-        ><div class="header-container1"></div></div></div
+        ><router-link to="/dashboard" class="header-navlink button"
+          ><img :alt="imageAlt" :src="imageSrc" class="header-image" />{{ button
+          }}</router-link
+        ></div
+      ><div class="header-container1"
+        ><div class="header-container2"></div></div></div
   ></header>
 </template>
 
@@ -36,10 +38,10 @@ export default {
   height: 75px;
   display: flex;
   position: relative;
-  max-width: var(--dl-size-size-maxwidth);
+  max-width: 100%;
   align-self: flex-start;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   background-color: var(--dl-color-gray-white);
 }
@@ -48,34 +50,43 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  align-self: flex-end;
+  align-self: flex-start;
   align-items: center;
   border-color: var(--dl-color-gray-700);
   border-width: 1px;
-  justify-content: flex-start;
+  justify-content: center;
   border-top-width: 0px;
   border-left-width: 0px;
   border-right-width: 0px;
   border-bottom-width: 2px;
 }
+.header-container {
+  flex: 0 0 auto;
+  width: 225px;
+  height: 100%;
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: space-between;
+}
 .header-navlink {
   color: transparent;
   width: 225px;
   height: 100%;
-  align-self: flex-start;
-  padding-top: 0px;
+  padding: 10px;
+  align-self: center;
   border-width: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-bottom: 0px;
   text-decoration: none;
 }
 .header-image {
   width: 200px;
+  height: auto;
+  margin: auto;
   align-self: center;
   object-fit: cover;
+  vertical-align: middle;
 }
-.header-container {
+.header-container1 {
   flex: 1;
   width: 100%;
   height: 100%;
@@ -84,7 +95,7 @@ export default {
   flex-direction: row;
   justify-content: flex-start;
 }
-.header-container1 {
+.header-container2 {
   flex: 1;
   width: 100%;
   height: 100%;

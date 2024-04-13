@@ -1,30 +1,20 @@
 <template>
   <div class="login-container"
     ><div class="login-container1"
-      ><header data-role="Header" class="login-header"
-        ><div class="login-main"
-          ><router-link to="/" class="login-navlink button"
-            ><img
-              alt="image"
-              src="3904a565-f753-4912-9d2d-a54dc279be92"
-              class="login-image"
-            />Button</router-link
-          ><div class="login-container2"
-            ><div class="login-container3"></div
-            ><app-registerbuttoncontainer></app-registerbuttoncontainer></div></div></header
+      ><login-header></login-header
       ><div class="login-body"
         ><div class="login-sidebar"></div
         ><div class="login-pagemain"
-          ><div class="login-container4"
-            ><div class="login-container5"
+          ><div class="login-container2"
+            ><div class="login-container3"
               ><img
                 alt="image"
                 src="/thinklink_logo-300h.png"
-                class="login-image1"
-              /><div class="login-container6"
+                class="login-image"
+              /><div class="login-container4"
                 ><span class="login-text">Sign in</span></div
               ></div
-            ><div class="login-container7"
+            ><div class="login-container5"
               ><form id="login_form" name="login_form" class="login-form"
                 ><input
                   type="text"
@@ -36,26 +26,26 @@
                   id="password"
                   name="password"
                   placeholder="password"
-                  class="login-textinput1 input" /><button
+                  class="login-textinput1 input" /><router-link
+                  to="/dashboard"
                   id="login_button"
                   name="login_button"
-                  type="button"
-                  class="login-button button"
+                  class="login-navlink button"
                   ><span class="login-text1"
                     ><span>Sign in</span
-                    ><br /></span></button></form></div></div></div
+                    ><br /></span></router-link></form></div></div></div
         ><div class="login-rightsidebar"></div></div></div
   ></div>
 </template>
 
 <script>
-import AppRegisterbuttoncontainer from '../components/registerbuttoncontainer'
+import LoginHeader from '../components/login-header'
 
 export default {
   name: 'Login',
   props: {},
   components: {
-    AppRegisterbuttoncontainer,
+    LoginHeader,
   },
   metaInfo: {
     title: 'login - ThinkLink',
@@ -91,69 +81,6 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.login-header {
-  width: 100%;
-  height: 75px;
-  display: flex;
-  position: relative;
-  max-width: var(--dl-size-size-maxwidth);
-  align-self: flex-start;
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-  background-color: var(--dl-color-gray-white);
-}
-.login-main {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-self: flex-start;
-  align-items: center;
-  border-color: var(--dl-color-gray-700);
-  border-width: 1px;
-  justify-content: flex-start;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 2px;
-}
-.login-navlink {
-  color: transparent;
-  width: 225px;
-  height: 100%;
-  align-self: flex-start;
-  padding-top: 0px;
-  border-width: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-bottom: 0px;
-  text-decoration: none;
-}
-.login-image {
-  width: 200px;
-  align-self: center;
-  object-fit: cover;
-}
-.login-container2 {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-self: flex-start;
-  align-items: center;
-  flex-direction: row;
-  justify-content: flex-start;
-}
-.login-container3 {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-self: flex-start;
-  align-items: stretch;
-  justify-content: space-between;
-}
 .login-body {
   flex: 1;
   width: 100%;
@@ -183,7 +110,7 @@ export default {
   flex-direction: column;
   justify-content: center;
 }
-.login-container4 {
+.login-container2 {
   flex: 0 0 auto;
   width: 600px;
   height: 600px;
@@ -199,7 +126,7 @@ export default {
   justify-content: flex-start;
   background-color: var(--dl-color-gray-white);
 }
-.login-container5 {
+.login-container3 {
   width: 100%;
   height: 40%;
   display: flex;
@@ -209,12 +136,12 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.login-image1 {
+.login-image {
   width: 100px;
   align-self: center;
   object-fit: cover;
 }
-.login-container6 {
+.login-container4 {
   flex: 1;
   width: 100%;
   height: 10%;
@@ -230,7 +157,7 @@ export default {
   font-family: "Inter";
   font-weight: 700;
 }
-.login-container7 {
+.login-container5 {
   flex: 1;
   width: 100%;
   display: flex;
@@ -241,6 +168,7 @@ export default {
   width: 100%;
   height: 90%;
   display: flex;
+  align-self: center;
   align-items: center;
   padding-top: 30px;
   flex-direction: column;
@@ -266,19 +194,26 @@ export default {
   border-right-width: 0px;
   border-bottom-width: 1px;
 }
-.login-button {
+.login-navlink {
   color: var(--dl-color-gray-white);
   width: 65%;
   height: 70px;
+  padding: 15px;
+  position: relative;
+  align-self: center;
   margin-top: 30px;
+  text-align: center;
   border-width: 0px;
+  text-decoration: none;
   background-color: rgb(38, 20, 96);
 }
 .login-text1 {
   font-size: 30px;
+  align-self: center;
   font-style: normal;
   text-align: center;
   font-weight: 700;
+  vertical-align: middle;
 }
 .login-rightsidebar {
   flex: 0 0 auto;
@@ -288,16 +223,5 @@ export default {
   align-self: stretch;
   align-items: flex-start;
   flex-direction: column;
-}
-@media(max-width: 767px) {
-  .login-header {
-    padding-left: var(--dl-space-space-twounits);
-    padding-right: var(--dl-space-space-twounits);
-  }
-}
-@media(max-width: 479px) {
-  .login-header {
-    padding: var(--dl-space-space-unit);
-  }
 }
 </style>

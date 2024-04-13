@@ -3,12 +3,12 @@
     ><div data-role="Header" class="root-header-container"
       ><header class="root-header"
         ><div class="root-logo"
-          ><router-link to="/dashboard" class="root-navlink button"
+          ><button type="button" class="root-button button"
             ><img
               alt="image"
               src="/thinklink-200h.png"
               class="root-image"
-            />Button</router-link
+            />Button</button
           ></div
         ><div class="root-container01"
           ><div class="root-menu"
@@ -18,16 +18,24 @@
             ><span class="root-text03">Blog</span
             ><span class="root-text04">Jobs</span></div
           ><div class="root-container02"
-            ><app-registerbuttoncontainer></app-registerbuttoncontainer></div></div></header></div
+            ><div id="register_button_container" class="root-register"
+              ><router-link
+                to="/register"
+                id="register_button"
+                name="register_button"
+                class="root-navlink button"
+                ><span class="root-text05"
+                  ><span>Sign up</span
+                  ><br /></span></router-link></div></div></div></header></div
     ><div class="root-main"
       ><div class="root-blur-background"></div
       ><div class="root-hero"
         ><div class="root-container03"
-          ><h1 class="root-text05 Headline1"
+          ><h1 class="root-text08 Headline1"
             ><span>Work together.</span><br /><span>Get more done.</span></h1
           ><primary-button
             button="Get Started"
-            class="root-component01"
+            class="root-component"
           ></primary-button></div
         ><img
           alt="image"
@@ -62,9 +70,9 @@
         src="/external/logo-6.svg"
         class="root-image6" /><div class="root-divider1"></div></div
     ><div class="root-features"
-      ><h2 class="Headline2 root-text09">Tailor-made features</h2
-      ><span class="root-text10"
-        ><span class="root-text11"
+      ><h2 class="Headline2 root-text12">Tailor-made features</h2
+      ><span class="root-text13"
+        ><span class="root-text14"
           >Lorem ipsum is common placeholder text used to demonstrate the graphic
           elements of a document or visual presentation.</span
         ></span
@@ -94,7 +102,7 @@
       ><div class="root-container04"></div
       ><div class="root-container05"
         ><h3 class="Headline3">Headline</h3
-        ><span class="root-text13 Lead1"
+        ><span class="root-text16 Lead1"
           >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum
           diam orci pretium a pharetra, feugiat cursus. Dictumst risus, sem
           egestas odio cras adipiscing vulputate. Nisi, risus in suscipit non. Non
@@ -102,12 +110,12 @@
         ><link-icon-button text="Get Started"></link-icon-button></div></div
     ><div class="root-achievements"
       ><div class="root-container06"
-        ><h2 class="root-text14"
-          ><span class="root-text15"
-            ><span>Our 18 years of <span v-html="rawcfwo"></span></span
-            ><span> <span v-html="rawxvvs"></span></span></span
+        ><h2 class="root-text17"
+          ><span class="root-text18"
+            ><span>Our 18 years of <span v-html="raw02rd"></span></span
+            ><span> <span v-html="rawh0p7"></span></span></span
           ><br /><span>achievements</span></h2
-        ><span class="root-text20"
+        ><span class="root-text23"
           >With our super powers we have reached this</span
         ></div
       ><div class="root-container07"
@@ -134,10 +142,10 @@
         ><div class="root-container12"></div></div></div
     ><div class="root-feature2"
       ><div class="root-container13"
-        ><h2 class="root-text21"
-          ><span class="Headline2 root-text22">Research with peers </span
+        ><h2 class="root-text24"
+          ><span class="Headline2 root-text25">Research with peers </span
           ><br /></h2
-        ><span class="root-text24 Lead1"
+        ><span class="root-text27 Lead1"
           >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum
           diam orci pretium a pharetra, feugiat cursus. Dictumst risus, sem
           egestas odio cras adipiscing vulputate. Nisi, risus in suscipit non. Non
@@ -147,14 +155,14 @@
     ><div class="root-cta"
       ><div class="root-container14"
         ><div class="root-container15"
-          ><h2 class="Headline2 root-text25"
+          ><h2 class="Headline2 root-text28"
             >Manage your projects from your mobile</h2
-          ><span class="root-text26 Lead1"
+          ><span class="root-text29 Lead1"
             >Download the app to manage your projects, keep track of the progress
             and complete tasks without procastinating. Stay on track and complete
             on time!</span
-          ><span class="root-text27 Subtitle2"
-            ><span class="root-text28">Get the App</span></span
+          ><span class="root-text30 Subtitle2"
+            ><span class="root-text31">Get the App</span></span
           ><store-banner></store-banner></div
         ><div class="root-container16"></div></div></div
     ><div class="root-footer"
@@ -163,15 +171,15 @@
           alt="image"
           src="/external/logotype-light.svg"
           class="root-image7" /><div class="root-container18"
-          ><span class="root-text29">About</span
-          ><span class="root-text30">Features</span
-          ><span class="root-text31">Pricing</span
-          ><span class="root-text32">Careers</span
-          ><span class="root-text33">Help</span
-          ><span class="root-text34">Privacy Policy</span></div
+          ><span class="root-text32">About</span
+          ><span class="root-text33">Features</span
+          ><span class="root-text34">Pricing</span
+          ><span class="root-text35">Careers</span
+          ><span class="root-text36">Help</span
+          ><span class="root-text37">Privacy Policy</span></div
         ><div class="root-divider2"></div
         ><div class="root-container19"
-          ><span class="root-text35 Body2"
+          ><span class="root-text38 Body2"
             >© 2020 Landify UI Kit. All rights reserved</span
           ><div class="root-container20"
             ><div class="root-container21"
@@ -198,7 +206,6 @@
 </template>
 
 <script>
-import AppRegisterbuttoncontainer from '../components/registerbuttoncontainer'
 import PrimaryButton from '../components/primary-button'
 import FeatureCard1 from '../components/feature-card1'
 import LinkIconButton from '../components/link-icon-button'
@@ -209,7 +216,6 @@ export default {
   name: 'Root',
   props: {},
   components: {
-    AppRegisterbuttoncontainer,
     PrimaryButton,
     FeatureCard1,
     LinkIconButton,
@@ -218,8 +224,8 @@ export default {
   },
   data() {
     return {
-      rawcfwo: ' ',
-      rawxvvs: ' ',
+      raw02rd: ' ',
+      rawh0p7: ' ',
     }
   },
   metaInfo: {
@@ -249,11 +255,13 @@ export default {
 }
 .root-header-container {
   width: 100%;
+  height: 75px;
   display: flex;
   align-self: flex-start;
   align-items: stretch;
   flex-direction: column;
   justify-content: center;
+  background-color: #ffffff;
 }
 .root-header {
   flex: 0 0 auto;
@@ -262,11 +270,12 @@ export default {
   display: flex;
   z-index: 100;
   position: relative;
-  max-width: auto;
+  max-width: 100%;
   align-self: flex-start;
   align-items: center;
   flex-direction: row;
   justify-content: flex-start;
+  background-color: var(--dl-color-gray-white);
 }
 .root-logo {
   display: flex;
@@ -276,24 +285,19 @@ export default {
   flex-direction: row;
   justify-content: space-between;
 }
-.root-navlink {
+.root-button {
   flex: 1;
   color: transparent;
   width: 225px;
   height: 100%;
+  padding: 10px;
   align-self: flex-start;
   border-width: 0px;
   border-radius: 0px;
-  text-decoration: none;
 }
 .root-image {
-  top: 0px;
-  left: 0px;
-  right: 0px;
   width: 200px;
-  bottom: 0px;
-  margin: auto;
-  position: absolute;
+  height: auto;
   align-self: center;
   object-fit: cover;
 }
@@ -358,6 +362,43 @@ export default {
   align-items: center;
   justify-content: center;
 }
+.root-register {
+  width: 225px;
+  display: flex;
+  padding: 10px;
+  position: relative;
+  align-self: stretch;
+  align-items: stretch;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.root-navlink {
+  color: var(--dl-color-gray-white);
+  width: 200px;
+  height: 100%;
+  padding: auto;
+  font-size: 30px;
+  align-self: center;
+  font-style: normal;
+  text-align: center;
+  align-items: center;
+  font-weight: 700;
+  padding-top: 0px;
+  border-color: var(--dl-color-custom-primary2);
+  border-width: 2px;
+  padding-left: 0px;
+  align-content: center;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  text-decoration: none;
+  background-color: transparent;
+}
+.root-text05 {
+  color: var(--dl-color-custom-primary2);
+  font-size: 30px;
+  align-self: center;
+  vertical-align: middle;
+}
 .root-main {
   width: 100%;
   display: flex;
@@ -399,10 +440,10 @@ export default {
   align-items: flex-start;
   flex-direction: column;
 }
-.root-text05 {
+.root-text08 {
   margin-bottom: var(--dl-space-space-doubleunit);
 }
-.root-component01 {
+.root-component {
   text-decoration: none;
 }
 .root-image1 {
@@ -515,11 +556,11 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.root-text10 {
+.root-text13 {
   max-width: 500px;
   text-align: center;
 }
-.root-text11 {
+.root-text14 {
   white-space: pre-wrap;
 }
 .root-features1 {
@@ -561,7 +602,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.root-text13 {
+.root-text16 {
   max-width: 400px;
   margin-top: var(--dl-space-space-doubleunit);
   margin-bottom: var(--dl-space-space-doubleunit);
@@ -585,7 +626,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.root-text15 {
+.root-text18 {
   white-space: pre-wrap;
 }
 .root-container07 {
@@ -650,7 +691,7 @@ export default {
   flex-direction: row;
   justify-content: flex-start;
 }
-.root-text24 {
+.root-text27 {
   max-width: 400px;
   margin-top: var(--dl-space-space-doubleunit);
   margin-bottom: var(--dl-space-space-doubleunit);
@@ -683,15 +724,15 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
-.root-text26 {
+.root-text29 {
   max-width: 500px;
 }
-.root-text27 {
+.root-text30 {
   max-width: 400px;
   margin-top: var(--dl-space-space-doubleunit);
   margin-bottom: var(--dl-space-space-halfunit);
 }
-.root-text28 {
+.root-text31 {
   white-space: pre-wrap;
 }
 .root-container16 {
@@ -736,27 +777,6 @@ export default {
   flex-direction: row;
   justify-content: flex-start;
 }
-.root-text29 {
-  transition: 0.3s;
-  margin-right: var(--dl-space-space-unit);
-}
-.root-text29:hover {
-  color: var(--dl-color-turquoise-default);
-}
-.root-text30 {
-  transition: 0.3s;
-  margin-right: var(--dl-space-space-unit);
-}
-.root-text30:hover {
-  color: var(--dl-color-turquoise-default);
-}
-.root-text31 {
-  transition: 0.3s;
-  margin-right: var(--dl-space-space-unit);
-}
-.root-text31:hover {
-  color: var(--dl-color-turquoise-default);
-}
 .root-text32 {
   transition: 0.3s;
   margin-right: var(--dl-space-space-unit);
@@ -773,9 +793,30 @@ export default {
 }
 .root-text34 {
   transition: 0.3s;
-  white-space: nowrap;
+  margin-right: var(--dl-space-space-unit);
 }
 .root-text34:hover {
+  color: var(--dl-color-turquoise-default);
+}
+.root-text35 {
+  transition: 0.3s;
+  margin-right: var(--dl-space-space-unit);
+}
+.root-text35:hover {
+  color: var(--dl-color-turquoise-default);
+}
+.root-text36 {
+  transition: 0.3s;
+  margin-right: var(--dl-space-space-unit);
+}
+.root-text36:hover {
+  color: var(--dl-color-turquoise-default);
+}
+.root-text37 {
+  transition: 0.3s;
+  white-space: nowrap;
+}
+.root-text37:hover {
   color: var(--dl-color-turquoise-default);
 }
 .root-divider2 {
@@ -792,7 +833,7 @@ export default {
   flex-direction: row;
   justify-content: space-between;
 }
-.root-text35 {
+.root-text38 {
   color: var(--dl-color-gray-300);
   margin-top: var(--dl-space-space-unit);
 }
@@ -883,7 +924,7 @@ export default {
     align-items: center;
     margin-bottom: var(--dl-space-space-doubleunit);
   }
-  .root-text05 {
+  .root-text08 {
     text-align: center;
   }
   .root-feature1 {
@@ -911,7 +952,7 @@ export default {
   .root-menu {
     display: none;
   }
-  .root-text05 {
+  .root-text08 {
     font-size: 50px;
     text-align: center;
   }
@@ -933,19 +974,19 @@ export default {
   .root-image6 {
     margin: var(--dl-space-space-unit);
   }
-  .root-text09 {
+  .root-text12 {
     font-size: 40px;
   }
-  .root-text14 {
+  .root-text17 {
     font-size: 40px;
   }
-  .root-text21 {
-    font-size: 40px;
-  }
-  .root-text22 {
+  .root-text24 {
     font-size: 40px;
   }
   .root-text25 {
+    font-size: 40px;
+  }
+  .root-text28 {
     font-size: 40px;
   }
   .root-container18 {
@@ -955,25 +996,25 @@ export default {
   .root-container19 {
     flex-direction: column;
   }
-  .root-text35 {
+  .root-text38 {
     margin-top: var(--dl-space-space-unit);
     margin-bottom: var(--dl-space-space-unit);
   }
 }
 @media(max-width: 479px) {
-  .root-text09 {
+  .root-text12 {
     text-align: center;
   }
-  .root-text10 {
+  .root-text13 {
     text-align: center;
   }
   .root-container06 {
     align-items: center;
   }
-  .root-text14 {
+  .root-text17 {
     text-align: center;
   }
-  .root-text20 {
+  .root-text23 {
     text-align: center;
   }
   .root-container11 {
