@@ -232,3 +232,22 @@ class Publication(db.Model):
             'team_id': self.team_id,
             'publication_date': self.publication_date.strftime('%Y-%m-%d %H:%M:%S')
         }
+
+class Token(db.Model):
+    __tablename__ = 'Token'
+
+    id = Column(Integer, primary_key=True)
+    token = Column(String(255), nullable=False)
+    user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
+    is_blacklisted = Column(Boolean, default=False)
+    creation_date = Column(DateTime, default=datetime.datetime.now)
+    expiration_date = Column(DateTime)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'token': self.token,
+            'is_blacklisted': self.blacklisted,
+            'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'expiration_date': self.expiration_date.strftime('%Y-%m-%d %H:%M:%S') if self.expiration_date else None
+        }

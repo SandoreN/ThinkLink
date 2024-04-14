@@ -2,7 +2,7 @@ from flask import jsonify, request
 from flask.views import MethodView
 from sqlalchemy.exc import IntegrityError
 from app import app, db
-from app.models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication
+from app.models import User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication, Token
 
 class CRUDView(MethodView):
     """
@@ -24,7 +24,7 @@ class CRUDView(MethodView):
         if model:
             self.model = model
  
-    def get(self, item_id=None, serialized=True):
+    def get(self, item_id=None, filters=None, serialized=True):
         """
         Retrieves an item from the database. Items can be found via parameter with the item.id, or by JSON in HTTP request.
 
@@ -38,7 +38,7 @@ class CRUDView(MethodView):
             If the item is not found, returns a JSON response with an error message and status code 404.
         """
         query = self.model.query
-        item = query.get(item_id) if item_id else query.filter_by(**request.json).first() if request.json else query.all()
+        item = query.get(item_id) if item_id else query.filter_by(**filters).first() if filters else query.all()
         if not item:
             return jsonify({'error': f'{self.model.__name__} not found'}), 404
         return jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
@@ -58,7 +58,7 @@ class CRUDView(MethodView):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            raise
+            return jsonify({'error': f'{self.model.__name__} already exists'}), 400
         return jsonify(item.serialize()), 201
 
     def put(self, item_id):
@@ -120,7 +120,7 @@ class CRUDView(MethodView):
         db.session.commit()
         return jsonify({'message': f'{self.model.__name__} deleted successfully'}), 200
 
-models = [User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication]
+models = [User, Team, Message, Project, Draft, Resource, Task, Proposal, Publication, Token]
 
 for model in models:
     view = type(f'{model.__name__}View', (CRUDView,), {'model': model}).as_view(f'{model.__name__.lower()}s')
