@@ -24,7 +24,7 @@ class CRUDView(MethodView):
         if model:
             self.model = model
  
-    def get(self, item_id=None, filters=None, serialized=True):
+    def get(self, item_id=None, filters=None, all_matches=False, serialized=True):
         """
         Retrieves an item from the database. Items can be found via parameter with the item.id, or by JSON in HTTP request.
 
@@ -33,15 +33,26 @@ class CRUDView(MethodView):
             serialized: A boolean indicating whether to serialize the item or not.
 
         Returns:
+            If the item_id is provided, returns the item with the given ID.
+            If the filters are provided, returns the item that matches the filters.
+            If the filters are provided and all_matches is True, returns a list of all items that match the filters.
+
             If the item is found AND serialized is True, returns a JSON representation of the item. 
             If the item is found and serialized is False, returns the item as a Python object.
             If the item is not found, returns a JSON response with an error message and status code 404.
         """
         query = self.model.query
-        item = query.get(item_id) if item_id else query.filter_by(**filters).first() if filters else query.all()
+        #this was the original line
+        #item = query.get(item_id) if item_id else query.filter_by(**filters).first() if filters else query.all()
+        #the following line returns ALL items matching the filters
+        #item = query.get(item_id) if item_id else [item for item in query.filter_by(**filters)] if filters else query.all()
+        #the following line does the same as the above except it only returns the first value matching filters, unless all_matches is True, then it returns all matches
+        item = query.get(item_id) if item_id else [item for item in query.filter_by(**filters)] if filters and all_matches else query.filter_by(**filters).first() if filters else query.all()
+
         if not item:
             return jsonify({'error': f'{self.model.__name__} not found'}), 404
-        return jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
+        #Ridiculously long line of code that would be substantially more comprehensible if it were written in the traditional if else format.It's a ternary operator that checks if the item is a list, and if all items in the list have a serialize method, then it serializes all items in the list. Otherwise, it serializes the item. If the item is not a list, it serializes the item. If serialized is False, it returns the item as a Python object. I thought such a long line of code could use a very long single line comment to go along with it.
+        return jsonify([i.serialize() for i in item]) if serialized and isinstance(item, list) and all(hasattr(i, 'serialize') for i in item) else item if isinstance(item, list) else jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
 
     def post(self):
         """
