@@ -26,20 +26,17 @@ class FileManager:
         os.makedirs(self.proposals_folder, exist_ok=True)
 
         # Create CRUDView instances for publications and proposals
-        self.publication_view = CRUDView()
-        self.publication_view.model = Publication  # Replace with your Publication model
-        self.proposal_view = CRUDView()
-        self.proposal_view.model = Proposal  # Replace with your Proposal model
-        self.resource_view = CRUDView()
-        self.resource_view.model = Resource  # Replace with your Resource model
+        self.publication_view = CRUDView(model=Publication)
+        self.proposal_view = CRUDView(model=Proposal)
+        self.resource_view = CRUDView(model=Resource)
 
-    def upload_file(self, file, team_name, project_name, filename, resource_data, resource_id=None):
+    def upload_file(self, file, user_id, project_id, filename, resource_data, resource_id=None):
         # Sanitize filename using Werkzeug's secure_filename
         s_filename = secure_filename(filename)
         
         # Construct file path for resource based on team and project
-        team_folder = os.path.join(self.resource_folder, team_name)
-        project_folder = os.path.join(team_folder, project_name)
+        user_folder = os.path.join(self.resource_folder, user_id)
+        project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, s_filename)
         
         # Ensure directories exist
@@ -65,10 +62,10 @@ class FileManager:
                 request.json = resource_data
                 self.resource_view.put(resource_id)
 
-    def download_file(self, team_name, project_name, filename):
+    def download_file(self, user_id, project_id, filename):
         # Construct path based on team and project
-        team_folder = os.path.join(self.base_folder, team_name)
-        project_folder = os.path.join(team_folder, project_name)
+        user_folder = os.path.join(self.base_folder, user_id)
+        project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, filename)
         
         # Check if file exists
@@ -77,10 +74,10 @@ class FileManager:
         else:
             return None  # File not found
 
-    def delete_file(self, team_name, project_name, filename):
+    def delete_file(self, user_id, project_id, filename):
         # Construct path based on team and project
-        team_folder = os.path.join(self.base_folder, team_name)
-        project_folder = os.path.join(team_folder, project_name)
+        user_folder = os.path.join(self.base_folder, user_id)
+        project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, filename)
         
         # Delete the specified file from the upload folder

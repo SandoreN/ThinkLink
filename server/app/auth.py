@@ -30,13 +30,17 @@ def token_required(f):
                 token = token_view.get(filters={'token': token_str}, serialized=False)
                 if not token or token.is_blacklisted:
                     return jsonify({'message': 'Token is invalid or has been blacklisted'}), 401
+                user = user_view.get(filters={'id': data['user_id']}, serialized=False)
+                if not user:
+                    return jsonify({'message': 'User not found'}), 401
             else:
                 return jsonify({'message': 'Invalid token'}), 401
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token'}), 401
-        return f(token, *args, **kwargs)
+        # changed from f(token, *args, **kwargs) to f(user, *args, **kwargs) as the /protected route expects a user. 
+        return f(user, *args, **kwargs)
     return decorated
 
 
