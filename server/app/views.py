@@ -41,17 +41,13 @@ class CRUDView(MethodView):
 
         Note:
             - If item_id is provided, filters will be ignored.
-            - If all_matches is True, filters will be ignored and all items that match the filters will be returned.
+            - If filters are not provided, all_matches will be ignored.
             - If serialized is False, the item(s) will be returned as Python objects instead of serialized JSON.
-
         """
         query = self.model.query
-
         item = query.get(item_id) if item_id else [item for item in query.filter_by(**filters)] if filters and all_matches else query.filter_by(**filters).first() if filters else query.all()
-
         if not item:
             return jsonify({'error': f'{self.model.__name__} not found'}), 404
-
         return jsonify([i.serialize() for i in item]) if serialized and isinstance(item, list) and all(hasattr(i, 'serialize') for i in item) else item if isinstance(item, list) else jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
 
     def post(self):
