@@ -1,17 +1,23 @@
 <template>
-  <header data-role="Header" class="header-header" v-bind:class="rootClassName"
-    ><div class="header-main"
-      ><div class="header-container"
-        ><router-link to="/dashboard" class="header-navlink button"
-          ><img :alt="imageAlt" :src="imageSrc" class="header-image" />{{ button
-          }}</router-link
-        ></div
-      ><div class="header-container1"
-        ><div class="header-container2"></div></div></div
-  ></header>
+  <header data-role="Header" class="header-header" v-bind:class="rootClassName">
+    <div class="header-main">
+      <div class="header-container">
+        <router-link to="/dashboard" class="header-navlink button">
+          <img :alt="imageAlt" :src="imageSrc" class="header-image" />{{ button }}
+        </router-link>
+      </div>
+      <div class="header-container1">
+        <div class="header-container2"></div>
+      </div>
+    </div>
+    <!-- Logout Button only shown when user is authenticated -->
+    <button @click="logout" v-if="isAuthenticated" class="logout-button">Logout</button>
+  </header>
 </template>
 
 <script>
+import axios from 'axios'; // Assuming axios might be needed elsewhere, not needed for current functionality
+
 export default {
   name: 'Header',
   props: {
@@ -28,6 +34,24 @@ export default {
       type: String,
       default: 'image',
     },
+  },
+  computed: {
+    // Computed property to determine if the user is authenticated
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated;
+    }
+  },
+  methods: {
+    // Method to handle logout
+    async logout() {
+      try {
+        await this.$store.dispatch('logout');
+        this.$router.push('/login'); // Redirect to login after logout
+      } catch (error) {
+        console.error('Logout failed:', error);
+        // Optionally show an error message to the user
+      }
+    }
   },
 }
 </script>
@@ -104,98 +128,13 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
-.header-root-class-name {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: absolute;
-}
-.header-root-class-name1 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: absolute;
-}
-.header-root-class-name2 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: absolute;
-}
-.header-root-class-name3 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: absolute;
-}
-.header-root-class-name4 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: absolute;
-}
-.header-root-class-name5 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name6 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name7 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name8 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name9 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name10 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name11 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name12 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
-}
-.header-root-class-name13 {
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  position: static;
-  align-self: flex-start;
+.logout-button {
+  padding: 10px 20px;
+  background-color: #f00;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
 }
 @media(max-width: 767px) {
   .header-header {

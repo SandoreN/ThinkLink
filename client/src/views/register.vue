@@ -17,17 +17,20 @@
                   id="user.name_register"
                   name="user.name_register"
                   placeholder="Full name"
-                  class="register-textinput input" /><input
+                  class="register-textinput input" />
+                <input
                   type="text"
                   id="user.username_register"
                   name="user.username_register"
                   placeholder="username"
-                  class="register-textinput1 input" /><input
+                  class="register-textinput1 input" />
+                <input
                   type="text"
                   id="user.email_register"
                   name="user.email_register"
                   placeholder="email"
-                  class="register-textinput2 input" /><input
+                  class="register-textinput2 input" />
+                <input
                   type="text"
                   id="password"
                   name="password"
@@ -45,24 +48,47 @@
 </template>
 
 <script>
-import RegisterHeader from '../components/register-header'
+import axios from 'axios';
+import RegisterHeader from '../components/register-header.vue';
 
 export default {
   name: 'Register',
-  props: {},
   components: {
     RegisterHeader,
   },
+  data() {
+    return {
+      user: {
+        fullname: '',
+        username: '',
+        email: '',
+        password: '',
+      },
+      errors: []
+    };
+  },
+  methods: {
+    async submitRegistration() {
+      try {
+        const response = await axios.post(`${process.env.VUE_APP_URL}/register`, this.user);
+        console.log('Registration successful:', response);
+        this.$router.push('/login');
+      } catch (error) {
+        console.error('Registration failed:', error);
+        this.errors.push('Failed to register. Please try again.');
+      }
+    }
+  },
   metaInfo: {
-    title: 'register - ThinkLink',
+    title: 'Register - ThinkLink',
     meta: [
       {
         property: 'og:title',
-        content: 'register - ThinkLink',
+        content: 'Register - ThinkLink',
       },
     ],
   },
-}
+};
 </script>
 
 <style scoped>
@@ -72,8 +98,6 @@ export default {
   overflow: auto;
   min-height: 100vh;
   align-items: center;
-  border-color: var(--dl-color-gray-black);
-  border-width: 0px;
   flex-direction: column;
   justify-content: center;
   background-color: var(--dl-color-gray-white);
@@ -81,7 +105,6 @@ export default {
 .register-container1 {
   flex: 1;
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: flex-start;
   flex-direction: column;
@@ -89,10 +112,7 @@ export default {
 }
 .register-body {
   flex: 1;
-  width: 100%;
-  height: 100%;
   display: flex;
-  align-self: stretch;
   align-items: flex-start;
   flex-direction: row;
   justify-content: flex-start;
@@ -101,150 +121,64 @@ export default {
 .register-sidebar {
   width: 225px;
   display: flex;
-  position: relative;
-  align-self: stretch;
-  align-items: stretch;
   flex-direction: column;
-  justify-content: flex-start;
 }
 .register-pagemain {
   flex: 1;
   display: flex;
-  position: relative;
-  align-self: stretch;
   align-items: center;
   flex-direction: column;
   justify-content: center;
 }
 .register-container2 {
-  flex: 0 0 auto;
   width: 600px;
-  height: 600px;
-  display: flex;
   padding: 80px;
-  margin-top: 0px;
-  align-items: flex-start;
-  padding-top: 30px;
-  padding-left: 30px;
-  padding-right: 30px;
+  display: flex;
   flex-direction: column;
-  padding-bottom: 30px;
-  justify-content: flex-start;
   background-color: var(--dl-color-gray-white);
 }
 .register-container3 {
-  width: 100%;
-  height: 30%;
-  display: flex;
   align-self: center;
-  margin-top: 0px;
-  align-items: center;
+  display: flex;
   flex-direction: column;
-  justify-content: flex-start;
 }
 .register-container4 {
-  flex: 1;
-  width: 100%;
-  height: 10%;
-  display: flex;
-  align-self: center;
   align-items: center;
   justify-content: center;
+  display: flex;
 }
 .register-text {
   font-size: 30px;
-  align-self: center;
-  font-style: normal;
-  text-align: center;
-  font-family: "Inter";
   font-weight: 700;
+  font-family: "Inter";
 }
 .register-container5 {
-  flex: 1;
-  width: 100%;
-  height: 60%;
   display: flex;
-  align-self: flex-end;
-  align-items: flex-start;
   flex-direction: column;
+  align-items: flex-start;
 }
 .register-form {
-  width: 100%;
-  height: 90%;
   display: flex;
-  align-self: center;
-  align-items: center;
-  padding-top: 0px;
   flex-direction: column;
-  justify-content: space-between;
+  width: 100%;
 }
-.register-textinput {
+.register-textinput, .register-textinput1, .register-textinput2, .register-textinput3 {
   width: 65%;
-  border-color: var(--dl-color-gray-500);
-  border-width: 1px;
-  border-radius: 0px;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 1px;
-}
-.register-textinput1 {
-  width: 65%;
-  border-color: var(--dl-color-gray-500);
-  border-width: 1px;
-  border-radius: 0px;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 1px;
-}
-.register-textinput2 {
-  width: 65%;
-  border-color: var(--dl-color-gray-500);
-  border-width: 1px;
-  border-radius: 0px;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 1px;
-}
-.register-textinput3 {
-  width: 65%;
-  border-color: var(--dl-color-gray-500);
-  border-width: 1px;
-  border-radius: 0px;
-  border-top-width: 0px;
-  border-left-width: 0px;
-  border-right-width: 0px;
+  margin-bottom: 20px;
   border-bottom-width: 1px;
 }
 .register-navlink {
-  color: var(--dl-color-gray-white);
   width: 65%;
-  height: 70px;
   padding: 15px;
-  align-self: center;
-  margin-top: 30px;
   text-align: center;
-  border-width: 0px;
-  text-decoration: none;
   background-color: rgb(38, 20, 96);
-}
-.register-text1 {
-  font-size: 30px;
-  align-self: center;
-  font-style: normal;
-  text-align: center;
-  font-weight: 700;
-  vertical-align: middle;
+  color: var(--dl-color-gray-white);
+  text-decoration: none;
+  margin-top: 30px;
 }
 .register-rightsidebar {
-  flex: 0 0 auto;
   width: 225px;
   display: flex;
-  position: relative;
-  align-self: stretch;
-  align-items: flex-start;
   flex-direction: column;
 }
 </style>
