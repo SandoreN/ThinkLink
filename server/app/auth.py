@@ -1,134 +1,111 @@
-import smtplib
 from flask import Blueprint, jsonify, request, url_for, render_template
-from . import config
-from . import *
+from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer
+import jwt
+from datetime import datetime, timedelta
+from functools import wraps
+import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
-from itsdangerous import URLSafeTimedSerializer
+from . import *
+from app import *
+from .models import User, BlacklistedToken
+from .views import CRUDView
 from sqlalchemy.exc import IntegrityError
-import jwt
 
 auth_bp = Blueprint('auth', __name__)
 
-# Instantiate CRUDView for User model
-user_view = CRUDView()
-user_view.model = User
+# Initialize CRUDView with the User model
+user_view = CRUDView(model=User)
 
-@auth_bp.route('/register', methods=['POST'])
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization', '').split(' ')[1] if 'Authorization' in request.headers else None
+        if not token or BlacklistedToken.query.filter_by(token=token).first():
+            return jsonify({'message': 'Token is missing or has been blacklisted'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            if 'user_id' in data:
+                current_user = User.query.get(data['user_id'])
+                if not current_user:
+                    return jsonify({'message': 'User not found'}), 404
+            else:
+                return jsonify({'message': 'Invalid token'}), 401
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
+
+
+@auth_bp.route('/api/register', methods=['POST'])
 def register_new_user():
     data = request.get_json()
-    if not data:
-        return jsonify({'message': 'No JSON data received'}), 400
-    
-    # Extract required fields from JSON data
-    name = data.get('name')
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
+    if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
+        return jsonify({'message': 'Missing required fields'}), 400
 
-    # Check if required fields are missing
-    if not (name and email and password and username):
-        return jsonify({'message': 'Username, email, or password field is missing'}), 400
+    if user_view.get(None, serialized=False):
+        return jsonify({'message': 'Username or email already exists'}), 400
 
-    # Generate password hash
-    password_hash = generate_password_hash(password_hash)
+    hashed_password = generate_password_hash(data['password'])
+    new_user_data = {
+        'name': data['name'],
+        'username': data['username'],
+        'email': data['email'],
+        'password_hash': hashed_password,
+        'is_confirmed': False
+    }
 
-    # Create a new user instance data
-    new_user_data = {'name': name, 'email': email, 'password_hash': password_hash}
-
-    request.json = new_user_data
-    # Use CRUDView to create the new user
     try:
-        response = user_view.post()
+        response, status_code = user_view.post(new_user_data)
+        if status_code == 201:
+            send_confirmation_email(data['email'], generate_confirmation_token(data['email']))
+            return jsonify({'message': 'User created successfully. Please check your email to confirm it.'}), 201
     except IntegrityError:
-        return jsonify({'message': 'Username or email already exists. Please try again.'}), 400
+        db.session.rollback()
+        return jsonify({'message': 'Username or email already exists'}), 400
 
-    confirmation_token = generate_confirmation_token(email)
+    return jsonify({'message': 'Failed to create user'}), 400
 
-    send_confirmation_email(email, confirmation_token)
-
-    return response
-
-@auth_bp.route('/confirm_email/<token>', methods=['GET'])
-def confirm_email(token):
-    email = verify_confirmation_token(token)
-    if email:
-        # This is how you would filter by any particular "column_name": "value"
-        # Prepare the request.json to filter by email
-        request.json = {'email': email}
-        # Send a GET request to the /api/users endpoint
-        user = user_view.get()
-        if user:
-            # prepare a PATCH request to update the user's is_confirmed field
-            request.json = {'is_confirmed': True}
-            # send the PATCH request
-            user_view.patch(user['id'])
-            return jsonify({'message': 'Email confirmed successfully.'}), 200
-    return jsonify({'error': 'Invalid token or email not found.'}), 400
-
-
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    email = data['email']
-    password = data['password']
+    user = user_view.get({'email': data.get('email')}, serialized=False)
     
-    # Query the database to find the user by email
-    request.json = {'email': email}
-    user = user_view.get(serialized=False)
-    
-    if user and check_password_hash(user.password_hash, password):
-        # Authentication successful
-        # Here you might generate a JWT token or set a session cookie
-        token = jwt.encode({'email': user.email}, 'secret', algorithm='HS256')
+    if user and check_password_hash(user.password_hash, data['password']):
+        token = jwt.encode({'user_id': user.id, 'exp': datetime.utcnow() + timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm='HS256')
+        return jsonify({'token': token, 'message': 'Login successful'}), 200
+    return jsonify({'message': 'Invalid email or password'}), 401
 
-        return jsonify({'message': 'Login successful'}), 200
-    else:
-        # Authentication failed
-        return jsonify({'message': 'Invalid email or password'}), 401
-
-@auth_bp.route('/logout', methods=['POST'])
-def logout():
-    # Here you might invalidate the JWT token or clear the session cookie
+@auth_bp.route('/api/logout', methods=['POST'])
+@token_required
+def logout(current_user):
+    token = request.headers['Authorization'].split(' ')[1]
+    blacklist_token = BlacklistedToken(token=token)
+    db.session.add(blacklist_token)
+    db.session.commit()
     return jsonify({'message': 'Logout successful'}), 200
 
-# Other authentication-related routes such as forgot password, change password, etc. can be added here
+@auth_bp.route('/api/protected', methods=['GET'])
+@token_required
+def protected(current_user):
+    return jsonify({'message': 'Access granted', 'user': current_user.serialize()}), 200
 
 def generate_confirmation_token(email):
-    return generate_password_hash(email)
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
 
-def send_confirmation_email(email, confirmation_token):
-    confirm_url = url_for('auth.confirm_email', token=confirmation_token, _external=True)
-
-    # Create the email message
+def send_confirmation_email(email, token):
+    confirm_url = url_for('.confirm_email', token=token, _external=True)
     message = MIMEMultipart()
     message['From'] = app.config['MAIL_USERNAME']
     message['To'] = email
     message['Subject'] = 'Confirm Your Email Address'
-
-    # HTML content for the email
     html_content = f"<p>Please click <a href='{confirm_url}'>here</a> to confirm your email address.</p>"
-
-    # Attach HTML content to the email
     message.attach(MIMEText(html_content, 'html'))
-
-    # Connect to the SMTP server and send the email
     with smtplib.SMTP_SSL(app.config['MAIL_SERVER'], app.config['MAIL_PORT']) as server:
         server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
         server.send_message(message)
 
-
-
-
-
-
-def verify_confirmation_token(token):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    try:
-        email = serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=3600)
-        return email
-    except:
-        return None
-# You might also have routes for user management such as updating user profile, deleting user accounts, etc.

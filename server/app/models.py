@@ -16,6 +16,14 @@ project_members = db.Table('project_members',
 teams = relationship('Team', secondary=team_members, backref='users')
 projects = relationship('Project', secondary=project_members, backref='users')
 
+class BlacklistedToken(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(500), unique=True, nullable=False)
+    blacklisted_on = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<BlacklistedToken {self.token}>'
+
 class User(db.Model):
     __tablename__ = 'User'
 

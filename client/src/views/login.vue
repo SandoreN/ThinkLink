@@ -1,79 +1,58 @@
 <template>
-  <div class="login-container"
-    ><div class="login-container1"
-      ><login-header></login-header
-      ><div class="login-body"
-        ><div class="login-sidebar"></div
-        ><div class="login-pagemain"
-          ><div class="login-container2"
-            ><div class="login-container3"
-              ><img
-                alt="image"
-                src="/thinklink_logo-300h.png"
-                class="login-image"
-              /><div class="login-container4"
-                ><span class="login-text">Sign in</span></div
-              ></div
-            ><div class="login-container5"
-              ><form id="login_form" name="login_form" class="login-form">
-                <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  placeholder="email"
-                  class="login-textinput input"
-                  v-model="email" />
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="password"
-                  class="login-textinput1 input"
-                  v-model="password" />
-                <button
-                  id="login_button"
-                  name="login_button"
-                  class="login-navlink button"
-                  @click.prevent="login">
-                  <span class="login-text1">
-      <span>Sign in</span>
-      <br />
-    </span>
-  </button>
-</form>
-              <!--
-               <form id="login_form" name="login_form" class="login-form"
-                ><input
-                  type="text"
-                  id="email"
-                  name="email"
-                  placeholder="email"
-                  class="login-textinput input" /><input
-                  type="text"
-                  id="password"
-                  name="password"
-                  placeholder="password"
-                  class="login-textinput1 input" /><router-link
-                  to="/dashboard"
-                  id="login_button"
-                  name="login_button"
-                  class="login-navlink button"
-                  ><span class="login-text1"
-                    ><span>Sign in</span
-                    ><br /></span></router-link></form> 
-              --></div></div></div
-        ><div class="login-rightsidebar"></div></div></div
-  ></div>
+  <div class="login-container">
+    <login-header></login-header>
+    <div class="login-body">
+      <div class="login-sidebar"></div>
+      <div class="login-pagemain">
+        <div class="login-container2">
+          <div class="login-container3">
+            <img
+              alt="ThinkLink logo"
+              src="/thinklink_logo-300h.png"
+              class="login-image"
+            />
+            <div class="login-container4">
+              <span class="login-text">Sign in</span>
+            </div>
+          </div>
+          <div class="login-container5">
+            <form @submit.prevent="login" class="login-form">
+              <input
+                type="text"
+                id="email"
+                name="email"
+                placeholder="email"
+                class="login-textinput input"
+                v-model="email"
+              />
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="password"
+                class="login-textinput1 input"
+                v-model="password"
+              />
+              <primary-button class="login-navlink button">Sign in</primary-button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="login-rightsidebar"></div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-import LoginHeader from '../components/login-header'
+import LoginHeader from '../components/login-header.vue';
+import PrimaryButton from '../components/primary-button.vue';
 
 export default {
   name: 'Login',
   components: {
     LoginHeader,
+    PrimaryButton
   },
   data() {
     return {
@@ -82,31 +61,26 @@ export default {
     };
   },
   methods: {
-    login() {
-      axios.post(`${process.env.VUE_APP_URL}/login`, {
-        email: this.email,
-        password: this.password
-      })
-      .then(response => {
-      console.log(response.data);
-      // Login successful
-      // Here you might store a token in local storage or set a session cookie
-      localStorage.setItem('token', response.data.token);
-    })
-    .catch(error => {
-      console.log(error);
-      // Login failed
-      // Here you might show an error message
-      alert('Invalid email or password');
-    });
+    async login() {
+      try {
+        const response = await axios.post(`${process.env.VUE_APP_URL}/login`, {
+          email: this.email,
+          password: this.password
+        });
+        localStorage.setItem('token', response.data.token); // Save token to localStorage
+        this.$router.push('/dashboard'); // Redirect to dashboard
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Invalid email or password'); // Show user-friendly error message
+      }
     },
   },
   metaInfo: {
-    title: 'login - ThinkLink',
+    title: 'Login - ThinkLink',
     meta: [
       {
         property: 'og:title',
-        content: 'login - ThinkLink',
+        content: 'Login - ThinkLink',
       },
     ],
   },
