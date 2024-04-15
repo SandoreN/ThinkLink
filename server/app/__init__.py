@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from .config import Config
 
 db = SQLAlchemy()
-
 app = Flask(__name__)
+
 from app.auth import auth_bp
 
 app.register_blueprint(auth_bp)

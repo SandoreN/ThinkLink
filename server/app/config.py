@@ -9,17 +9,17 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'your_secret_key_here'
 
     # Database configuration
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS') or False
 
     #File System configuration
     APP_FS_ROOT = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
 
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 465
-    MAIL_USE_SSL = True
-    MAIL_USERNAME = 'boyztoilet@gmail.com'#os.environ.get('MAIL_USERNAME') 
-    MAIL_PASSWORD = 'uzbmdbkbhlmckivw'#os.environ.get('MAIL_PASSWORD')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
+    MAIL_PORT = os.environ.get('MAIL_PORT') or 465
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL') or True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 # Development configuration
 class DevelopmentConfig(Config):
