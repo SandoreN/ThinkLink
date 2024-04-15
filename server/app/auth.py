@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, url_for, render_template
+from flask import Blueprint, jsonify, request, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 import jwt
@@ -9,44 +9,50 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from . import *
 from app import *
-from .models import User, BlacklistedToken
+from .models import User, Token
 from .views import CRUDView
-from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint('auth', __name__)
 
-# Initialize CRUDView with the User model
+# Create CRUDView instances for User and Token models to interact with the database
 user_view = CRUDView(model=User)
+token_view = CRUDView(model=Token)
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization', '').split(' ')[1] if 'Authorization' in request.headers else None
-        if not token or BlacklistedToken.query.filter_by(token=token).first():
-            return jsonify({'message': 'Token is missing or has been blacklisted'}), 401
+        token_str = request.headers.get('Authorization', '').split(' ')[1] if 'Authorization' in request.headers else None
+        if not token_str:
+            return jsonify({'message': 'Token is missing'}), 401
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            data = jwt.decode(token_str, app.config['SECRET_KEY'], algorithms=['HS256'])
             if 'user_id' in data:
-                current_user = User.query.get(data['user_id'])
-                if not current_user:
-                    return jsonify({'message': 'User not found'}), 404
+                token = token_view.get(filters={'token': token_str}, serialized=False)
+                if not token or token.is_blacklisted:
+                    return jsonify({'message': 'Token is invalid or has been blacklisted'}), 401
+                user = user_view.get(filters={'id': data['user_id']}, serialized=False)
+                if not user:
+                    return jsonify({'message': 'User not found'}), 401
             else:
                 return jsonify({'message': 'Invalid token'}), 401
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token'}), 401
-        return f(current_user, *args, **kwargs)
+        # changed from f(token, *args, **kwargs) to f(user, *args, **kwargs) as the /protected route expects a user. 
+        return f(user, *args, **kwargs)
     return decorated
 
 
-@auth_bp.route('/api/register', methods=['POST'])
+@auth_bp.route('/register', methods=['POST'])
 def register_new_user():
     data = request.get_json()
     if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
 
-    if user_view.get(None, serialized=False):
+    existing_user_by_email = user_view.get(filters={'email': data.get('email')}, serialized=False)
+    existing_user_by_username = user_view.get(filters={'username': data.get('username')}, serialized=False)
+    if existing_user_by_email or existing_user_by_username:
         return jsonify({'message': 'Username or email already exists'}), 400
 
     hashed_password = generate_password_hash(data['password'])
@@ -58,18 +64,14 @@ def register_new_user():
         'is_confirmed': False
     }
 
-    try:
-        response, status_code = user_view.post(new_user_data)
-        if status_code == 201:
-            send_confirmation_email(data['email'], generate_confirmation_token(data['email']))
-            return jsonify({'message': 'User created successfully. Please check your email to confirm it.'}), 201
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({'message': 'Username or email already exists'}), 400
+    response, status_code = user_view.post(new_user_data)
+    if status_code == 201:
+        send_confirmation_email(data['email'], generate_confirmation_token(data['email']))
+        return jsonify({'message': 'User created successfully. Please check your email to confirm it.'}), 201
 
-    return jsonify({'message': 'Failed to create user'}), 400
+    return response
 
-@auth_bp.route('/api/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = user_view.get({'email': data.get('email')}, serialized=False)
@@ -79,16 +81,17 @@ def login():
         return jsonify({'token': token, 'message': 'Login successful'}), 200
     return jsonify({'message': 'Invalid email or password'}), 401
 
-@auth_bp.route('/api/logout', methods=['POST'])
+@auth_bp.route('/logout', methods=['POST'])
 @token_required
 def logout(current_user):
-    token = request.headers['Authorization'].split(' ')[1]
-    blacklist_token = BlacklistedToken(token=token)
-    db.session.add(blacklist_token)
-    db.session.commit()
-    return jsonify({'message': 'Logout successful'}), 200
+    token_str = request.headers['Authorization'].split(' ')[1]
+    token = token_view.get(filters={'token': token_str}, serialized=False)
+    if token:
+        token_view.put(token.id, {'is_blacklisted': True})
+        return jsonify({'message': 'Logout successful'}), 200
+    return jsonify({'message': 'Token not found'}), 404
 
-@auth_bp.route('/api/protected', methods=['GET'])
+@auth_bp.route('/protected', methods=['GET'])
 @token_required
 def protected(current_user):
     return jsonify({'message': 'Access granted', 'user': current_user.serialize()}), 200
@@ -108,4 +111,3 @@ def send_confirmation_email(email, token):
     with smtplib.SMTP_SSL(app.config['MAIL_SERVER'], app.config['MAIL_PORT']) as server:
         server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
         server.send_message(message)
-

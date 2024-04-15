@@ -1,52 +1,59 @@
 <template>
-  <div class="login-container">
-    <login-header></login-header>
-    <div class="login-body">
-      <div class="login-sidebar"></div>
-      <div class="login-pagemain">
-        <div class="login-container2">
-          <div class="login-container3">
-            <img
-              alt="ThinkLink logo"
-              src="/thinklink_logo-300h.png"
-              class="login-image"
-            />
-            <div class="login-container4">
-              <span class="login-text">Sign in</span>
+  <div class="login-container"
+    ><div class="login-container1"
+      ><login-header></login-header
+      ><div class="login-body"
+        ><div class="login-sidebar"></div
+        ><div class="login-pagemain"
+          ><div class="login-container2"
+            ><div class="login-container3"
+              ><img
+                alt="image"
+                src="/thinklink_logo-300h.png"
+                class="login-image"
+              /><div class="login-container4"
+                ><span class="login-text">Sign in</span></div
+              ></div
+            ><div class="login-container5"
+              ><form id="login_form" name="login_form" class="login-form">
+                <input
+                  type="text"
+                  id="email"
+                  name="email"
+                  placeholder="email"
+                  class="login-textinput input"
+                  v-model="email" />
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="password"
+                  class="login-textinput1 input"
+                  v-model="password" />
+                <button
+                  id="login_button"
+                  name="login_button"
+                  class="login-navlink button"
+                  @click.prevent="login">
+                  <span class="login-text1">
+                  <span>Sign in</span>
+                  <br />
+                  </span>
+                  </button>
+              </form>
             </div>
           </div>
-          <div class="login-container5">
-            <form @submit.prevent="login" class="login-form">
-              <input
-                type="text"
-                id="email"
-                name="email"
-                placeholder="email"
-                class="login-textinput input"
-                v-model="email"
-              />
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="password"
-                class="login-textinput1 input"
-                v-model="password"
-              />
-              <primary-button class="login-navlink button">Sign in</primary-button>
-            </form>
-          </div>
         </div>
-      </div>
-      <div class="login-rightsidebar"></div>
-    </div>
+      <div class="login-rightsidebar"
+      ></div
+    ></div>
+  </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import LoginHeader from '../components/login-header.vue';
-import PrimaryButton from '../components/primary-button.vue';
 
 export default {
   name: 'Login',
@@ -68,7 +75,6 @@ export default {
           password: this.password
         });
         localStorage.setItem('token', response.data.token); // Save token to localStorage
-        const redirectPath = this.$route.query.redirect || '/';
         this.$router.push('/dashboard'); // Redirect to dashboard
       } catch (error) {
         console.error('Login error:', error);

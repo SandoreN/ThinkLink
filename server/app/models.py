@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from app import db
 import datetime
 
@@ -13,17 +13,6 @@ project_members = db.Table('project_members',
     db.Column('project_id', db.Integer, db.ForeignKey('Project.id'), primary_key=True)
 )
 
-teams = relationship('Team', secondary=team_members, backref='users')
-projects = relationship('Project', secondary=project_members, backref='users')
-
-class BlacklistedToken(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(500), unique=True, nullable=False)
-    blacklisted_on = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<BlacklistedToken {self.token}>'
-
 class User(db.Model):
     __tablename__ = 'User'
 
@@ -36,6 +25,23 @@ class User(db.Model):
     is_admin = Column(Boolean, default=False)
     registration_date = Column(DateTime, default=datetime.datetime.now)
     teams = relationship('Team', secondary=team_members, backref='users')
+    projects = relationship('Project', secondary=project_members, backref='users')
+    
+    @validates('username')
+    def validate_username(self, key, username):
+        assert username, "Username must not be empty"
+        assert ' ' not in username, "Username must not contain spaces"
+        return username
+
+    @validates('email')
+    def validate_email(self, key, email):
+        assert '@' in email, "Provided email is not valid"
+        return email
+
+    @validates('password_hash')
+    def validate_password_hash(self, key, password_hash):
+        assert password_hash, "Password hash must not be empty"
+        return password_hash
 
     def serialize(self):
         return {
@@ -79,6 +85,10 @@ class Message(db.Model):
     text = Column(Text, nullable=False)
     sent_date = Column(DateTime, default=datetime.datetime.now)
     parent_id = Column(Integer, ForeignKey('Message.id'))
+    is_read = Column(Boolean, default=False)
+    is_deleted_by_sender = Column(Boolean, default=False)
+    is_deleted_by_recipient = Column(Boolean, default=False)
+    reply_order = Column(Integer)
 
     def serialize(self):
         return {
@@ -87,7 +97,11 @@ class Message(db.Model):
             'recipient_id': self.recipient_id,
             'subject': self.subject,
             'text': self.text,
-            'sent_date': self.sent_date.strftime('%Y-%m-%d %H:%M:%S')
+            'sent_date': self.sent_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'is_read': self.is_read,
+            'is_deleted_by_sender': self.is_deleted_by_sender,
+            'is_deleted_by_recipient': self.is_deleted_by_recipient,
+            'reply_order': self.reply_order
         }
 
 class Project(db.Model):
@@ -99,7 +113,7 @@ class Project(db.Model):
     resource_dir = Column(String, nullable=False)
     is_published = Column(Boolean, default=False)
     is_proposal = Column(Boolean, default=False)
-    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
+    team_id = Column(Integer, ForeignKey('Team.id'))
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     creator = relationship('User', backref='projects')
     drafts = relationship('Draft', backref='project', lazy=True)
@@ -197,10 +211,9 @@ class Proposal(db.Model):
     description = Column(Text)
     category = Column(String(50))
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
-    project = relationship('Project', backref='proposal', uselist=False)
-    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)  # Add foreign key constraint
-    team = relationship('Team', backref='proposals')
+    team_id = Column(Integer, ForeignKey('Team.id'))
     proposal_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
@@ -210,9 +223,10 @@ class Proposal(db.Model):
             'description': self.description,
             'category': self.category,
             'resource_id': self.resource_id,
-            'project': self.project_id,
-            'team': self.team_id,
-            'proposal_date': self.proposal.strftime('%Y-%m-%d %H:%M:%S')
+            'creator_id': self.creator_id,
+            'project_id': self.project_id,
+            'team_id': self.team_id,
+            'proposal_date': self.proposal_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 class Publication(db.Model):
@@ -223,10 +237,9 @@ class Publication(db.Model):
     description = Column(Text)
     category = Column(String(50))
     resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
+    creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
-    team_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
-    project = relationship('Project', backref='publication', uselist=False)
-    team = relationship('Team', backref='publication')
+    team_id = Column(Integer, ForeignKey('Team.id'))
     publication_date = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
@@ -236,7 +249,27 @@ class Publication(db.Model):
             'description': self.description,
             'category': self.category,
             'resource_id': self.resource_id,
+            'creator_id': self.creator_id,
             'project_id': self.project_id,
             'team_id': self.team_id,
             'publication_date': self.publication_date.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+class Token(db.Model):
+    __tablename__ = 'Token'
+
+    id = Column(Integer, primary_key=True)
+    token = Column(String(255), nullable=False)
+    user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
+    is_blacklisted = Column(Boolean, default=False)
+    creation_date = Column(DateTime, default=datetime.datetime.now)
+    expiration_date = Column(DateTime)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'token': self.token,
+            'is_blacklisted': self.is_blacklisted,
+            'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'expiration_date': self.expiration_date.strftime('%Y-%m-%d %H:%M:%S') if self.expiration_date else None
         }
