@@ -50,6 +50,15 @@ def register_new_user():
     if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
 
+
+    # Check if email already exists
+    if user_view.get(filters={"email": data['email']}).first():
+        return jsonify({'message': 'Username already exists'}), 400
+
+    # Check if username already exists
+    if user_view.get(filters={"username": data['username']}).first():
+        return jsonify({'message': 'Email already exists'}), 400
+
     hashed_password = generate_password_hash(data['password'])
     new_user_data = {
         'name': data['name'],

@@ -48,7 +48,7 @@ class CRUDView(MethodView):
             print(f"Error in get method: {e}")
             return jsonify({"message": "Internal server error"}), 500
         
-    def post(self, request_data):
+    def post(self, request_data=None):
         """
         Creates a new item in the database.
 
@@ -56,7 +56,11 @@ class CRUDView(MethodView):
             If the item is created successfully, returns a JSON representation of the created item and status code 201.
             If there is an integrity error, rolls back the session and raises an exception.
         """
-        data = request_data
+        
+        if request_data:
+            data = request_data
+        else:
+            data = request.json
         item = self.model(**data)
         try:
             db.session.add(item)
