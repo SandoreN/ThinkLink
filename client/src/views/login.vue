@@ -68,6 +68,7 @@ export default {
           password: this.password
         });
         localStorage.setItem('token', response.data.token); // Save token to localStorage
+        const redirectPath = this.$route.query.redirect || '/';
         this.$router.push('/dashboard'); // Redirect to dashboard
       } catch (error) {
         console.error('Login error:', error);
