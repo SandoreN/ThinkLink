@@ -8,13 +8,13 @@ import app.config
 
 class FileManager:
     def __init__(self):
-        #base_directory
+        #uploads
         #--resources
         #--library
         #----publications
         #----proposals
 
-        self.base_folder = app.config.BASE_DIR
+        self.base_folder = app.config.Config.APP_FS_ROOT
         self.resource_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')
         self.publications_folder = os.path.join(self.library_folder, 'publications')

@@ -13,7 +13,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     #File System configuration
-    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
+    APP_FS_ROOT = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
 
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
