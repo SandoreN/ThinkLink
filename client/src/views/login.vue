@@ -59,6 +59,7 @@ export default {
   name: 'Login',
   components: {
     LoginHeader,
+    PrimaryButton
   },
   data() {
     return {
@@ -74,7 +75,8 @@ export default {
           password: this.password
         });
         localStorage.setItem('token', response.data.token); // Save token to localStorage
-        this.$router.push('/dashboard'); // Redirect to dashboard
+        const redirectPath = this.$route.query.redirect || '/';
+        this.$router.push(redirectPath); // Redirect to dashboard
       } catch (error) {
         console.error('Login error:', error);
         alert('Invalid email or password'); // Show user-friendly error message
