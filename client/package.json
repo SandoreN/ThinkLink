@@ -9,6 +9,8 @@
   "dependencies": {
     "@lottiefiles/vue-lottie-player": "1.0.4",
     "axios": "^1.6.8",
+    "easymde": "^2.18.0",
+    "marked": "^12.0.1",
     "vue": "^2.6.7",
     "vue-meta": "^2.2.1",
     "vue-router": "^3.0.2",
