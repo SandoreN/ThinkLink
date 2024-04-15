@@ -45,47 +45,24 @@
 </template>
 
 <script>
-import axios from 'axios';
-import RegisterHeader from '../components/register-header.vue';
+import RegisterHeader from '../components/register-header'
 
 export default {
   name: 'Register',
+  props: {},
   components: {
     RegisterHeader,
   },
-  data() {
-    return {
-      user: {
-        fullname: '',
-        username: '',
-        email: '',
-        password: '',
-      },
-      errors: []
-    };
-  },
-  methods: {
-    async submitRegistration() {
-      try {
-        const response = await axios.post(`${process.env.VUE_APP_URL}/register`, this.user);
-        console.log('Registration successful:', response);
-        this.$router.push('/login');
-      } catch (error) {
-        console.error('Registration failed:', error);
-        this.errors.push('Failed to register. Please try again.');
-      }
-    }
-  },
   metaInfo: {
-    title: 'Register - ThinkLink',
+    title: 'register - ThinkLink',
     meta: [
       {
         property: 'og:title',
-        content: 'Register - ThinkLink',
+        content: 'register - ThinkLink',
       },
     ],
   },
-};
+}
 </script>
 
 <style scoped>
