@@ -1,4 +1,5 @@
-export FLASK_APP=run.py
-export FLASK_DEBUG=1
-export FLASK_RUN_PORT=8080
-export FLASK_RUN_HOST=0.0.0.0
+FLASK_APP=run.py
+FLASK_ENV=development
+FLASK_DEBUG=True
+FLASK_SECRET_KEY=mysecretkey
+FLASK_URL=http://localhost:5000
