@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import axios from 'axios'; // Assuming axios might be needed elsewhere, not needed for current functionality
+
 export default {
   name: 'Header',
   props: {
@@ -28,6 +30,24 @@ export default {
       type: String,
       default: 'image',
     },
+  },
+  computed: {
+    // Computed property to determine if the user is authenticated
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated;
+    }
+  },
+  methods: {
+    // Method to handle logout
+    async logout() {
+      try {
+        await this.$store.dispatch('logout');
+        this.$router.push('/login'); // Redirect to login after logout
+      } catch (error) {
+        console.error('Logout failed:', error);
+        // Optionally show an error message to the user
+      }
+    }
   },
 }
 </script>
