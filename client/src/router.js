@@ -1,6 +1,5 @@
 import Vue from 'vue'
-import Router from 'vue-router'
-import Meta from 'vue-meta'
+//Removed unused imports
 
 import Login from './views/login'
 import Projectworkspace from './views/projectworkspace'

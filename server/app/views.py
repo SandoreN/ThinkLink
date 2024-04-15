@@ -25,32 +25,30 @@ class CRUDView(MethodView):
             self.model = model
  
     def get(self, item_id=None, filters=None, all_matches=False, serialized=True):
-        """
-        Retrieve an item or a list of items based on the provided parameters.
-
-        Args:
-            item_id (int): The ID of the item to retrieve. If provided, only a single item will be returned.
-            filters (dict): A dictionary of filters to apply when querying the items. Only items that match the filters will be returned.
-            all_matches (bool): If True, return all items that match the filters. If False, return only the first item that matches the filters.
-            serialized (bool): If True, serialize the item(s) before returning. If False, return the item(s) as Python objects.
-
-        Returns:
-            If item_id is provided and an item with the specified ID exists, return the item.
-            If filters are provided and at least one item matches the filters, return the item(s).
-            If no item is found, return a JSON response with an error message and a 404 status code.
-
-        Note:
-            - If item_id is provided, filters will be ignored.
-            - If filters are not provided, all_matches will be ignored.
-            - If serialized is False, the item(s) will be returned as Python objects instead of serialized JSON.
-        """
         query = self.model.query
-        item = query.get(item_id) if item_id else [item for item in query.filter_by(**filters)] if filters and all_matches else query.filter_by(**filters).first() if filters else query.all()
-        if not item:
-            return jsonify({'error': f'{self.model.__name__} not found'}), 404
-        return jsonify([i.serialize() for i in item]) if serialized and isinstance(item, list) and all(hasattr(i, 'serialize') for i in item) else item if isinstance(item, list) else jsonify(item.serialize()) if serialized and hasattr(item, 'serialize') else item
+        try:
+            if item_id is not None:
+                item = query.get(item_id)
+            elif filters:
+                if all_matches:
+                    item = query.filter_by(**filters).all()
+                else:
+                    item = query.filter_by(**filters).first()
+            else:
+                item = query.all()
 
-    def post(self):
+            if not item:
+                return (None, 200) if not serialized else (jsonify({}), 200)
+
+            if isinstance(item, list):
+                return (jsonify([i.serialize() for i in item]), 200) if serialized and all(hasattr(i, 'serialize') for i in item) else (item, 200)
+            else:
+                return (jsonify(item.serialize()), 200) if serialized and hasattr(item, 'serialize') else (item, 200)
+        except Exception as e:
+            print(f"Error in get method: {e}")
+            return jsonify({"message": "Internal server error"}), 500
+        
+    def post(self, request_data):
         """
         Creates a new item in the database.
 
@@ -58,7 +56,7 @@ class CRUDView(MethodView):
             If the item is created successfully, returns a JSON representation of the created item and status code 201.
             If there is an integrity error, rolls back the session and raises an exception.
         """
-        data = request.json
+        data = request_data
         item = self.model(**data)
         try:
             db.session.add(item)

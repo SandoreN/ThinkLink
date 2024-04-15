@@ -69,7 +69,7 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await axios.post(`${process.env.VUE_APP_URL}/login`, {
+        const response = await axios.post(process.env.VUE_APP_FLASK_APP_URL + '/login', {
           email: this.email,
           password: this.password
         });

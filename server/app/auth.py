@@ -50,11 +50,6 @@ def register_new_user():
     if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
 
-    existing_user_by_email = user_view.get(filters={'email': data.get('email')}, serialized=False)
-    existing_user_by_username = user_view.get(filters={'username': data.get('username')}, serialized=False)
-    if existing_user_by_email or existing_user_by_username:
-        return jsonify({'message': 'Username or email already exists'}), 400
-
     hashed_password = generate_password_hash(data['password'])
     new_user_data = {
         'name': data['name'],
@@ -63,7 +58,7 @@ def register_new_user():
         'password_hash': hashed_password,
         'is_confirmed': False
     }
-
+    
     response, status_code = user_view.post(new_user_data)
     if status_code == 201:
         send_confirmation_email(data['email'], generate_confirmation_token(data['email']))

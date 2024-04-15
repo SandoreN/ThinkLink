@@ -14,31 +14,31 @@
             <div class="register-container5">
               <form id="register_form" name="register_form" class="register-form" @submit.prevent="register">
     <input
-      v-model="user.name"
+      v-model="name"
       type="text"
-      id="user.name_register"
-      name="user.name_register"
+      id="name_register"
+      name="name_register"
       placeholder="Full name"
       class="register-textinput input" 
     />
     <input
-      v-model="user.username"
+      v-model="username"
       type="text"
-      id="user.username_register"
-      name="user.username_register"
+      id="username_register"
+      name="username_register"
       placeholder="username"
       class="register-textinput1 input" 
     />
     <input
-      v-model="user.email"
+      v-model="email"
       type="text"
-      id="user.email_register"
-      name="user.email_register"
+      id="email_register"
+      name="email_register"
       placeholder="email"
       class="register-textinput2 input" 
     />
     <input
-      v-model="user.password"
+      v-model="password"
       type="text"
       id="password"
       name="password"
@@ -71,20 +71,23 @@ export default {
   },
   data() {
     return {
-      user: {
-        name: '',
-        username: '',
-        email: '',
-        password: ''
-      },
-      error: null,
+      name: '',
+      username: '',
+      email: '',
+      password: ''
     }
   },
   methods: {
     async register() {
-      console.log('register method called with user data:', this.user);
+      const user_data = {
+        name: this.name,
+        username: this.username,
+        email: this.email,
+        password: this.password
+      }
+      console.log('register method called with user data:', user_data);
       try {
-        const response = await axios.post('http://localhost:5000/register', this.user);
+        const response = await axios.post(process.env.VUE_APP_FLASK_APP_URL + '/register', user_data);
         console.log('server response:', response);
         // handle response
       } catch (error) {
