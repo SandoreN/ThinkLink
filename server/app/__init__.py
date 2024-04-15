@@ -1,9 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from .config import Config
+from flask_cors import CORS
 
 db = SQLAlchemy()
 app = Flask(__name__)
+CORS(app, origins=['http://localhost:8080'])
 
 from app.auth import auth_bp
 

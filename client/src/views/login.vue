@@ -258,4 +258,7 @@ export default {
   align-items: flex-start;
   flex-direction: column;
 }
+#login_button {
+  cursor: pointer;
+}
 </style>

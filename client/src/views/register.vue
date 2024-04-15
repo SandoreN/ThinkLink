@@ -1,50 +1,66 @@
 <template>
-  <div class="register-container"
-    ><div class="register-container1"
-      ><register-header></register-header
-      ><div class="register-body"
-        ><div class="register-sidebar"></div
-        ><div class="register-pagemain"
-          ><div class="register-container2"
-            ><div class="register-container3"
-              ><div class="register-container4"
-                ><span class="register-text">Register new user</span></div
-              ></div
-            ><div class="register-container5"
-              ><form id="login_form" name="login_form" class="register-form"
-                ><input
-                  type="text"
-                  id="user.name_register"
-                  name="user.name_register"
-                  placeholder="Full name"
-                  class="register-textinput input" /><input
-                  type="text"
-                  id="user.username_register"
-                  name="user.username_register"
-                  placeholder="username"
-                  class="register-textinput1 input" /><input
-                  type="text"
-                  id="user.email_register"
-                  name="user.email_register"
-                  placeholder="email"
-                  class="register-textinput2 input" /><input
-                  type="text"
-                  id="password"
-                  name="password"
-                  placeholder="password"
-                  class="register-textinput3 input" /><router-link
-                  to="/dashboard"
-                  id="register_login_button"
-                  name="login_button"
-                  class="register-navlink button"
-                  ><span class="register-text1"
-                    ><span>Sign up</span
-                    ><br /></span></router-link></form></div></div></div
+  <div class="register-container">
+    <div class="register-container1">
+      <register-header></register-header>
+      <div class="register-body">
+        <div class="register-sidebar"></div>
+        <div class="register-pagemain">
+          <div class="register-container2">
+            <div class="register-container3">
+              <div class="register-container4">
+                <span class="register-text">Register new user</span>
+              </div>
+            </div>
+            <div class="register-container5">
+              <form id="register_form" name="register_form" class="register-form" @submit.prevent="register">
+    <input
+      v-model="user.name"
+      type="text"
+      id="user.name_register"
+      name="user.name_register"
+      placeholder="Full name"
+      class="register-textinput input" 
+    />
+    <input
+      v-model="user.username"
+      type="text"
+      id="user.username_register"
+      name="user.username_register"
+      placeholder="username"
+      class="register-textinput1 input" 
+    />
+    <input
+      v-model="user.email"
+      type="text"
+      id="user.email_register"
+      name="user.email_register"
+      placeholder="email"
+      class="register-textinput2 input" 
+    />
+    <input
+      v-model="user.password"
+      type="text"
+      id="password"
+      name="password"
+      placeholder="password"
+      class="register-textinput3 input" 
+    />
+    <button
+      type="submit"
+      id="register_button"
+      name="register_button"
+      class="register-navlink button">
+      <span class="register-text1">
+        <span>Sign up</span
+      ><br /></span>
+    </button>
+  </form></div></div></div
         ><div class="register-rightsidebar"></div></div></div
   ></div>
 </template>
 
 <script>
+import axios from 'axios'
 import RegisterHeader from '../components/register-header'
 
 export default {
@@ -52,6 +68,30 @@ export default {
   props: {},
   components: {
     RegisterHeader,
+  },
+  data() {
+    return {
+      user: {
+        name: '',
+        username: '',
+        email: '',
+        password: ''
+      },
+      error: null,
+    }
+  },
+  methods: {
+    async register() {
+      console.log('register method called with user data:', this.user);
+      try {
+        const response = await axios.post('http://localhost:5000/register', this.user);
+        console.log('server response:', response);
+        // handle response
+      } catch (error) {
+        console.log('error:', error);
+        // handle error
+      }
+    }
   },
   metaInfo: {
     title: 'register - ThinkLink',
@@ -247,4 +287,10 @@ export default {
   align-items: flex-start;
   flex-direction: column;
 }
+#register_button {
+  cursor: pointer;
+}
 </style>
+
+
+

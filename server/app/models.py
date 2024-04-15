@@ -115,7 +115,7 @@ class Project(db.Model):
     is_proposal = Column(Boolean, default=False)
     team_id = Column(Integer, ForeignKey('Team.id'))
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    creator = relationship('User', backref='projects')
+    creator = relationship('User', backref='created_projects')
     drafts = relationship('Draft', backref='project', lazy=True)
     resources = relationship('Resource', backref='project', lazy=True)
     tasks = relationship('Task', backref='project', lazy=True)

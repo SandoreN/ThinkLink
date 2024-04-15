@@ -1,4 +1,4 @@
-#!/home/user/School/CSC330/ThinkLink/.venv/bin/python3
+#!/home/user/School/CSC330/ThinkLink/server/.venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
