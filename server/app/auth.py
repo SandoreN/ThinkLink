@@ -16,6 +16,7 @@ auth_bp = Blueprint('auth', __name__)
 
 # Create CRUDView instances for User and Token models to interact with the database
 user_view = CRUDView(model=User)
+'''
 token_view = CRUDView(model=Token)
 
 def token_required(f):
@@ -42,7 +43,7 @@ def token_required(f):
         # changed from f(token, *args, **kwargs) to f(user, *args, **kwargs) as the /protected route expects a user. 
         return f(user, *args, **kwargs)
     return decorated
-
+'''
 
 @auth_bp.route('/register', methods=['POST'])
 def register_new_user():
@@ -56,13 +57,16 @@ def register_new_user():
         'username': data['username'],
         'email': data['email'],
         'password_hash': hashed_password,
-        'is_confirmed': False
+        #shouldn't really be confirmed without email confirmation.... but for now
+        'is_confirmed': True
     }
     
     response, status_code = user_view.post(new_user_data)
     if status_code == 201:
+        '''
         send_confirmation_email(data['email'], generate_confirmation_token(data['email']))
-        return jsonify({'message': 'User created successfully. Please check your email to confirm it.'}), 201
+        '''
+        return jsonify({'message': 'User created successfully.'}), 201
 
     return response
 
@@ -72,22 +76,28 @@ def login():
     user = user_view.get({'email': data.get('email')}, serialized=False)
     
     if user and check_password_hash(user.password_hash, data['password']):
+        '''
         token = jwt.encode({'user_id': user.id, 'exp': datetime.utcnow() + timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm='HS256')
         return jsonify({'token': token, 'message': 'Login successful'}), 200
+        '''
+        return jsonify({'message': 'Login successful'}), 200
     return jsonify({'message': 'Invalid email or password'}), 401
 
 @auth_bp.route('/logout', methods=['POST'])
-@token_required
+
 def logout(current_user):
+    '''
     token_str = request.headers['Authorization'].split(' ')[1]
     token = token_view.get(filters={'token': token_str}, serialized=False)
     if token:
         token_view.put(token.id, {'is_blacklisted': True})
         return jsonify({'message': 'Logout successful'}), 200
     return jsonify({'message': 'Token not found'}), 404
+    '''
+    # idk how to gho about this now
 
+'''
 @auth_bp.route('/protected', methods=['GET'])
-@token_required
 def protected(current_user):
     return jsonify({'message': 'Access granted', 'user': current_user.serialize()}), 200
 
@@ -106,3 +116,4 @@ def send_confirmation_email(email, token):
     with smtplib.SMTP_SSL(app.config['MAIL_SERVER'], app.config['MAIL_PORT']) as server:
         server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
         server.send_message(message)
+'''

@@ -26,7 +26,7 @@ class User(db.Model):
     registration_date = Column(DateTime, default=datetime.datetime.now)
     teams = relationship('Team', secondary=team_members, backref='users')
     projects = relationship('Project', secondary=project_members, backref='users')
-    
+    '''
     @validates('username')
     def validate_username(self, key, username):
         assert username, "Username must not be empty"
@@ -42,7 +42,7 @@ class User(db.Model):
     def validate_password_hash(self, key, password_hash):
         assert password_hash, "Password hash must not be empty"
         return password_hash
-
+    '''
     def serialize(self):
         return {
             'id': self.id,

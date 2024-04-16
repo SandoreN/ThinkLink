@@ -52,15 +52,12 @@ class FileManager:
         if resource_id is None:
             # If no resource_id is provided, create a new resource
             with app.app_context():
-                # only one request.json can exist per context
-                request.json = resource_data
                 # send HTTP POST request to /api/resources to 
-                self.resource_view.post()
+                self.resource_view.post(request_data=resource_data)
         else:
             # If a resource_id is provided, update the existing resource
             with app.app_context():
-                request.json = resource_data
-                self.resource_view.put(resource_id)
+                self.resource_view.put(item_id=resource_id, request_data=resource_data)
 
     def download_file(self, user_id, project_id, filename):
         # Construct path based on team and project
@@ -104,11 +101,10 @@ class FileManager:
 
         # Call the appropriate method to create or update the publication in the database
         with app.app_context():
-            request.json = publication_data
             if publication_id is None:
-                self.publication_view.post()
+                self.publication_view.post(request_data=publication_data)
             else:
-                self.publication_view.put(publication_id)
+                self.publication_view.put(item_id=publication_id, request_data=publication_data)
 
     def create_proposal_file(self, proposal_data, proposal_id=None):
         # Get the file path from the proposal data
@@ -127,8 +123,7 @@ class FileManager:
 
         # Call the appropriate method to create or update the proposal in the database
         with app.app_context():
-            request.json = proposal_data
             if proposal_id is None:
-                self.proposal_view.post()
+                self.proposal_view.post(request_data=proposal_data)
             else:
-                self.proposal_view.put(proposal_id)
+                self.proposal_view.put(item_id=proposal_id, request_data=proposal_data)

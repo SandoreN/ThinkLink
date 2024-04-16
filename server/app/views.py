@@ -49,14 +49,6 @@ class CRUDView(MethodView):
             return jsonify({"message": "Internal server error"}), 500
         
     def post(self, request_data=None):
-        """
-        Creates a new item in the database.
-
-        Returns:
-            If the item is created successfully, returns a JSON representation of the created item and status code 201.
-            If there is an integrity error, rolls back the session and raises an exception.
-        """
-        
         if request_data:
             data = request_data
         else:
@@ -70,19 +62,13 @@ class CRUDView(MethodView):
             return jsonify({'error': f'{self.model.__name__} already exists'}), 400
         return jsonify(item.serialize()), 201
 
-    def put(self, item_id):
-        """
-        Updates an existing item in the database.
-
-        Args:
-            item_id: The ID of the item to update.
-
-        Returns:
-            If the item is found and updated successfully, returns a JSON representation of the updated item.
-            If the item is not found, returns a JSON response with an error message and status code 404.
-        """
-        data = request.json
-        item = self.model.query.get(item_id)
+    def put(self, item_id, request_data=None):
+        if request_data:
+            data = request_data
+            item = self.model(**data)
+        else:
+            data = request.json
+            item = self.model.query.get(item_id)
         if not item:
             return jsonify({'error': f'{self.model.__name__} not found'}), 404
         for key, value in data.items():
@@ -90,19 +76,13 @@ class CRUDView(MethodView):
         db.session.commit()
         return jsonify(item.serialize())
 
-    def patch(self, item_id):
-        """
-        Partially updates an existing item in the database.
-
-        Args:
-            item_id: The ID of the item to update.
-
-        Returns:
-            If the item is found and updated successfully, returns a JSON representation of the updated item.
-            If the item is not found, returns a JSON response with an error message and status code 404.
-        """
-        data = request.json
-        item = self.model.query.get(item_id)
+    def patch(self, item_id, request_data=None):
+        if request_data:
+            data = request_data
+            item = self.model(**data)
+        else:
+            data = request.json
+            item = self.model.query.get(item_id)
         if not item:
             return jsonify({'error': f'{self.model.__name__} not found'}), 404
         for key, value in data.items():
