@@ -19,6 +19,24 @@ def load_user(user_id):
 
 @auth_bp.route('/register', methods=['POST'])
 def register_new_user():
+    """
+    Register a new user.
+
+    This function handles the registration of a new user by receiving a POST request with the user's information.
+    The required fields are 'name', 'username', 'email', and 'password'. If any of these fields are missing, a
+    response with a status code of 400 and a message indicating the missing fields is returned.
+
+    If all the required fields are provided, the user's password is hashed using the generate_password_hash function
+    and a new_user_data dictionary is created with the user's information. The 'is_confirmed' field is set to True
+    indicating that the user's account is confirmed.
+
+    The new_user_data is then passed to the user_view.post function to create a new user. If the user is created
+    successfully, a response with a status code of 201 and a message indicating the successful creation is returned.
+    Otherwise, the response returned by user_view.post is returned.
+
+    Returns:
+        A JSON response with a status code and a message indicating the result of the registration process.
+    """
     data = request.get_json()
     if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
@@ -40,6 +58,12 @@ def register_new_user():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    """
+    Authenticate a user by checking their email and password.
+
+    Returns:
+        A JSON response indicating the result of the login attempt.
+    """
     data = request.get_json()
     user = user_view.get({'email': data.get('email')}, serialized=False)
     
@@ -52,5 +76,11 @@ def login():
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    """
+    Logout the currently logged-in user.
+
+    Returns:
+        A JSON response with a success message and HTTP status code 200.
+    """
     logout_user()
     return jsonify({'message': 'Logout successful'}), 200
