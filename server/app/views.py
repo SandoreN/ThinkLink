@@ -25,6 +25,22 @@ class CRUDView(MethodView):
             self.model = model
  
     def get(self, item_id=None, filters=None, all_matches=False, serialized=True):
+        """
+        Retrieves an item from the database based on the provided parameters.
+
+        Args:
+            item_id (int): The ID of the item to retrieve. If provided, only the item with the matching ID will be returned.
+            filters (dict): A dictionary of filters to apply when retrieving the item(s). Each key-value pair represents a filter condition.
+            all_matches (bool): If True, returns all items that match the provided filters. If False, returns only the first matching item.
+            serialized (bool): If True, serializes the retrieved item(s) before returning them. If False, returns the item(s) as is.
+
+        Returns:
+            tuple: A tuple containing the retrieved item(s) and the HTTP status code.
+
+        Raises:
+            Exception: If an error occurs during the retrieval process.
+
+        """
         query = self.model.query
         try:
             if item_id is not None:
@@ -49,6 +65,16 @@ class CRUDView(MethodView):
             return jsonify({"message": "Internal server error"}), 500
         
     def post(self, request_data=None):
+        """
+        Handle HTTP POST requests.
+
+        Args:
+            request_data (dict): Optional request data. If provided, it will be used as the data for creating the item.
+
+        Returns:
+            Response: JSON response containing the serialized item if successful, or an error message if the item already exists.
+
+        """
         if request_data:
             data = request_data
         else:
@@ -63,33 +89,56 @@ class CRUDView(MethodView):
         return jsonify(item.serialize()), 201
 
     def put(self, item_id, request_data=None):
-        if request_data:
-            data = request_data
-            item = self.model(**data)
-        else:
-            data = request.json
-            item = self.model.query.get(item_id)
-        if not item:
-            return jsonify({'error': f'{self.model.__name__} not found'}), 404
-        for key, value in data.items():
-            setattr(item, key, value)
-        db.session.commit()
-        return jsonify(item.serialize())
+            """
+            Updates an item in the database.
+
+            Args:
+                item_id (int): The ID of the item to be updated.
+                request_data (dict, optional): The data to update the item with. Defaults to None.
+
+            Returns:
+                dict: A JSON response containing the updated item.
+            """
+            if request_data:
+                data = request_data
+                item = self.model(**data)
+            else:
+                data = request.json
+                item = self.model.query.get(item_id)
+            if not item:
+                return jsonify({'error': f'{self.model.__name__} not found'}), 404
+            for key, value in data.items():
+                setattr(item, key, value)
+            db.session.commit()
+            return jsonify(item.serialize())
 
     def patch(self, item_id, request_data=None):
-        if request_data:
-            data = request_data
-            item = self.model(**data)
-        else:
-            data = request.json
-            item = self.model.query.get(item_id)
-        if not item:
-            return jsonify({'error': f'{self.model.__name__} not found'}), 404
-        for key, value in data.items():
-            if hasattr(item, key):
-                setattr(item, key, value)
-        db.session.commit()
-        return jsonify(item.serialize())
+            """
+            Update an item with the given item_id using the provided request_data.
+
+            Args:
+                item_id (int): The ID of the item to be updated.
+                request_data (dict, optional): The data to update the item with. Defaults to None.
+
+            Returns:
+                dict: A JSON response containing the serialized updated item.
+
+            Raises:
+                404: If the item with the given item_id is not found.
+            """
+            if request_data:
+                data = request_data
+                item = self.model(**data)
+            else:
+                data = request.json
+                item = self.model.query.get(item_id)
+            if not item:
+                return jsonify({'error': f'{self.model.__name__} not found'}), 404
+            for key, value in data.items():
+                if hasattr(item, key):
+                    setattr(item, key, value)
+            db.session.commit()
+            return jsonify(item.serialize())
 
     def delete(self, item_id):
         """
