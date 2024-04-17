@@ -7,7 +7,24 @@ from app.models import Publication, Proposal, Resource
 import app.config
 
 class FileManager:
+    """
+    A class that manages file operations for the application.
+
+    Attributes:
+        base_folder (str): The base folder path for file operations.
+        resource_folder (str): The folder path for storing resources.
+        library_folder (str): The folder path for the library.
+        publications_folder (str): The folder path for storing publications.
+        proposals_folder (str): The folder path for storing proposals.
+        publication_view (CRUDView): An instance of CRUDView for managing publications.
+        proposal_view (CRUDView): An instance of CRUDView for managing proposals.
+        resource_view (CRUDView): An instance of CRUDView for managing resources.
+    """
+
     def __init__(self):
+        """
+        Initializes a new instance of the FileManager class.
+        """
         #uploads
         #--resources
         #--library
@@ -31,6 +48,17 @@ class FileManager:
         self.resource_view = CRUDView(model=Resource)
 
     def upload_file(self, file, user_id, project_id, filename, resource_data, resource_id=None):
+        """
+        Uploads a file to the specified user and project folder.
+
+        Args:
+            file (FileStorage): The file to be uploaded.
+            user_id (str): The ID of the user.
+            project_id (str): The ID of the project.
+            filename (str): The original filename of the file.
+            resource_data (dict): The data associated with the resource.
+            resource_id (str, optional): The ID of the resource. Defaults to None.
+        """
         # Sanitize filename using Werkzeug's secure_filename
         s_filename = secure_filename(filename)
         
@@ -60,6 +88,17 @@ class FileManager:
                 self.resource_view.put(item_id=resource_id, request_data=resource_data)
 
     def download_file(self, user_id, project_id, filename):
+        """
+        Downloads a file from the specified user and project folder.
+
+        Args:
+            user_id (str): The ID of the user.
+            project_id (str): The ID of the project.
+            filename (str): The filename of the file to be downloaded.
+
+        Returns:
+            str: The file path if the file exists, None otherwise.
+        """
         # Construct path based on team and project
         user_folder = os.path.join(self.base_folder, user_id)
         project_folder = os.path.join(user_folder, project_id)
@@ -72,6 +111,17 @@ class FileManager:
             return None  # File not found
 
     def delete_file(self, user_id, project_id, filename):
+        """
+        Deletes a file from the specified user and project folder.
+
+        Args:
+            user_id (str): The ID of the user.
+            project_id (str): The ID of the project.
+            filename (str): The filename of the file to be deleted.
+
+        Returns:
+            bool: True if the file was deleted successfully, False otherwise.
+        """
         # Construct path based on team and project
         user_folder = os.path.join(self.base_folder, user_id)
         project_folder = os.path.join(user_folder, project_id)
@@ -85,6 +135,13 @@ class FileManager:
             return False  # File not found
     
     def publish_project_file(self, publication_data, publication_id=None):
+        """
+        Publishes a project file by creating a symbolic link in the publications folder.
+
+        Args:
+            publication_data (dict): The data associated with the publication.
+            publication_id (str, optional): The ID of the publication. Defaults to None.
+        """
         # Get the file path from the publication data
         file_path = publication_data['file_path']
 
@@ -107,6 +164,13 @@ class FileManager:
                 self.publication_view.put(item_id=publication_id, request_data=publication_data)
 
     def create_proposal_file(self, proposal_data, proposal_id=None):
+        """
+        Creates a proposal file by creating a symbolic link in the proposals folder.
+
+        Args:
+            proposal_data (dict): The data associated with the proposal.
+            proposal_id (str, optional): The ID of the proposal. Defaults to None.
+        """
         # Get the file path from the proposal data
         file_path = proposal_data['file_path']
 
