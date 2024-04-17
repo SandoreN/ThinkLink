@@ -58,11 +58,28 @@ export default {
       })
   },
   methods: {
-    saveDraft() {
-      const draftContent = this.mde.value()
-      // Implement your saving logic here. For example:
-      // this.$http.post('/api/saveDraft', { name: this.draftName, content: draftContent })
-      console.log(this.draftName, draftContent)
+    // Your existing methods here
+
+    saveDraft() {  // Add this method
+      // Get the content of the EasyMDE editor
+      const draftContent = this.easyMDE.value();
+
+      // Make a POST request to the server
+      axios.post(process.env.VUE_APP_FLASK_APP_URL + `/project_workspace/${this.projectId}`, {
+        action: 'create_draft',
+        draft_data: {
+          content: draftContent,
+          // Add any other data you need to send to the server here
+        },
+      })
+      .then(response => {
+        // Handle the response from the server
+        console.log(response.data);
+      })
+      .catch(error => {
+        // Handle the error
+        console.error(error);
+      });
     },
   },
   computed: {
