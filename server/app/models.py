@@ -66,7 +66,7 @@ class Message(db.Model):
     sender_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     recipient_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     subject = Column(String(100))
-    text = Column(Text, nullable=False)
+    content = Column(Text, nullable=False)
     sent_date = Column(DateTime, default=datetime.datetime.now)
     parent_id = Column(Integer, ForeignKey('Message.id'))
     is_read = Column(Boolean, default=False)
@@ -80,7 +80,7 @@ class Message(db.Model):
             'sender_id': self.sender_id,
             'recipient_id': self.recipient_id,
             'subject': self.subject,
-            'text': self.text,
+            'content': self.content,
             'sent_date': self.sent_date.strftime('%Y-%m-%d %H:%M:%S'),
             'is_read': self.is_read,
             'is_deleted_by_sender': self.is_deleted_by_sender,
@@ -167,7 +167,7 @@ class Task(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
-    description = Column(Text)
+    content = Column(Text)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     due_date = Column(DateTime)
@@ -178,7 +178,7 @@ class Task(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description,
+            'content': self.content,
             'project_id': self.project_id,
             'creator_id': self.creator_id,
             'due_date': self.due_date.strftime('%Y-%m-%d %H:%M:%S') if self.due_date else None,

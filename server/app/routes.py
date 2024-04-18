@@ -141,4 +141,4 @@ def send_message():
 @app.route('/messages/<int:receiver_id>', methods=['GET'])
 def get_messages(receiver_id):
     messages = message_view.get(filters={'receiver_id': receiver_id}, all_matches=True)
-    return jsonify([{'sender_id': msg.sender_id, 'content': msg.content} for msg in messages])
+    return jsonify([{'sender_id': msg.sender_id, 'subject': msg.subject, 'content': msg.content} for msg in messages])
