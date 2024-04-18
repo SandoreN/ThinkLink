@@ -3,8 +3,20 @@
     ><div class="projects-container1"
       ><app-header rootClassName="header-root-class-name5"></app-header
       ><div class="projects-body"
-        ><app-leftsidebar></app-leftsidebar><div class="projects-pagemain"></div
-        ><app-rightsidebar></app-rightsidebar></div></div
+        ><app-leftsidebar></app-leftsidebar>
+        <div class="projects-pagemain">
+          <div>
+            <router-link
+              v-for="project in projects"
+              :key="project.id"
+              :to="`/project_workspace/${project.id}`"
+              tag="button"
+            >
+              {{ project.name }}
+            </router-link>
+          </div>
+        </div>
+        <app-rightsidebar></app-rightsidebar></div></div
   ></div>
 </template>
 
@@ -12,6 +24,7 @@
 import AppHeader from '../components/header'
 import AppLeftsidebar from '../components/leftsidebar'
 import AppRightsidebar from '../components/rightsidebar'
+import axios from 'axios'
 
 export default {
   name: 'Projects',
@@ -20,6 +33,16 @@ export default {
     AppHeader,
     AppLeftsidebar,
     AppRightsidebar,
+  },
+  data() {
+    return {
+      projects: [],
+    };
+  },
+  async created() {
+    const userId = 1; // Replace with the actual user ID
+    const response = await axios.get(`/projects/${userId}`);
+    this.projects = response.data;
   },
   metaInfo: {
     title: 'projects - ThinkLink',

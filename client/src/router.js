@@ -27,7 +27,7 @@ const routes = [
   },
   {
     name: 'projectworkspace',
-    path: '/project_workspace',
+    path: '/project_workspace/<int:project_id>',
     component: Projectworkspace,
   },
   {
@@ -37,7 +37,7 @@ const routes = [
   },
   {
     name: 'projects',
-    path: '/projects',
+    path: '/projects/<int:user_id>',
     component: Projects,
   },
   {
@@ -47,7 +47,7 @@ const routes = [
   },
   {
     name: 'messages',
-    path: '/messages',
+    path: '/messages/<int:receiver_id>',
     component: Messages,
   },
   {
@@ -57,7 +57,7 @@ const routes = [
   },
   {
     name: 'profile',
-    path: '/profile',
+    path: '/profile/<int:user_id>',
     component: Profile,
   },
   {
@@ -67,7 +67,7 @@ const routes = [
   },
   {
     name: 'dashboard',
-    path: '/dashboard',
+    path: '/dashboard/<int:user_id>',
     component: Dashboard,
     meta: { requiresAuth: true }
   },
