@@ -74,8 +74,10 @@ export default {
       name: '',
       username: '',
       email: '',
-      password: ''
-    }
+      password: '',
+      errorMessage: '',
+      successMessage: ''
+    };
   },
   methods: {
     async register() {
@@ -89,10 +91,15 @@ export default {
       try {
         const response = await axios.post(process.env.VUE_APP_FLASK_APP_URL + '/register', user_data);
         console.log('server response:', response);
-        // handle response
+        if (response.status === 201) {
+          this.successMessage = 'User created successfully.';
+        }
+        else {
+          this.errorMessage = 'An error occurred while creating the user.';
+        }
       } catch (error) {
         console.log('error:', error);
-        // handle error
+        this.errorMessage = 'An error occurred while creating the user.';
       }
     }
   },
