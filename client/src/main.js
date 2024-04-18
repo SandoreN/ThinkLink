@@ -1,16 +1,14 @@
-
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
 import store from './store';
 import './style.css';
-import LottieVuePlayer from '@lottiefiles/vue-lottie-player'
+import LottieVuePlayer from '@lottiefiles/vue-lottie-player';
 
-Vue.use(LottieVuePlayer)
-Vue.config.productionTip = false
+const app = createApp(App);
 
-new Vue({
-  render: h => h(App),
-  router,
-  store
-}).$mount('#app')
+app.use(router);
+app.use(store);
+app.use(LottieVuePlayer);
+
+app.mount('#app');
