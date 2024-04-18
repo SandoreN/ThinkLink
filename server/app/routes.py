@@ -1,7 +1,7 @@
 from flask import request, jsonify, send_from_directory, url_for
 from flask_login import current_user, login_required
 from . import app
-from .models import Project, User, Team, Draft, Task, Resource
+from .models import Project, User, Team, Draft, Task, Resource, Message, Publication, Proposal
 from .views import CRUDView
 from .file_manager import FileManager
 import app.config
@@ -13,6 +13,10 @@ team_view = CRUDView(model=Team)
 draft_view = CRUDView(model=Draft)
 task_view = CRUDView(model=Task)
 resource_view = CRUDView(model=Resource)
+message_view = CRUDView(model=Message)
+publication_view = CRUDView(model=Publication)
+proposal_view = CRUDView(model=Proposal)
+file_manager = FileManager()
 
 @app.route('/files/<path:filename>')
 def serve_file(filename):
@@ -63,8 +67,6 @@ def get_user_projects(user_id):
 @app.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
 @login_required
 def get_project_workspace(project_id):
-    file_manager = FileManager()
-
     if request.method == 'POST':
         # Get the project
         project = project_view.get({'id': project_id}, serialized=False)
@@ -130,3 +132,13 @@ def get_project_workspace(project_id):
             'team_users': team_users
         }
         return jsonify(workspace)
+    
+@app.route('/messages', methods=['POST'])
+def send_message():
+    message_view.post()
+    return jsonify({'message': 'Message sent successfully'}), 201
+
+@app.route('/messages/<int:receiver_id>', methods=['GET'])
+def get_messages(receiver_id):
+    messages = message_view.get(filters={'receiver_id': receiver_id}, all_matches=True)
+    return jsonify([{'sender_id': msg.sender_id, 'content': msg.content} for msg in messages])
