@@ -39,7 +39,7 @@
                 name="password"
                 placeholder="Password"
                 class="register-textinput3 input"
-                v-model="user.password" />
+                v-model="user.password_hash" />
               <button type="submit" class="register-navlink button" @click="register">
                 <span class="register-text1">Sign up</span>
               </button>
@@ -68,7 +68,7 @@ export default {
       fullname: '',
       username: '',
       email: '',
-      password: ''
+      password_hash: ''
     }
   }
 },
@@ -78,7 +78,7 @@ export default {
         name: this.user.fullname,
         username: this.user.username,
         email: this.user.email,
-        password: this.user.password_hash
+        password_hash: this.user.password_hash
       }
       console.log('register method called with user data:', user_data);
       try {
