@@ -1,8 +1,6 @@
 from flask import Blueprint, jsonify, request
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required
-from . import *
-from app import *
+from app import app
 from .models import User
 from .views import CRUDView
 
@@ -26,8 +24,8 @@ def register_new_user():
     The required fields are 'name', 'username', 'email', and 'password'. If any of these fields are missing, a
     response with a status code of 400 and a message indicating the missing fields is returned.
 
-    If all the required fields are provided, the user's password is hashed using the generate_password_hash function
-    and a new_user_data dictionary is created with the user's information. The 'is_confirmed' field is set to True
+    If all the required fields are provided, the password is stored as plain text for simplicity in this example.
+    A new_user_data dictionary is created with the user's information. The 'is_confirmed' field is set to True
     indicating that the user's account is confirmed.
 
     The new_user_data is then passed to the user_view.post function to create a new user. If the user is created
@@ -41,12 +39,11 @@ def register_new_user():
     if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
 
-    hashed_password = generate_password_hash(data['password'])
     new_user_data = {
         'name': data['name'],
         'username': data['username'],
         'email': data['email'],
-        'password_hash': hashed_password,
+        'password': data['password'],  # Store password as plain text
         'is_confirmed': True
     }
     
@@ -67,13 +64,13 @@ def login():
     data = request.get_json()
     user = user_view.get({'email': data.get('email')}, serialized=False)
     
-    if user and check_password_hash(user.password_hash, data['password']):
+    if user and user.password == data['password']:  # Direct comparison without hashing
         login_user(user)
         return jsonify({'message': 'Login successful'}), 200
 
     return jsonify({'message': 'Invalid email or password'}), 401
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout', methods=['GET'])
 @login_required
 def logout():
     """

@@ -19,13 +19,13 @@ print(app.config['SQLALCHEMY_DATABASE_URI'])  # This should print the URI if set
 
 
 # Setup CORS
-CORS(app, origins=['http://localhost:8080'])
+CORS(app, origins=['http://localhost:8081'])
 
 # Import blueprints and models after app and db are defined
 from .auth import auth_bp  # Assuming auth_bp is defined in the auth module
 
 # Register blueprints
-app.register_blueprint(auth_bp)
+app.register_blueprint(auth_bp, url_prefix='/auth')
 
 # Initialize SQLAlchemy with the app
 db.init_app(app)
