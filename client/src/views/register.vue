@@ -63,20 +63,22 @@ export default {
     RegisterHeader,
   },
   data() {
-    return {
-      name: '',
+  return {
+    user: {
+      fullname: '',
       username: '',
       email: '',
       password: ''
     }
-  },
+  }
+},
   methods: {
     async register() {
       const user_data = {
-        name: this.name,
-        username: this.username,
-        email: this.email,
-        password: this.password
+        name: this.user.emailfullname,
+        username: this.user.username,
+        email: this.user.email,
+        password: this.user.password
       }
       console.log('register method called with user data:', user_data);
       try {
