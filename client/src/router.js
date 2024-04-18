@@ -24,6 +24,7 @@ const routes = [
     name: 'login',
     path: '/login',
     component: Login,
+    meta: {guestOnly: true }
   },
   {
     name: 'projectworkspace',
@@ -75,6 +76,7 @@ const routes = [
     name: 'register',
     path: '/register',
     component: Register,
+    meta: {guestOnly: true }
   },
   {
     name: '404 - Not Found',
@@ -92,10 +94,13 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isGuestOnly = to.matched.some(record => record.meta.guestOnly);
   const isAuthenticated = store.getters.isAuthenticated;
 
   if (requiresAuth && !isAuthenticated) {
     next('/login');
+  } else if (isGuestOnly && isAuthenticated) {
+    next('/dashboard');
   } else {
     next();
   }
