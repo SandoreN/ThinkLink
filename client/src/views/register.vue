@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="register-container5">
-            <form @submit.prevent="submitRegistration" class="register-form">
+            <form @submit.prevent="register" class="register-form">
               <input
                 type="text"
                 id="fullname"
@@ -75,7 +75,7 @@ export default {
   methods: {
     async register() {
       const user_data = {
-        name: this.user.emailfullname,
+        name: this.user.fullname,
         username: this.user.username,
         email: this.user.email,
         password: this.user.password
@@ -84,6 +84,7 @@ export default {
       try {
         const response = await axios.post(process.env.VUE_APP_FLASK_APP_URL + '/register', user_data);
         console.log('server response:', response);
+        this.$router.push('/login');
         // handle response
       } catch (error) {
         console.log('error:', error);
