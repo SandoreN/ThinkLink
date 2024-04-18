@@ -84,12 +84,20 @@ export default {
       try {
         const response = await axios.post(`${process.env.VUE_APP_FLASK_APP_URL}/register`, user_data);
         console.log('server response:', response);
-        this.$router.push('/login');
-        // handle response
-      } catch (error) {
-        console.log('error:', error);
-        // handle error
-      }
+        if (this.$router.currentRoute.path !== '/login') {
+          this.$router.push('/login').catch(err => {
+            if (err.name !== 'NavigationDuplicated' && err.name !== 'NavigationCancelled') {
+              // Only log the error if it's not because of redundant navigation or cancelled navigation
+              console.error(err);
+            }
+          });
+        }
+  // handle response
+} catch (error) {
+  console.error('error:', error);
+  // handle error, you might want to show an error message to the user
+}
+
     }
   },
   metaInfo: {
