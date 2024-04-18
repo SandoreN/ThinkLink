@@ -41,12 +41,11 @@ def register_new_user():
     if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
 
-    hashed_password = generate_password_hash(data['password'])
     new_user_data = {
         'name': data['name'],
         'username': data['username'],
         'email': data['email'],
-        'password_hash': hashed_password,
+        'password': data['password'],
         'is_confirmed': True
     }
     
@@ -67,7 +66,7 @@ def login():
     data = request.get_json()
     user = user_view.get({'email': data.get('email')}, serialized=False)
     
-    if user and check_password_hash(user.password_hash, data['password']):
+    if user and user.password == data['password']:  # Direct comparison without hashing
         login_user(user)
         return jsonify({'message': 'Login successful'}), 200
 

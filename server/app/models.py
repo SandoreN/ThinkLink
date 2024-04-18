@@ -20,7 +20,7 @@ class User(db.Model):
     name = Column(String(100), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(100), nullable=False, unique=True)
-    password_hash = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
     is_confirmed = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     registration_date = Column(DateTime, default=datetime.datetime.now)
