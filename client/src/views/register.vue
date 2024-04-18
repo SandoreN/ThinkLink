@@ -78,11 +78,11 @@ export default {
         name: this.user.fullname,
         username: this.user.username,
         email: this.user.email,
-        password: this.user.password
+        password: this.user.password_hash
       }
       console.log('register method called with user data:', user_data);
       try {
-        const response = await axios.post(process.env.VUE_APP_FLASK_APP_URL + '/register', user_data);
+        const response = await axios.post(`${process.env.VUE_APP_FLASK_APP_URL}/register`, user_data);
         console.log('server response:', response);
         this.$router.push('/login');
         // handle response
