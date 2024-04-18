@@ -36,14 +36,14 @@ def register_new_user():
         A JSON response with a status code and a message indicating the result of the registration process.
     """
     data = request.get_json()
-    if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
+    if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password_hash')]):
         return jsonify({'message': 'Missing required fields'}), 400
 
     new_user_data = {
         'name': data['name'],
         'username': data['username'],
         'email': data['email'],
-        'password': data['password'],  # Store password as plain text
+        'password_hash': data['password_hash'],  # Store password as plain text
         'is_confirmed': True
     }
     

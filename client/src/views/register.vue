@@ -40,7 +40,7 @@
                 placeholder="Password"
                 class="register-textinput3 input"
                 v-model="user.password" />
-              <button type="submit" class="register-navlink button">
+              <button type="submit" class="register-navlink button" @click="register">
                 <span class="register-text1">Sign up</span>
               </button>
             </form>

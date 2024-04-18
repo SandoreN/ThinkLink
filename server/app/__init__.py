@@ -8,6 +8,7 @@ load_dotenv()  # This loads the environment variables from a .env file
 
 # Create the Flask application
 app = Flask(__name__)
+CORS(app)
 
 # Initialize extensions but don't associate them with the app yet
 db = SQLAlchemy()
@@ -19,13 +20,13 @@ print(app.config['SQLALCHEMY_DATABASE_URI'])  # This should print the URI if set
 
 
 # Setup CORS
-CORS(app, origins=['http://localhost:8081'])
+CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
 
 # Import blueprints and models after app and db are defined
 from .auth import auth_bp  # Assuming auth_bp is defined in the auth module
 
 # Register blueprints
-app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(auth_bp)
 
 # Initialize SQLAlchemy with the app
 db.init_app(app)
