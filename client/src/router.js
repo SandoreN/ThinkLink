@@ -1,6 +1,4 @@
-import Vue from 'vue'
-//Removed unused imports
-
+import { createRouter, createWebHistory } from 'vue-router'
 import Login from './views/login'
 import Projectworkspace from './views/projectworkspace'
 import Teams from './views/teams'
@@ -14,10 +12,7 @@ import Dashboard from './views/dashboard'
 import Register from './views/register'
 import NotFound from './views/not-found'
 import './style.css'
-import VueRouter from 'vue-router'
 import store from './store';
-
-Vue.use(VueRouter);
 
 const routes = [
   {
@@ -27,7 +22,7 @@ const routes = [
   },
   {
     name: 'projectworkspace',
-    path: '/project_workspace/<int:project_id>',
+    path: '/project_workspace/:project_id',
     component: Projectworkspace,
   },
   {
@@ -37,7 +32,7 @@ const routes = [
   },
   {
     name: 'projects',
-    path: '/projects/<int:user_id>',
+    path: '/projects/:user_id',
     component: Projects,
   },
   {
@@ -47,17 +42,17 @@ const routes = [
   },
   {
     name: 'messages',
-    path: '/messages/<int:receiver_id>',
+    path: '/messages/:receiver_id',
     component: Messages,
   },
   {
     name: 'root',
     path: '/',
-    component: () => import('./views/root.vue'),
+    component: Root,
   },
   {
     name: 'profile',
-    path: '/profile/<int:user_id>',
+    path: '/profile/:user_id',
     component: Profile,
   },
   {
@@ -67,7 +62,7 @@ const routes = [
   },
   {
     name: 'dashboard',
-    path: '/dashboard/<int:user_id>',
+    path: '/dashboard/:user_id',
     component: Dashboard,
     meta: { requiresAuth: true }
   },
@@ -78,17 +73,16 @@ const routes = [
   },
   {
     name: '404 - Not Found',
-    path: '**',
+    path: '/**',
     component: NotFound,
     fallback: true,
   },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
-})
+const router = createRouter({
+  history: createWebHistory('/'),
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);

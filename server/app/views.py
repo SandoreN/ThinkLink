@@ -24,6 +24,7 @@ class CRUDView(MethodView):
         if model:
             self.model = model
  
+
     def get(self, item_id=None, filters=None, all_matches=False, serialized=True):
         """
         Retrieves an item from the database based on the provided parameters.
@@ -42,27 +43,27 @@ class CRUDView(MethodView):
 
         """
         query = self.model.query
-        try:
-            if item_id is not None:
-                item = query.get(item_id)
-            elif filters:
-                if all_matches:
-                    item = query.filter_by(**filters).all()
-                else:
-                    item = query.filter_by(**filters).first()
+        #try:
+        if item_id is not None:
+            item = query.get(item_id)
+        elif filters:
+            if all_matches:
+                item = query.filter_by(**filters).all()
             else:
-                item = query.all()
+                item = query.filter_by(**filters).first()
+        else:
+            item = query.all()
 
-            if not item:
-                return (None, 200) if not serialized else (jsonify({}), 200)
+        if not item:
+            return (None, 200) if not serialized else (jsonify({}), 200)
 
-            if isinstance(item, list):
-                return (jsonify([i.serialize() for i in item]), 200) if serialized and all(hasattr(i, 'serialize') for i in item) else (item, 200)
-            else:
-                return (jsonify(item.serialize()), 200) if serialized and hasattr(item, 'serialize') else (item, 200)
-        except Exception as e:
-            print(f"Error in get method: {e}")
-            return jsonify({"message": "Internal server error"}), 500
+        if isinstance(item, list):
+            return (jsonify([i.serialize() for i in item]), 200) if serialized and all(hasattr(i, 'serialize') for i in item) else (item, 200)
+        else:
+            return (jsonify(item.serialize()), 200) if serialized and hasattr(item, 'serialize') else (item, 200)
+        #except Exception as e:
+        #    print(f"Error in get method: {e}")
+        #    return jsonify({"message": "Internal server error"}), 500
         
     def post(self, request_data=None):
         """

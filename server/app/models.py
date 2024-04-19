@@ -1,3 +1,4 @@
+from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, validates
 from app import db
@@ -13,7 +14,7 @@ project_members = db.Table('project_members',
     db.Column('project_id', db.Integer, db.ForeignKey('Project.id'), primary_key=True)
 )
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'User'
 
     id = Column(Integer, primary_key=True)
@@ -23,6 +24,7 @@ class User(db.Model):
     password = Column(String(255), nullable=False)
     is_confirmed = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
     registration_date = Column(DateTime, default=datetime.datetime.now)
     teams = relationship('Team', secondary=team_members, backref='users')
     projects = relationship('Project', secondary=project_members, backref='users')
@@ -35,6 +37,7 @@ class User(db.Model):
             'email': self.email,
             'is_confirmed': self.is_confirmed,
             'is_admin': self.is_admin,
+            'is_active': self.is_active,
             'registration_date': self.registration_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 

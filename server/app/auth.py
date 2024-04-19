@@ -38,7 +38,7 @@ def register_new_user():
         A JSON response with a status code and a message indicating the result of the registration process.
     """
     data = request.get_json()
-    if not data or not all([data.get('name'), data.get('username'), data.get('email'), data.get('password')]):
+    if not data or not all([data['name'], data['username'], data['email'], data['password']]):
         return jsonify({'message': 'Missing required fields'}), 400
 
     new_user_data = {
@@ -64,13 +64,13 @@ def login():
         A JSON response indicating the result of the login attempt.
     """
     data = request.get_json()
-    user = user_view.get({'email': data.get('email')}, serialized=False)
+    user, status = user_view.get(filters={'email': data['email']}, serialized=False)
     
     if user and user.password == data['password']:  # Direct comparison without hashing
         login_user(user)
         return jsonify({'message': 'Login successful'}), 200
-
-    return jsonify({'message': 'Invalid email or password'}), 401
+    else: 
+        return jsonify({'message': 'Invalid email or password'}), 401
 
 @auth_bp.route('/logout')
 @login_required

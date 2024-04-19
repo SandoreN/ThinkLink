@@ -93,6 +93,8 @@ export default {
         console.log('server response:', response);
         if (response.status === 201) {
           this.successMessage = 'User created successfully.';
+          // Redirect to login page
+          this.$router.push('/login');
         }
         else {
           this.errorMessage = 'An error occurred while creating the user.';
