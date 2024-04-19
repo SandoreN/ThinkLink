@@ -69,7 +69,7 @@ def get_user_projects(user_id):
 def get_project_workspace(project_id):
     if request.method == 'POST':
         # Get the project
-        project = project_view.get({'id': project_id}, serialized=False)
+        project, status = project_view.get({'id': project_id}, serialized=False)
 
         # Check if the logged-in user is the owner of the project
         if current_user.id != project.user_id:
@@ -106,16 +106,16 @@ def get_project_workspace(project_id):
         return jsonify({'message': 'Action performed successfully'}), 200
     else:  # GET method
         # Get the project
-        project = project_view.get({'id': project_id}, serialized=False)
+        project, status = project_view.get({'id': project_id}, serialized=False)
 
         # Check if the logged-in user is the owner of the project
         if current_user.id != project.user_id:
             return jsonify({'message': 'Unauthorized'}), 403
 
         # Get all drafts, tasks, and resources for the project
-        drafts = draft_view.get(filters={'project_id': project_id}, all_matches=True)
-        tasks = task_view.get(filters={'project_id': project_id}, all_matches=True)
-        resources = resource_view.get(filters={'project_id': project_id}, all_matches=True)
+        drafts, status = draft_view.get(filters={'project_id': project_id}, all_matches=True)
+        tasks, status = task_view.get(filters={'project_id': project_id}, all_matches=True)
+        resources, status = resource_view.get(filters={'project_id': project_id}, all_matches=True)
 
         for resource in resources:
             resource['url'] = url_for('serve_file', filename=resource['filename'])
@@ -124,21 +124,21 @@ def get_project_workspace(project_id):
         team_users = [user.serialize() for user in project.team.users]
 
         # Return the project workspace
-        workspace = {
+        workspace_data = {
             'project': project.serialize(),
             'drafts': drafts,
             'tasks': tasks,
             'resources': resources,
             'team_users': team_users
         }
-        return jsonify(workspace)
+        return jsonify(workspace_data)
     
 @app.route('/messages', methods=['POST'])
-def send_message():
-    message_view.post()
+def send_message(message_data=None):
+    message_view.post(message_data if message_data else request.get_json())
     return jsonify({'message': 'Message sent successfully'}), 201
 
 @app.route('/messages/<int:receiver_id>', methods=['GET'])
 def get_messages(receiver_id):
-    messages = message_view.get(filters={'receiver_id': receiver_id}, all_matches=True)
+    messages, status = message_view.get(filters={'receiver_id': receiver_id}, all_matches=True)
     return jsonify([{'sender_id': msg.sender_id, 'subject': msg.subject, 'content': msg.content} for msg in messages])
