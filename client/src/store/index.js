@@ -5,27 +5,22 @@ import api from '@/services/api';
 export default createStore({
   state: {
     user: null,
-    token: localStorage.getItem('token')
   },
   mutations: {
     setUser(state, user) {
       state.user = user;
     },
-    setToken(state, token) {
-      state.token = token;
-    }
   },
   actions: {
     async login({ commit }, credentials) {
       try {
         const response = await api.post('/login', credentials);
-        const token = response.data.token;
-        localStorage.setItem('token', token);
-        commit('setToken', token);
-        const user = await api.get('/protected');
-        commit('setUser', user.data.user);
+        if (response.data.message === 'Login successful') {
+          commit('setUser', response.data.user);  // Store the user's ID
+        }
+        return response.data;
       } catch (error) {
-        // Handle login error
+        throw error;
       }
     },
     async register(_, userData) {
@@ -39,8 +34,6 @@ export default createStore({
     async logout({ commit }) {
       try {
         await api.post('/logout');
-        localStorage.removeItem('token');
-        commit('setToken', null);
         commit('setUser', null);
       } catch (error) {
         // Handle logout error
@@ -48,9 +41,6 @@ export default createStore({
     }
   },
   getters: {
-    isAuthenticated(state) {
-      return !!state.token;
-    },
     currentUser(state) {
       return state.user;
     }

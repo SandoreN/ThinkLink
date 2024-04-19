@@ -64,7 +64,7 @@ const routes = [
     name: 'dashboard',
     path: '/dashboard/:user_id',
     component: Dashboard,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, roles: ['admin', 'user'] }
   },
   {
     name: 'register',
@@ -86,9 +86,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = store.getters.isAuthenticated;
 
-  if (requiresAuth && !isAuthenticated) {
+  if (requiresAuth && !store.state.user) {
     next('/login');
   } else {
     next();

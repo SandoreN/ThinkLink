@@ -68,7 +68,7 @@ def login():
     
     if user and user.password == data['password']:  # Direct comparison without hashing
         login_user(user)
-        return jsonify({'message': 'Login successful'}), 200
+        return jsonify({'message': 'Login successful', 'user': user.id}), 200
     else: 
         return jsonify({'message': 'Invalid email or password'}), 401
 
