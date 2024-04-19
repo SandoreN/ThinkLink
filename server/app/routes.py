@@ -53,10 +53,10 @@ def get_user_projects(user_id):
             return jsonify({'message': 'Unauthorized'}), 403
 
         # Get the current user
-        user = user_view.get({'id': user_id}, serialized=False)
+        user, status = user_view.get({'id': user_id}, serialized=False)
 
         # Get all projects for the user
-        user_projects = project_view.get(filters={'creator_id': user_id}, all_matches=True)
+        user_projects, status = project_view.get(filters={'creator_id': user_id}, all_matches=True)
 
         # Get all projects that belong to any team the user is a part of
         team_projects = [project.serialize() for team in user.teams for project in team.projects]

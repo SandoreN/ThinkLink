@@ -80,7 +80,7 @@ class FileManager:
         if resource_id is None:
             # If no resource_id is provided, create a new resource
             with app.app_context():
-                # send HTTP POST request to /api/resources to 
+                 
                 self.resource_view.post(request_data=resource_data)
         else:
             # If a resource_id is provided, update the existing resource
