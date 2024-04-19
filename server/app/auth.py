@@ -15,7 +15,8 @@ user_view = CRUDView(model=User)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return user_view.get(filters={'id': user_id}, serialized=False)
+    user, status = user_view.get(filters={'id': user_id}, serialized=False)
+    return user
 
 @auth_bp.route('/register', methods=['POST'])
 def register_new_user():
