@@ -16,6 +16,7 @@ export default createStore({
       try {
         const response = await api.post('/login', credentials);
         if (response.data.message === 'Login successful') {
+          console.log(response.data.user); // Log the user data
           commit('setUser', response.data.user);  // Store the user's ID
         }
         return response.data;

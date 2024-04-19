@@ -1,4 +1,4 @@
-from flask import request, jsonify, send_from_directory, url_for
+from flask import request, jsonify, send_from_directory, url_for, Blueprint
 from flask_login import current_user, login_required
 from . import app
 from .models import Project, User, Team, Draft, Task, Resource, Message, Publication, Proposal
@@ -18,13 +18,16 @@ publication_view = CRUDView(model=Publication)
 proposal_view = CRUDView(model=Proposal)
 file_manager = FileManager()
 
-@app.route('/files/<path:filename>')
+routes_bp = Blueprint('routes', __name__)
+
+@routes_bp.route('/files/<path:filename>')
 def serve_file(filename):
     return send_from_directory(app.config.Config.APP_FS_ROOT, filename)
 
-@app.route('/projects/<int:user_id>', methods=['GET', 'POST'])
+@routes_bp.route('/projects/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def get_user_projects(user_id):
+    print(f"get_user_projects called with user_id: {user_id}")
     if request.method == 'POST':
         # Check if the logged-in user is the one trying to create a project
         if current_user.id != user_id:
@@ -48,6 +51,7 @@ def get_user_projects(user_id):
         return jsonify(created_project), 201
 
     else:  # GET method
+        print(f"get_user_projects called with user_id: {user_id}")
         # Check if the logged-in user is trying to access their own projects
         if current_user.id != user_id:
             return jsonify({'message': 'Unauthorized'}), 403
@@ -64,7 +68,7 @@ def get_user_projects(user_id):
         all_projects = user_projects + team_projects
         return jsonify(all_projects)
 
-@app.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
+@routes_bp.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
 @login_required
 def get_project_workspace(project_id):
     if request.method == 'POST':
@@ -133,12 +137,12 @@ def get_project_workspace(project_id):
         }
         return jsonify(workspace_data)
     
-@app.route('/messages', methods=['POST'])
+@routes_bp.route('/messages', methods=['POST'])
 def send_message(message_data=None):
     message_view.post(message_data if message_data else request.get_json())
     return jsonify({'message': 'Message sent successfully'}), 201
 
-@app.route('/messages/<int:receiver_id>', methods=['GET'])
+@routes_bp.route('/messages/<int:receiver_id>', methods=['GET'])
 def get_messages(receiver_id):
     messages, status = message_view.get(filters={'receiver_id': receiver_id}, serialized=False, all_matches=True)
     return jsonify([{'sender_id': msg.sender_id, 'subject': msg.subject, 'content': msg.content} for msg in messages])

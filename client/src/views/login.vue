@@ -74,7 +74,7 @@ export default {
           password: this.password
         });
         if (response) {
-          this.$router.push(`/dashboard/${response.user}`);
+          this.$router.push(`/dashboard/${response.user.id}`);
         }
       } catch (error) {
         console.error('Login error:', error);

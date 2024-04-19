@@ -9,9 +9,8 @@
             <router-link
               v-for="project in projects"
               :key="project.id"
-              :to="`/project_workspace/${project.id}`"
-              tag="button"
-            >
+              :to="`/project_workspace/${project.project_id}`"
+              tag="button">
               {{ project.name }}
             </router-link>
           </div>
@@ -40,9 +39,21 @@ export default {
     };
   },
   async created() {
-    const userId = 1; // Replace with the actual user ID
-    const response = await axios.get(`/projects/${userId}`);
-    this.projects = response.data;
+    try {
+      const token = this.$store.state.user.token; // Access the token from the user state
+
+      const response = await axios.get(
+        `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`, 
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      this.projects = response.data;
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
   },
   metaInfo: {
     title: 'projects - ThinkLink',

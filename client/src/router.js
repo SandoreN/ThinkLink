@@ -27,7 +27,7 @@ const routes = [
   },
   {
     name: 'teams',
-    path: '/teams',
+    path: '/teams/:user_id',
     component: Teams,
   },
   {
@@ -62,6 +62,11 @@ const routes = [
   },
   {
     name: 'dashboard',
+    path: '/dashboard',
+    component: Dashboard
+  },
+  {
+    name: 'dashboarduser',
     path: '/dashboard/:user_id',
     component: Dashboard,
     meta: { requiresAuth: true, roles: ['admin', 'user'] }

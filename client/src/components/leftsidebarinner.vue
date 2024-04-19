@@ -5,7 +5,7 @@
     v-bind:class="rootClassName"
     ><div class="leftsidebarinner-sidebarheader"
       ><div class="leftsidebarinner-container"
-        ><router-link to="/profile" class="leftsidebarinner-navlink button"
+        ><router-link :to="`/profile/${this.$store.getters.currentUser}`" class="leftsidebarinner-navlink button"
           ><span id="user.name" class="leftsidebarinner-text"
             >{{ userFirstName }}</span
           ><span id="user.username" class="leftsidebarinner-text01"
@@ -16,7 +16,7 @@
     ><div class="leftsidebarinner-container1"
       ><nav class="leftsidebarinner-nav"
         ><div class="leftsidebarinner-container2"
-          ><router-link to="/dashboard" class="leftsidebarinner-navlink1 button"
+          ><router-link :to="`/dashboard/${this.$store.state.user.id}`" class="leftsidebarinner-navlink1 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon">
               <path
                 d="M512 128c0 0-263.936 227.84-411.435 351.232-8.661 7.851-15.232 19.285-15.232 32.768 0 23.595 19.072 42.667 42.667 42.667h85.333v298.667c0 23.595 19.072 42.667 42.667 42.667h128c23.595 0 42.667-19.115 42.667-42.667v-170.667h170.667v170.667c0 23.552 19.072 42.667 42.667 42.667h128c23.595 0 42.667-19.072 42.667-42.667v-298.667h85.333c23.595 0 42.667-19.072 42.667-42.667 0-13.483-6.571-24.917-16.341-32.768-146.475-123.392-410.325-351.232-410.325-351.232z"
@@ -24,7 +24,7 @@
             ><span class="leftsidebarinner-text02">{{ text2 }}</span></router-link
           ></div
         ><div class="leftsidebarinner-container3"
-          ><router-link to="/messages" class="leftsidebarinner-navlink2 button"
+          ><router-link :to="`/messages/${this.$store.state.user.id}`" class="leftsidebarinner-navlink2 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon02">
               <path
                 d="M896 298.667h-128c0-70.4-57.6-128-128-128h-512c-70.4 0-128 57.6-128 128v298.667c0 70.4 57.6 128 128 128v128l128-128c0 70.4 57.6 128 128 128h341.333l128 128v-128h42.667c70.4 0 128-57.6 128-128v-298.667c0-70.4-57.6-128-128-128zM128 640c-23.125 0-42.667-19.541-42.667-42.667v-298.667c0-23.125 19.541-42.667 42.667-42.667h512c23.125 0 42.667 19.541 42.667 42.667v42.667h-277.333c-58.837 0-106.667 47.829-106.667 106.667v192h-170.667zM938.667 725.333c0 23.125-19.541 42.667-42.667 42.667h-512c-23.125 0-42.667-19.541-42.667-42.667v-277.333c0-35.285 28.715-64 64-64h490.667c23.125 0 42.667 19.541 42.667 42.667v298.667z"
@@ -32,7 +32,7 @@
             ><span class="leftsidebarinner-text03">Messages</span></router-link
           ></div
         ><div class="leftsidebarinner-container4"
-          ><router-link to="/teams" class="leftsidebarinner-navlink3 button"
+          ><router-link :to="`/teams/${this.$store.state.user.id}`" class="leftsidebarinner-navlink3 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon04">
               <path
                 d="M512 597.333c117.931 0 213.333-95.488 213.333-213.333s-95.403-213.333-213.333-213.333-213.333 95.488-213.333 213.333 95.403 213.333 213.333 213.333zM512 256c70.571 0 128 57.429 128 128s-57.429 128-128 128-128-57.429-128-128 57.429-128 128-128z"
@@ -49,7 +49,7 @@
             ><span class="leftsidebarinner-text04"
               ><span>Teams</span><br /></span></router-link></div
         ><div class="leftsidebarinner-container5"
-          ><router-link to="/projects" class="leftsidebarinner-navlink4 button"
+          ><router-link :to="`/projects/${this.$store.state.user.id}`" class="leftsidebarinner-navlink4 button"
             ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon09">
               <path
                 d="M768 256h-256c0-47.104-38.229-85.333-85.333-85.333h-170.667c-70.571 0-128 57.429-128 128v426.667c0 70.571 57.429 128 128 128h512c70.571 0 128-57.429 128-128v-341.333c0-70.571-57.429-128-128-128zM256 256h170.667c0 47.104 38.229 85.333 85.333 85.333h256c23.552 0 42.667 19.115 42.667 42.667h-597.333v-85.333c0-23.552 19.115-42.667 42.667-42.667zM768 768h-512c-23.552 0-42.667-19.115-42.667-42.667v-298.667h597.333v298.667c0 23.552-19.115 42.667-42.667 42.667z"
