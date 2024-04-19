@@ -6,13 +6,8 @@ from app.models import User, Team, Message, Project, Draft, Resource, Task, Prop
 
 class CRUDView(MethodView):
     """
-    A class that provides CRUD (Create, Read, Update, Delete) operations for a given model.
-
-    Attributes:
-        model: The model class associated with the CRUD operations.
+    A class that provides CRUD (Create, Read, Update, Delete) operations for a given model (Python representation of SQL database table).
     """
-
-    model = None
 
     def __init__(self, model=None):
         """
