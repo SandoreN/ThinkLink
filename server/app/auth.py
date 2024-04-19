@@ -62,13 +62,16 @@ def login():
         A JSON response indicating the result of the login attempt.
     """
     data = request.get_json()
-    user = user_view.get({'email': data.get('email')}, serialized=False)
-    
-    if user and user.password == data['password']:  # Direct comparison without hashing
+    user_tuple = user_view.get(filters={'email': data.get('email')}, serialized=False)
+    # Assuming user_tuple[0] contains the user object and the second element is the status code.
+    user = user_tuple[0] if user_tuple[0] else None
+    if user and user.password_hash == data['password_hash']:
         login_user(user)
         return jsonify({'message': 'Login successful'}), 200
 
     return jsonify({'message': 'Invalid email or password'}), 401
+
+
 
 @auth_bp.route('/logout', methods=['GET'])
 @login_required

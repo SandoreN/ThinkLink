@@ -17,7 +17,7 @@
               </div>
             </div>
             <div class="login-container5">
-              <form id="login_form" name="login_form" class="login-form">
+              <form @submit.prevent="login" class="login-form">
                 <input
                   type="text"
                   id="email"
@@ -34,17 +34,9 @@
                   class="login-textinput1 input"
                   v-model="password"
                 />
-                <PrimaryButton
-                  id="login_button"
-                  name="login_button"
-                  class="login-navlink"
-                  @click.prevent="login"
-                >
-                  <span class="login-text1">
-                    <span>Sign in</span>
-                    <br />
-                  </span>
-                </PrimaryButton>
+                <button type="submit" class="login-navlink">
+                  <span class="login-text1">Sign in</span>
+                </button>
               </form>
             </div>
           </div>
@@ -58,13 +50,11 @@
 <script>
 import axios from 'axios';
 import LoginHeader from '../components/login-header.vue';
-import PrimaryButton from '../components/primary-button.vue';
 
 export default {
   name: 'Login',
   components: {
     LoginHeader,
-    PrimaryButton,
   },
   data() {
     return {
@@ -74,17 +64,25 @@ export default {
   },
   methods: {
     async login() {
+      const credentials = {
+        email: this.email,
+        password_hash: this.password,  // Assuming the backend expects this field
+      };
+      console.log('login method called with credentials:', credentials);
+
       try {
-        const response = await axios.post(process.env.VUE_APP_FLASK_APP_URL + '/login', {
-          email: this.email,
-          password: this.password,
-        });
-        localStorage.setItem('token', response.data.token); // Save token to localStorage
-        const redirectPath = this.$route.query.redirect || '/';
-        this.$router.push(redirectPath); // Redirect to dashboard
+        const response = await axios.post(`${process.env.VUE_APP_FLASK_APP_URL}/login`, credentials);
+        console.log('server response:', response);
+
+        // Redirect to the dashboard or another appropriate page on successful login
+        if (response.status === 200) {
+          this.$router.push('/dashboard');
+        } else {
+          throw new Error('Login failed');
+        }
       } catch (error) {
         console.error('Login error:', error);
-        alert('Invalid email or password'); // Show user-friendly error message
+        alert('Incorrect email or password.'); // Handling failed login
       }
     },
   },
@@ -99,6 +97,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .login-container {
