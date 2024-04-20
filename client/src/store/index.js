@@ -1,60 +1,28 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import api from '@/services/api';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user: null,
-    token: localStorage.getItem('token')
+    userId: null  // Assuming you can set this directly for demonstration purposes
   },
   mutations: {
-    setUser(state, user) {
-      state.user = user;
-    },
-    setToken(state, token) {
-      state.token = token;
+    setUserId(state, userId) {
+      state.userId = userId;
     }
   },
   actions: {
-    async login({ commit }, credentials) {
-      try {
-        const response = await api.post('/login', credentials);
-        const token = response.data.token;
-        localStorage.setItem('token', token);
-        commit('setToken', token);
-        const user = await api.get('/protected');
-        commit('setUser', user.data.user);
-      } catch (error) {
-        // Handle login error
-      }
+    login({ commit }, userId) {
+      commit('setUserId', userId); // Directly set the user ID, maybe from a form or a static value
     },
-    async register(_, userData) {
-      try {
-        await api.post('/register', userData);
-        // Handle successful registration
-      } catch (error) {
-        // Handle registration error
-      }
-    },
-    async logout({ commit }) {
-      try {
-        await api.post('/logout');
-        localStorage.removeItem('token');
-        commit('setToken', null);
-        commit('setUser', null);
-      } catch (error) {
-        // Handle logout error
-      }
+    logout({ commit }) {
+      commit('setUserId', null);
     }
   },
   getters: {
-    isAuthenticated(state) {
-      return !!state.token;
-    },
-    currentUser(state) {
-      return state.user;
+    currentUserId(state) {
+      return state.userId;
     }
   }
 });

@@ -23,13 +23,8 @@ def serve_file(filename):
     return send_from_directory(app.config.Config.APP_FS_ROOT, filename)
 
 @app.route('/projects/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-def get_user_projects(user_id):
+def handle_user_projects(user_id):
     if request.method == 'POST':
-        # Check if the logged-in user is the one trying to create a project
-        if current_user.id != user_id:
-            return jsonify({'message': 'Unauthorized'}), 403
-
         # Get the data from the request
         data = request.get_json()
 
@@ -41,28 +36,20 @@ def get_user_projects(user_id):
             'creator_id': user_id
         }
 
-        # Add the new project to the database using CRUDView
-        created_project = project_view.create(new_project)
-
-        # Return the new project
-        return jsonify(created_project), 201
+        # Add the new project to the database
+        response, status_code = project_view.post(new_project)
+        return response, status_code
 
     else:  # GET method
-        # Check if the logged-in user is trying to access their own projects
-        if current_user.id != user_id:
-            return jsonify({'message': 'Unauthorized'}), 403
-
-        # Get the current user
-        user = user_view.get({'id': user_id}, serialized=False)
-
         # Get all projects for the user
-        user_projects = project_view.get(filters={'creator_id': user_id}, all_matches=True)
-
-        # Get all projects that belong to any team the user is a part of
-        team_projects = [project.serialize() for team in user.teams for project in team.projects]
+        user_projects, _ = project_view.get(filters={'creator_id': user_id}, all_matches=True)
+        
+        # Optionally, fetch team projects if teams are relevant
+        user = user_view.get(item_id=user_id, serialized=False)
+        team_projects = [project.serialize() for team in user.teams for project in team.projects if team.projects] if user.teams else []
 
         all_projects = user_projects + team_projects
-        return jsonify(all_projects)
+        return jsonify(all_projects), 200
 
 @app.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
 @login_required

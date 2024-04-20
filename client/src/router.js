@@ -19,7 +19,7 @@ Vue.use(VueRouter);
 
 const routes = [
   { name: 'login', path: '/login', component: Login },
-  { name: 'projectworkspace', path: '/project_workspace', component: Projectworkspace },
+  { name: 'projectworkspace', path: '/project_workspace/:projectId', component: Projectworkspace, props: true },
   { name: 'teams', path: '/teams', component: Teams },
   { name: 'projects', path: '/projects', component: Projects },
   { name: 'library', path: '/library', component: Library },
@@ -29,7 +29,7 @@ const routes = [
   { name: 'template', path: '/template', component: Template },
   { name: 'dashboard', path: '/dashboard', component: Dashboard },
   { name: 'register', path: '/register', component: Register },
-  { name: '404 - Not Found', path: '**', component: NotFound },
+  { name: '404 - Not Found', path: '*', component: NotFound },
 ];
 
 const router = new VueRouter({
