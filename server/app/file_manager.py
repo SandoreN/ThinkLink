@@ -31,13 +31,14 @@ class FileManager:
         #----publications
         #----proposals
 
-        self.base_folder = app.config.Config.APP_FS_ROOT
+        self.base_folder = app.config.Config.FLASK_APP_FS_ROOT
         self.resource_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')
         self.publications_folder = os.path.join(self.library_folder, 'publications')
         self.proposals_folder = os.path.join(self.library_folder, 'proposals')
 
         # Ensure directories exist
+        os.makedirs(self.base_folder, exist_ok=True)
         os.makedirs(self.resource_folder, exist_ok=True)
         os.makedirs(self.publications_folder, exist_ok=True)
         os.makedirs(self.proposals_folder, exist_ok=True)

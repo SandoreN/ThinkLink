@@ -1,4 +1,4 @@
-from flask import request, jsonify, send_from_directory, url_for, Blueprint
+from flask import request, jsonify, send_from_directory, url_for, Blueprint, current_app
 from flask_login import current_user, login_required
 from . import app
 from .models import Project, User, Team, Draft, Task, Resource, Message, Publication, Proposal
@@ -24,10 +24,18 @@ routes_bp = Blueprint('routes', __name__)
 def serve_file(filename):
     return send_from_directory(app.config.Config.APP_FS_ROOT, filename)
 
+@routes_bp.route('/test', methods=['GET'])
+def test_route():
+    print(f"Current user logged in: {current_user} , Authenticated: {current_user.is_authenticated}")
+    return jsonify({'message': 'Test route'}), 200
+
 @routes_bp.route('/projects/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def get_user_projects(user_id):
-    print(f"get_user_projects called with user_id: {user_id}")
+    current_app.logger.info("Entered get_user_projects method")
+    print(f"Current user logged in: {current_user} , Authenticated: {current_user.is_authenticated}")
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'Unauthorized'}), 403
     if request.method == 'POST':
         # Check if the logged-in user is the one trying to create a project
         if current_user.id != user_id:

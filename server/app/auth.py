@@ -5,6 +5,7 @@ from . import *
 from app import *
 from .models import User
 from .views import CRUDView
+import datetime
 
 auth_bp = Blueprint('auth', __name__)
 login_manager = LoginManager()
@@ -13,10 +14,17 @@ login_manager.init_app(app)
 # Create CRUDView instance for User model to interact with the database
 user_view = CRUDView(model=User)
 
-@login_manager.user_loader
-def load_user(user_id):
-    user, status = user_view.get(filters={'id': user_id}, serialized=False)
-    return user
+import jwt as pyjwt
+from flask import current_app
+
+def generate_token(user_id):
+    payload = {
+        'user_id': user_id,
+        # Set the expiry time (you can adjust this as needed)
+        'exp': datetime.datetime.now() + datetime.timedelta(days=1)
+    }
+    token = pyjwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+    return token
 
 @auth_bp.route('/register', methods=['POST'])
 def register_new_user():
@@ -67,12 +75,19 @@ def login():
     data = request.get_json()
     user, status = user_view.get(filters={'email': data['email']}, serialized=False)
     
+    print(f"Entered password: {data['password']}")
+    print(f"Stored password: {user.password}")
+    print(f"User is active: {user.is_active}")
+    print(f"User ID: {user.get_id()}")
+    
     if user and user.password == data['password']:  # Direct comparison without hashing
         login_user(user)
+        current_app.logger.info(f"Logged in user {user.id}")
+        token = generate_token(user.get_id())
         user_dict = user.__dict__
         del user_dict['_sa_instance_state']  # Remove SQLAlchemy's instance state
         del user_dict['password']  # Remove the password
-        return jsonify({'message': 'Login successful', 'user': user_dict}), 200
+        return jsonify({'message': 'Login successful', 'user': user_dict, 'token': token}), 200
     else: 
         return jsonify({'message': 'Invalid email or password'}), 401
 

@@ -40,14 +40,15 @@ export default {
   },
   async created() {
     try {
-      const token = this.$store.state.user.token; // Access the token from the user state
+      const token = this.$store.state.token; // Access the token from the user state
 
       const response = await axios.get(
         `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`, 
         {
           headers: {
             'Authorization': `Bearer ${token}`
-          }
+          },
+          withCredentials: true
         }
       );
       this.projects = response.data;

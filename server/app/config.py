@@ -25,13 +25,15 @@ class Config:
     SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT')
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS') or False
-    APP_FS_ROOT = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
+    FLASK_APP_FS_ROOT = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
     MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
     MAIL_PORT = os.environ.get('MAIL_PORT') or 465
     MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL') or True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'None'
 # Development configuration
 class DevelopmentConfig(Config):
     DEBUG = True
