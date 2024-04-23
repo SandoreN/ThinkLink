@@ -32,8 +32,8 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = 'Lax'
 # Development configuration
 class DevelopmentConfig(Config):
     DEBUG = True

@@ -1,30 +1,13 @@
-from flask import Blueprint, jsonify, request
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask import Blueprint, jsonify, request, session
 from . import *
 from app import *
 from .models import User
 from .views import CRUDView
-import datetime
 
 auth_bp = Blueprint('auth', __name__)
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 # Create CRUDView instance for User model to interact with the database
 user_view = CRUDView(model=User)
-
-import jwt as pyjwt
-from flask import current_app
-
-def generate_token(user_id):
-    payload = {
-        'user_id': user_id,
-        # Set the expiry time (you can adjust this as needed)
-        'exp': datetime.datetime.now() + datetime.timedelta(days=1)
-    }
-    token = pyjwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
-    return token
 
 @auth_bp.route('/register', methods=['POST'])
 def register_new_user():
@@ -75,24 +58,19 @@ def login():
     data = request.get_json()
     user, status = user_view.get(filters={'email': data['email']}, serialized=False)
     
-    print(f"Entered password: {data['password']}")
-    print(f"Stored password: {user.password}")
-    print(f"User is active: {user.is_active}")
-    print(f"User ID: {user.get_id()}")
-    
     if user and user.password == data['password']:  # Direct comparison without hashing
-        login_user(user)
-        current_app.logger.info(f"Logged in user {user.id}")
-        token = generate_token(user.get_id())
-        user_dict = user.__dict__
-        del user_dict['_sa_instance_state']  # Remove SQLAlchemy's instance state
-        del user_dict['password']  # Remove the password
-        return jsonify({'message': 'Login successful', 'user': user_dict, 'token': token}), 200
-    else: 
-        return jsonify({'message': 'Invalid email or password'}), 401
+        
+        user_dict = {
+            'id': user.id,
+            'email': user.email,
+            'username': user.username,
+            'name': user.name
+        }
+        session['user'] = user_dict
+        return jsonify({'message': 'Logged in successfully.', 'user': user_dict}), 200
+    return 'Invalid username or password'
 
 @auth_bp.route('/logout')
-@login_required
 def logout():
     """
     Logout the currently logged-in user.
@@ -100,5 +78,5 @@ def logout():
     Returns:
         A JSON response with a success message and HTTP status code 200.
     """
-    logout_user()
-    return jsonify({'message': 'Logout successful'}), 200
+    session.pop('user', None)
+    return jsonify({'message': 'Logged out successfully.'}), 200

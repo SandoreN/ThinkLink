@@ -1,10 +1,11 @@
-from flask import request, jsonify, send_from_directory, url_for, Blueprint, current_app
-from flask_login import current_user, login_required
+from flask import request, jsonify, send_from_directory, url_for, Blueprint, current_app, session
 from . import app
 from .models import Project, User, Team, Draft, Task, Resource, Message, Publication, Proposal
 from .views import CRUDView
 from .file_manager import FileManager
 import app.config
+import logging
+
 
 # Create CRUDView instance for Project model to interact with the database
 project_view = CRUDView(model=Project)
@@ -26,65 +27,64 @@ def serve_file(filename):
 
 @routes_bp.route('/test', methods=['GET'])
 def test_route():
-    print(f"Current user logged in: {current_user} , Authenticated: {current_user.is_authenticated}")
+    print(f"Current user logged in: {session['user']} , Authenticated: {'user' in session}")
     return jsonify({'message': 'Test route'}), 200
 
 @routes_bp.route('/projects/<int:user_id>', methods=['GET', 'POST'])
-@login_required
 def get_user_projects(user_id):
-    current_app.logger.info("Entered get_user_projects method")
-    print(f"Current user logged in: {current_user} , Authenticated: {current_user.is_authenticated}")
-    if not current_user.is_authenticated:
+    logging.info(f"get_user_projects called with user_id: {user_id}")
+    if 'user' not in session:
+        logging.error("No user logged in")
         return jsonify({'message': 'Unauthorized'}), 403
-    if request.method == 'POST':
+    else:
+        if request.method == 'POST':
         # Check if the logged-in user is the one trying to create a project
-        if current_user.id != user_id:
-            return jsonify({'message': 'Unauthorized'}), 403
+            if session['user']['id'] != user_id:
+                logging.error(f"Logged in user id {session['user']['id']} does not match requested user id {user_id}")
+                return jsonify({'message': 'Unauthorized'}), 403
 
-        # Get the data from the request
-        data = request.get_json()
+            # Get the data from the request
+            data = request.get_json()
 
-        # Create a new project
-        new_project = {
-            'name': data['name'],
-            'description': data['description'],
-            'resource_dir': data['resource_dir'],
-            'creator_id': user_id
-        }
+            # Create a new project
+            new_project = {
+                'name': data['name'],
+                'description': data['description'],
+                'resource_dir': data['resource_dir'],
+                'creator_id': user_id
+            }
 
-        # Add the new project to the database using CRUDView
-        created_project = project_view.create(new_project)
+            # Add the new project to the database using CRUDView
+            created_project, status = project_view.post(new_project)
 
-        # Return the new project
-        return jsonify(created_project), 201
+            # Return the new project
+            return jsonify(created_project), 201
+        else:  # GET method
+            print(f"get_user_projects called with user_id: {user_id}")
+            # Check if the logged-in user is trying to access their own projects
+            if session['user']['id'] != user_id:
+                return jsonify({'message': 'Unauthorized'}), 403
 
-    else:  # GET method
-        print(f"get_user_projects called with user_id: {user_id}")
-        # Check if the logged-in user is trying to access their own projects
-        if current_user.id != user_id:
-            return jsonify({'message': 'Unauthorized'}), 403
+            # Get the current user
+            user, status = user_view.get({'id': user_id}, serialized=False)
 
-        # Get the current user
-        user, status = user_view.get({'id': user_id}, serialized=False)
+            # Get all projects for the user
+            user_projects, status = project_view.get(filters={'creator_id': user_id}, serialized=False, all_matches=True)
+            user_projects = [project.serialize() for project in user_projects]
+            # Get all projects that belong to any team the user is a part of
+            team_projects = [project.serialize() for team in user.teams for project in team.projects]
 
-        # Get all projects for the user
-        user_projects, status = project_view.get(filters={'creator_id': user_id}, all_matches=True)
-
-        # Get all projects that belong to any team the user is a part of
-        team_projects = [project.serialize() for team in user.teams for project in team.projects]
-
-        all_projects = user_projects + team_projects
-        return jsonify(all_projects)
+            all_projects = user_projects + team_projects
+            return jsonify(all_projects)
 
 @routes_bp.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
-@login_required
 def get_project_workspace(project_id):
     if request.method == 'POST':
         # Get the project
         project, status = project_view.get({'id': project_id}, serialized=False)
 
         # Check if the logged-in user is the owner of the project
-        if current_user.id != project.user_id:
+        if session['user']['id'] != project.user_id:
             return jsonify({'message': 'Unauthorized'}), 403
 
         # Get the data from the request
@@ -103,7 +103,7 @@ def get_project_workspace(project_id):
         elif action == 'create_resource':
             # Use file_manager.py to upload a new resource
             resource_data = data.get('resource_data')
-            file_manager.upload_file(resource_data['file'], current_user.id, project_id, resource_data['filename'], resource_data)
+            file_manager.upload_file(resource_data['file'], session['user']['id'], project_id, resource_data['filename'], resource_data)
         elif action == 'publish':
             # Use file_manager.py to publish the project
             publication_data = data.get('publication_data')
@@ -121,7 +121,7 @@ def get_project_workspace(project_id):
         project, status = project_view.get({'id': project_id}, serialized=False)
 
         # Check if the logged-in user is the owner of the project
-        if current_user.id != project.user_id:
+        if session['user']['id'] != project.user_id:
             return jsonify({'message': 'Unauthorized'}), 403
 
         # Get all drafts, tasks, and resources for the project
