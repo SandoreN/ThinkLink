@@ -22,7 +22,7 @@ file_manager = FileManager()
 def serve_file(filename):
     return send_from_directory(app.config.Config.APP_FS_ROOT, filename)
 
-@app.route('/projects', methods=['GET', 'POST'])
+@app.route('/projects/<int:user_id>', methods=['GET', 'POST'])
 def handle_user_projects():
     if request.method == 'POST':
         data = request.get_json()
@@ -53,7 +53,6 @@ def handle_user_projects():
         return jsonify(all_projects), 200
     
 @app.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
-@login_required
 def get_project_workspace(project_id):
     if request.method == 'POST':
         # Get the project

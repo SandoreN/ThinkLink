@@ -74,7 +74,7 @@ export default {
         console.error('Creator ID is missing');
         return;
       }
-      axios.get(`${process.env.VUE_APP_FLASK_APP_URL}/projects?user_id=${this.currentUserId}`)
+      axios.get(`${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.currentUserId}`)
         .then(response => {
           this.projects = response.data;
         })
@@ -83,7 +83,7 @@ export default {
         });
     },
     createProject() {
-      axios.post(`${process.env.VUE_APP_FLASK_APP_URL}/projects`, {
+      axios.post(`${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.currentUserId}`, {
         ...this.newProject,
         user_id: this.currentUserId, // Make sure this is uncommented if the server expects user_id in the body
       })
