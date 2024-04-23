@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    userId: null  // Assuming you can set this directly for demonstration purposes
+    userId: null
   },
   mutations: {
     setUserId(state, userId) {
@@ -14,11 +14,8 @@ export default new Vuex.Store({
   },
   actions: {
     login({ commit }, userId) {
-      commit('setUserId', userId); // Directly set the user ID, maybe from a form or a static value
+      commit('setUserId', userId );
     },
-    logout({ commit }) {
-      commit('setUserId', null);
-    }
   },
   getters: {
     currentUserId(state) {

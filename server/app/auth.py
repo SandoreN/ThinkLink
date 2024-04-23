@@ -67,7 +67,11 @@ def login():
     user = user_tuple[0] if user_tuple[0] else None
     if user and user.password_hash == data['password_hash']:
         login_user(user)
-        return jsonify({'message': 'Login successful'}), 200
+        response_data = {
+            'message': 'Login Succesful',
+            'user_id': user.id,
+        }
+        return jsonify(response_data), 200
 
     return jsonify({'message': 'Invalid email or password'}), 401
 

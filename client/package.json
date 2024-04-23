@@ -11,10 +11,10 @@
     "axios": "^1.6.8",
     "easymde": "^2.18.0",
     "marked": "^12.0.1",
-    "vue": "^2.6.7",
+    "vue": "^2.7.16",
     "vue-meta": "^2.2.1",
     "vue-router": "^3.0.2",
-    "vuex": "^4.1.0"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/babel-preset-app": "^5.0.8",

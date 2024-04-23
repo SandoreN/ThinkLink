@@ -22,35 +22,36 @@ file_manager = FileManager()
 def serve_file(filename):
     return send_from_directory(app.config.Config.APP_FS_ROOT, filename)
 
-@app.route('/projects/<int:user_id>', methods=['GET', 'POST'])
-def handle_user_projects(user_id):
+@app.route('/projects', methods=['GET', 'POST'])
+def handle_user_projects():
     if request.method == 'POST':
-        # Get the data from the request
         data = request.get_json()
+        user_id = data['user_id']
 
         # Create a new project
         new_project = {
             'name': data['name'],
             'description': data['description'],
             'resource_dir': data['resource_dir'],
-            'creator_id': user_id
+            'user_id': user_id
         }
 
         # Add the new project to the database
         response, status_code = project_view.post(new_project)
         return response, status_code
-
     else:  # GET method
+        user_id = request.args.get('user_id')
+        
         # Get all projects for the user
-        user_projects, _ = project_view.get(filters={'creator_id': user_id}, all_matches=True)
+        user_projects, _ = project_view.get(filters={'user_id': user_id}, all_matches=True)
         
         # Optionally, fetch team projects if teams are relevant
         user = user_view.get(item_id=user_id, serialized=False)
         team_projects = [project.serialize() for team in user.teams for project in team.projects if team.projects] if user.teams else []
-
+        
         all_projects = user_projects + team_projects
         return jsonify(all_projects), 200
-
+    
 @app.route('/project_workspace/<int:project_id>', methods=['GET', 'POST'])
 @login_required
 def get_project_workspace(project_id):

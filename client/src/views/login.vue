@@ -76,6 +76,9 @@ export default {
 
         // Redirect to the dashboard or another appropriate page on successful login
         if (response.status === 200) {
+          const userId = response.data.user_id;
+          localStorage.setItem('userId', userId);
+          this.$store.commit('setUserId', userId);
           this.$router.push('/dashboard');
         } else {
           throw new Error('Login failed');
