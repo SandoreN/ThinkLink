@@ -23,7 +23,7 @@ routes_bp = Blueprint('routes', __name__)
 
 @routes_bp.route('/files/<path:filename>')
 def serve_file(filename):
-    return send_from_directory(app.config.Config.APP_FS_ROOT, filename)
+    return send_from_directory(app.config.Config.FLASK_APP_FS_ROOT, filename)
 
 @routes_bp.route('/test', methods=['GET'])
 def test_route():

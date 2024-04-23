@@ -13,7 +13,7 @@ class Config:
         SECURITY_PASSWORD_SALT (str): Salt for password hashing.
         SQLALCHEMY_DATABASE_URI (str): URI for the database connection.
         SQLALCHEMY_TRACK_MODIFICATIONS (bool): Flag to enable/disable modification tracking.
-        APP_FS_ROOT (str): Root folder for file system configuration.
+        FLASK_APP_FS_ROOT (str): Root folder for file system configuration.
         MAIL_SERVER (str): SMTP server for sending emails.
         MAIL_PORT (int): Port number for the mail server.
         MAIL_USE_SSL (bool): Flag to enable/disable SSL for email communication.
@@ -25,7 +25,7 @@ class Config:
     SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT')
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS') or False
-    FLASK_APP_FS_ROOT = os.environ.get('UPLOAD_FOLDER') or 'your_upload_folder_here'
+    FLASK_APP_FS_ROOT = os.environ.get('FLASK_APP_FS_ROOT') or 'your_upload_folder_here'
     MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
     MAIL_PORT = os.environ.get('MAIL_PORT') or 465
     MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL') or True
