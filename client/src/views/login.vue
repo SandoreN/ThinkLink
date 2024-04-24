@@ -1,53 +1,49 @@
 <template>
-  <div class="login-container"
-    ><div class="login-container1"
-      ><login-header></login-header
-      ><div class="login-body"
-        ><div class="login-sidebar"></div
-        ><div class="login-pagemain"
-          ><div class="login-container2"
-            ><div class="login-container3"
-              ><img
+  <div class="login-container">
+    <div class="login-container1">
+      <login-header></login-header>
+      <div class="login-body">
+        <div class="login-sidebar"></div>
+        <div class="login-pagemain">
+          <div class="login-container2">
+            <div class="login-container3">
+              <img
                 alt="image"
                 src="/thinklink_logo-300h.png"
                 class="login-image"
-              /><div class="login-container4"
-                ><span class="login-text">Sign in</span></div
-              ></div
-            ><div class="login-container5"
-              ><form id="login_form" name="login_form" class="login-form">
+              />
+              <div class="login-container4">
+                <span class="login-text">Sign in</span>
+              </div>
+            </div>
+            <div class="login-container5">
+              <form @submit.prevent="login" class="login-form">
                 <input
                   type="text"
                   id="email"
                   name="email"
                   placeholder="email"
                   class="login-textinput input"
-                  v-model="email" />
+                  v-model="email"
+                />
                 <input
                   type="password"
                   id="password"
                   name="password"
                   placeholder="password"
                   class="login-textinput1 input"
-                  v-model="password" />
-                <button
-                  id="login_button"
-                  name="login_button"
-                  class="login-navlink button"
-                  @click.prevent="login">
-                  <span class="login-text1">
-                  <span>Sign in</span>
-                  <br />
-                  </span>
-                  </button>
+                  v-model="password"
+                />
+                <button type="submit" class="login-navlink">
+                  <span class="login-text1">Sign in</span>
+                </button>
               </form>
             </div>
           </div>
         </div>
-      <div class="login-rightsidebar"
-      ></div
-    ></div>
-  </div>
+        <div class="login-rightsidebar"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,6 +64,12 @@ export default {
   },
   methods: {
     async login() {
+      const credentials = {
+        email: this.email,
+        password_hash: this.password,  // Assuming the backend expects this field
+      };
+      console.log('login method called with credentials:', credentials);
+
       try {
         const response = await this.$store.dispatch('login', {
           email: this.email,
@@ -78,7 +80,7 @@ export default {
         }
       } catch (error) {
         console.error('Login error:', error);
-        alert('Invalid email or password'); // Show user-friendly error message
+        alert('Incorrect email or password.'); // Handling failed login
       }
     },
   },
@@ -93,6 +95,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .login-container {

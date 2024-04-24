@@ -1,12 +1,9 @@
-import Vuex from '../dist/vuex.cjs.js'
+import Vuex from '../dist/vuex.common.js'
 
 const {
-  version,
   Store,
-  storeKey,
-  createStore,
   install,
-  useStore,
+  version,
   mapState,
   mapMutations,
   mapGetters,
@@ -17,12 +14,9 @@ const {
 
 export {
   Vuex as default,
-  version,
   Store,
-  storeKey,
-  createStore,
   install,
-  useStore,
+  version,
   mapState,
   mapMutations,
   mapGetters,

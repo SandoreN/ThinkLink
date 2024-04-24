@@ -40,6 +40,15 @@ class User(db.Model, UserMixin):
             'is_active': self.is_active,
             'registration_date': self.registration_date.strftime('%Y-%m-%d %H:%M:%S')
         }
+    @property
+    def is_active(self):
+        # Return True if the user's account is confirmed
+        return self.is_confirmed
+    def get_id(self):
+        """
+        Returns the user id as a unicode string which Flask-Login uses to handle the user session.
+        """
+        return str(self.id)  # Ensure unicode string return
 
 
 class Team(db.Model):
