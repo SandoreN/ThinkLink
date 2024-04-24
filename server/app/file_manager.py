@@ -3,93 +3,132 @@ from werkzeug.utils import secure_filename
 from flask import request
 from app import app
 from app.views import CRUDView
-from app.models import Publication, Proposal, Resource
+from app.models import Publication, Proposal, Resource, Draft
 import app.config
+from weasyprint import HTML
 
 class FileManager:
+    """
+    A class that manages file operations for the application.
+
+    Attributes:
+        base_folder (str): The base folder path for file operations.
+        drafts_folder (str): The folder path for storing drafts.
+        resources_folder (str): The folder path for storing resources.
+        library_folder (str): The folder path for the library.
+        publications_folder (str): The folder path for storing publications.
+        proposals_folder (str): The folder path for storing proposals.
+        publication_view (CRUDView): An instance of CRUDView for managing publications.
+        proposal_view (CRUDView): An instance of CRUDView for managing proposals.
+        resource_view (CRUDView): An instance of CRUDView for managing resources.
+    """
+
     def __init__(self):
-        #base_directory
+        """
+        Initializes a new instance of the FileManager class.
+        """
+        #uploads
         #--resources
         #--library
         #----publications
         #----proposals
-        self.base_folder = app.config.BASE_DIR
-        self.resource_folder = os.path.join(self.base_folder, 'resources')
+
+        self.base_folder = app.config.Config.FLASK_APP_FS_ROOT
+        self.drafts_folder = os.path.join(self.base_folder, 'drafts')    
+        self.resources_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')
         self.publications_folder = os.path.join(self.library_folder, 'publications')
         self.proposals_folder = os.path.join(self.library_folder, 'proposals')
 
         # Ensure directories exist
-        os.makedirs(self.resource_folder, exist_ok=True)
+        os.makedirs(self.base_folder, exist_ok=True)
+        os.makedirs(self.drafts_folder, exist_ok=True)
+        os.makedirs(self.resources_folder, exist_ok=True)
         os.makedirs(self.publications_folder, exist_ok=True)
         os.makedirs(self.proposals_folder, exist_ok=True)
 
         # Create CRUDView instances for publications and proposals
-        self.publication_view = CRUDView()
-        self.publication_view.model = Publication  # Replace with your Publication model
-        self.proposal_view = CRUDView()
-        self.proposal_view.model = Proposal  # Replace with your Proposal model
-        self.resource_view = CRUDView()
-        self.resource_view.model = Resource  # Replace with your Resource model
+        self.draft_view = CRUDView(model=Draft)
+        self.publication_view = CRUDView(model=Publication)
+        self.proposal_view = CRUDView(model=Proposal)
+        self.resource_view = CRUDView(model=Resource)
 
-    def upload_file(self, file, team_name, project_name, filename, resource_data, resource_id=None):
-        # Sanitize filename using Werkzeug's secure_filename
-        s_filename = secure_filename(filename)
+    def create_pdf_from_html(self, html_content, output_path):
+        """
+        Creates a PDF file from the given HTML content.
+
+        Args:
+            html_content (str): The HTML content to convert to PDF.
+            output_path (str): The path where the PDF file will be saved.
+        """
+        try:
+            HTML(string=html_content).write_pdf(output_path)
+            return True
+        except Exception as e:
+            print(f"Failed to create PDF: {e}")
+            return False
+
+    def upload_file(self, file, user_id, project_id, filename, file_data, file_type, file_id=None):
+
         
-        # Construct file path for resource based on team and project
-        team_folder = os.path.join(self.resource_folder, team_name)
-        project_folder = os.path.join(team_folder, project_name)
+        s_filename = secure_filename(filename)
+        if file_type == 'draft':
+            view = self.draft_view
+            user_folder = os.path.join(self.drafts_folder, user_id)
+
+        elif file_type == 'resource':
+            view = self.resource_view
+            user_folder = os.path.join(self.resources_folder, user_id)   
+        else:
+            raise ValueError("Invalid file type")
+        project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, s_filename)
         
-        # Ensure directories exist
         os.makedirs(project_folder, exist_ok=True)
-
-        # Save the uploaded file to the specified upload folder
         file.save(file_path)
+        file_data['file_path'] = file_path
 
-        # Add the file path to the resource data (resource data is a dictionary, JSON)
-        resource_data['file_path'] = file_path
-
-        # check if resource exists
-        if resource_id is None:
-            # If no resource_id is provided, create a new resource
-            with app.test_request_context():
-                # only one request.json can exist per context
-                request.json = resource_data
-                # send HTTP POST request to /api/resources to 
-                self.resource_view.post()
+        if file_id is None:
+            with app.app_context():
+                view.post(request_data=file_data)
         else:
-            # If a resource_id is provided, update the existing resource
-            with app.test_request_context():
-                request.json = resource_data
-                self.resource_view.put(resource_id)
+            with app.app_context():
+                view.put(item_id=file_id, request_data=file_data)
+        if file_type == 'draft':
+            self.create_pdf_from_html(file_data['content'], file_path.replace('.html', '.pdf'))  
 
-    def download_file(self, team_name, project_name, filename):
-        # Construct path based on team and project
-        team_folder = os.path.join(self.base_folder, team_name)
-        project_folder = os.path.join(team_folder, project_name)
+    def download_file(self, user_id, project_id, filename, file_type):
+        user_folder = os.path.join(self.base_folder, user_id)
+        project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, filename)
         
-        # Check if file exists
-        if os.path.exists(file_path):
-            return file_path
-        else:
-            return None  # File not found
+        if file_type not in ['draft', 'resource']:
+            raise ValueError("Invalid file type")
 
-    def delete_file(self, team_name, project_name, filename):
-        # Construct path based on team and project
-        team_folder = os.path.join(self.base_folder, team_name)
-        project_folder = os.path.join(team_folder, project_name)
+        return file_path if os.path.exists(file_path) else None
+
+    def delete_file(self, user_id, project_id, filename, file_type):
+        user_folder = os.path.join(self.base_folder, user_id)
+        project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, filename)
         
-        # Delete the specified file from the upload folder
+        if file_type not in ['draft', 'resource']:
+            raise ValueError("Invalid file type")
+
         if os.path.exists(file_path):
             os.remove(file_path)
-            return True  # File deleted successfully
+            return True
         else:
-            return False  # File not found
+            return False
     
     def publish_project_file(self, publication_data, publication_id=None):
+        """
+        Publishes a project file by creating a symbolic link in the publications folder.
+
+        Args:
+            publication_data (dict): The data associated with the publication.
+            publication_id (str, optional): The ID of the publication. Defaults to None.
+        """
         # Get the file path from the publication data
         file_path = publication_data['file_path']
 
@@ -105,14 +144,20 @@ class FileManager:
             os.symlink(file_path, symlink_path)
 
         # Call the appropriate method to create or update the publication in the database
-        with app.test_request_context():
-            request.json = publication_data
+        with app.app_context():
             if publication_id is None:
-                self.publication_view.post()
+                self.publication_view.post(request_data=publication_data)
             else:
-                self.publication_view.put(publication_id)
+                self.publication_view.put(item_id=publication_id, request_data=publication_data)
 
     def create_proposal_file(self, proposal_data, proposal_id=None):
+        """
+        Creates a proposal file by creating a symbolic link in the proposals folder.
+
+        Args:
+            proposal_data (dict): The data associated with the proposal.
+            proposal_id (str, optional): The ID of the proposal. Defaults to None.
+        """
         # Get the file path from the proposal data
         file_path = proposal_data['file_path']
 
@@ -128,9 +173,8 @@ class FileManager:
             os.symlink(file_path, symlink_path)
 
         # Call the appropriate method to create or update the proposal in the database
-        with app.test_request_context():
-            request.json = proposal_data
+        with app.app_context():
             if proposal_id is None:
-                self.proposal_view.post()
+                self.proposal_view.post(request_data=proposal_data)
             else:
-                self.proposal_view.put(proposal_id)
+                self.proposal_view.put(item_id=proposal_id, request_data=proposal_data)

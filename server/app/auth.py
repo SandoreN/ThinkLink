@@ -1,50 +1,82 @@
-from flask import Blueprint, jsonify, request
-from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User
+from flask import Blueprint, jsonify, request, session
+from . import *
 from app import *
-from app.views import CRUDView
+from .models import User
+from .views import CRUDView
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/register')
-def register_new_user(name, username, email, password, is_confirmed=False, is_admin=False):
-    # Generate password hash
-    hashed_password = generate_password_hash(password)
-    # Create a new user object
-    new_user = User(name=name, username=username, email=email, password_hash=hashed_password,
-                    is_confirmed=is_confirmed, is_admin=is_admin)
+# Create CRUDView instance for User model to interact with the database
+user_view = CRUDView(model=User)
+
+@auth_bp.route('/register', methods=['POST'])
+def register_new_user():
+    """
+    Register a new user.
+
+    This function handles the registration of a new user by receiving a POST request with the user's information.
+    The required fields are 'name', 'username', 'email', and 'password'. If any of these fields are missing, a
+    response with a status code of 400 and a message indicating the missing fields is returned.
+
+    If all the required fields are provided, the user's password is hashed using the generate_password_hash function
+    and a new_user_data dictionary is created with the user's information. The 'is_confirmed' field is set to True
+    indicating that the user's account is confirmed.
+
+    The new_user_data is then passed to the user_view.post function to create a new user. If the user is created
+    successfully, a response with a status code of 201 and a message indicating the successful creation is returned.
+    Otherwise, the response returned by user_view.post is returned.
+
+    Returns:
+        A JSON response with a status code and a message indicating the result of the registration process.
+    """
+    data = request.get_json()
+    if not data or not all([data['name'], data['username'], data['email'], data['password']]):
+        return jsonify({'message': 'Missing required fields'}), 400
+
+    new_user_data = {
+        'name': data['name'],
+        'username': data['username'],
+        'email': data['email'],
+        'password': data['password'],
+        'is_confirmed': True
+    }
     
-    user_view = CRUDView()
-    user_view.model = User
-    request.json = new_user.serialize()
-    user_view.post()
+    response, status_code = user_view.post(new_user_data)
+    if status_code == 201:
+        return jsonify({'message': 'User created successfully.'}), 201
 
-    return new_user
+    return response
 
-@auth_bp.route('/login')
+@auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.json
-    email = data['email']
-    password = data['password']
+    """
+    Authenticate a user by checking their email and password.
+
+    Returns:
+        A JSON response indicating the result of the login attempt.
+    """
+    data = request.get_json()
+    user, status = user_view.get(filters={'email': data['email']}, serialized=False)
     
-    # Query the database to find the user by email
-    user = User.query.filter_by(email=email).first()
-    
-    if user and check_password_hash(user.password_hash, password):
-        # Authentication successful
-        # Here you might generate a JWT token or set a session cookie
-        # What???
-        return jsonify({'message': 'Login successful'}), 200
-    else:
-        # Authentication failed
-        return jsonify({'message': 'Invalid email or password'}), 401
+    if user and user.password == data['password']:  # Direct comparison without hashing
+        
+        user_dict = {
+            'id': user.id,
+            'email': user.email,
+            'username': user.username,
+            'name': user.name
+        }
+        session['user'] = user_dict
+        return jsonify({'message': 'Logged in successfully.', 'user': user_dict}), 200
+    return 'Invalid username or password'
 
 @auth_bp.route('/logout')
 def logout():
-    # Here you might invalidate the JWT token or clear the session cookie
-    # tf is a JWT token???!!!??
-    return jsonify({'message': 'Logout successful'}), 200
+    """
+    Logout the currently logged-in user.
 
-# Other authentication-related routes such as forgot password, change password, etc. can be added here
-
-# You might also have routes for user management such as updating user profile, deleting user accounts, etc.
+    Returns:
+        A JSON response with a success message and HTTP status code 200.
+    """
+    session.pop('user', None)
+    return jsonify({'message': 'Logged out successfully.'}), 200
