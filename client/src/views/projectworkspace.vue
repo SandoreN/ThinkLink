@@ -63,11 +63,15 @@ export default {
     saveDraft() {  // Add this method
       // Get the content of the EasyMDE editor
       const draftContent = this.easyMDE.value();
+      
+      // Get the draftName= this.draftName;
+      const draftName = this.draftName;
 
       // Make a POST request to the server
       axios.post(process.env.VUE_APP_FLASK_APP_URL + `/project_workspace/${this.projectId}`, {
         action: 'create_draft',
         draft_data: {
+          name: draftName,
           content: draftContent,
           // Add any other data you need to send to the server here
         },

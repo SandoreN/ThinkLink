@@ -127,7 +127,8 @@ class Draft(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
-    content = Column(Text, nullable=False)
+    content = Column(Text, default='')
+    file_path = Column(Text, default='')
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     creation_date = Column(DateTime, default=datetime.datetime.now)
@@ -137,6 +138,7 @@ class Draft(db.Model):
             'id': self.id,
             'name': self.name,
             'content': self.content,
+            'file_path': self.file_path,
             'project_id': self.project_id,
             'creator_id': self.creator_id,
             'creation_date': self.creation_date.strftime('%Y-%m-%d %H:%M:%S')
@@ -152,7 +154,7 @@ class Resource(db.Model):
     type = Column(String(50), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    upload_date = Column(DateTime, default=datetime.datetime.now)
+    creation_data = Column(DateTime, default=datetime.datetime.now)
 
     def serialize(self):
         return {
@@ -162,7 +164,7 @@ class Resource(db.Model):
             'type': self.type,
             'project_id': self.project_id,
             'creator_id': self.creator_id,
-            'upload_date': self.upload_date.strftime('%Y-%m-%d %H:%M:%S')
+            'creation_date': self.upload_date.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 class Task(db.Model):
@@ -197,7 +199,7 @@ class Proposal(db.Model):
     title = Column(String(100), nullable=False)
     description = Column(Text)
     category = Column(String(50))
-    resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
+    draft_id = Column(Integer, ForeignKey('Draft.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     team_id = Column(Integer, ForeignKey('Team.id'))
@@ -209,7 +211,7 @@ class Proposal(db.Model):
             'title': self.title,
             'description': self.description,
             'category': self.category,
-            'resource_id': self.resource_id,
+            'draft_id': self.draft_id,
             'creator_id': self.creator_id,
             'project_id': self.project_id,
             'team_id': self.team_id,
@@ -223,7 +225,7 @@ class Publication(db.Model):
     title = Column(String(100), nullable=False)
     description = Column(Text)
     category = Column(String(50))
-    resource_id = Column(Integer, ForeignKey('Resource.id'), nullable=False)
+    draft_id = Column(Integer, ForeignKey('Draft.id'), nullable=False)
     creator_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
     team_id = Column(Integer, ForeignKey('Team.id'))
@@ -235,7 +237,7 @@ class Publication(db.Model):
             'title': self.title,
             'description': self.description,
             'category': self.category,
-            'resource_id': self.resource_id,
+            'draft_id': self.draft_id,
             'creator_id': self.creator_id,
             'project_id': self.project_id,
             'team_id': self.team_id,

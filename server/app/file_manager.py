@@ -3,8 +3,9 @@ from werkzeug.utils import secure_filename
 from flask import request
 from app import app
 from app.views import CRUDView
-from app.models import Publication, Proposal, Resource
+from app.models import Publication, Proposal, Resource, Draft
 import app.config
+from weasyprint import HTML
 
 class FileManager:
     """
@@ -12,7 +13,8 @@ class FileManager:
 
     Attributes:
         base_folder (str): The base folder path for file operations.
-        resource_folder (str): The folder path for storing resources.
+        drafts_folder (str): The folder path for storing drafts.
+        resources_folder (str): The folder path for storing resources.
         library_folder (str): The folder path for the library.
         publications_folder (str): The folder path for storing publications.
         proposals_folder (str): The folder path for storing proposals.
@@ -32,108 +34,92 @@ class FileManager:
         #----proposals
 
         self.base_folder = app.config.Config.FLASK_APP_FS_ROOT
-        self.resource_folder = os.path.join(self.base_folder, 'resources')
+        self.drafts_folder = os.path.join(self.base_folder, 'drafts')    
+        self.resources_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')
         self.publications_folder = os.path.join(self.library_folder, 'publications')
         self.proposals_folder = os.path.join(self.library_folder, 'proposals')
 
         # Ensure directories exist
         os.makedirs(self.base_folder, exist_ok=True)
-        os.makedirs(self.resource_folder, exist_ok=True)
+        os.makedirs(self.drafts_folder, exist_ok=True)
+        os.makedirs(self.resources_folder, exist_ok=True)
         os.makedirs(self.publications_folder, exist_ok=True)
         os.makedirs(self.proposals_folder, exist_ok=True)
 
         # Create CRUDView instances for publications and proposals
+        self.draft_view = CRUDView(model=Draft)
         self.publication_view = CRUDView(model=Publication)
         self.proposal_view = CRUDView(model=Proposal)
         self.resource_view = CRUDView(model=Resource)
 
-    def upload_file(self, file, user_id, project_id, filename, resource_data, resource_id=None):
+    def create_pdf_from_html(self, html_content, output_path):
         """
-        Uploads a file to the specified user and project folder.
+        Creates a PDF file from the given HTML content.
 
         Args:
-            file (FileStorage): The file to be uploaded.
-            user_id (str): The ID of the user.
-            project_id (str): The ID of the project.
-            filename (str): The original filename of the file.
-            resource_data (dict): The data associated with the resource.
-            resource_id (str, optional): The ID of the resource. Defaults to None.
+            html_content (str): The HTML content to convert to PDF.
+            output_path (str): The path where the PDF file will be saved.
         """
-        # Sanitize filename using Werkzeug's secure_filename
-        s_filename = secure_filename(filename)
+        try:
+            HTML(string=html_content).write_pdf(output_path)
+            return True
+        except Exception as e:
+            print(f"Failed to create PDF: {e}")
+            return False
+
+    def upload_file(self, file, user_id, project_id, filename, file_data, file_type, file_id=None):
+
         
-        # Construct file path for resource based on team and project
-        user_folder = os.path.join(self.resource_folder, user_id)
+        s_filename = secure_filename(filename)
+        if file_type == 'draft':
+            view = self.draft_view
+            user_folder = os.path.join(self.drafts_folder, user_id)
+
+        elif file_type == 'resource':
+            view = self.resource_view
+            user_folder = os.path.join(self.resources_folder, user_id)   
+        else:
+            raise ValueError("Invalid file type")
         project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, s_filename)
         
-        # Ensure directories exist
         os.makedirs(project_folder, exist_ok=True)
-
-        # Save the uploaded file to the specified upload folder
         file.save(file_path)
+        file_data['file_path'] = file_path
 
-        # Add the file path to the resource data (resource data is a dictionary, JSON)
-        resource_data['file_path'] = file_path
-
-        # check if resource exists
-        if resource_id is None:
-            # If no resource_id is provided, create a new resource
+        if file_id is None:
             with app.app_context():
-                 
-                self.resource_view.post(request_data=resource_data)
+                view.post(request_data=file_data)
         else:
-            # If a resource_id is provided, update the existing resource
             with app.app_context():
-                self.resource_view.put(item_id=resource_id, request_data=resource_data)
+                view.put(item_id=file_id, request_data=file_data)
+        if file_type == 'draft':
+            self.create_pdf_from_html(file_data['content'], file_path.replace('.html', '.pdf'))  
 
-    def download_file(self, user_id, project_id, filename):
-        """
-        Downloads a file from the specified user and project folder.
-
-        Args:
-            user_id (str): The ID of the user.
-            project_id (str): The ID of the project.
-            filename (str): The filename of the file to be downloaded.
-
-        Returns:
-            str: The file path if the file exists, None otherwise.
-        """
-        # Construct path based on team and project
+    def download_file(self, user_id, project_id, filename, file_type):
         user_folder = os.path.join(self.base_folder, user_id)
         project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, filename)
         
-        # Check if file exists
-        if os.path.exists(file_path):
-            return file_path
-        else:
-            return None  # File not found
+        if file_type not in ['draft', 'resource']:
+            raise ValueError("Invalid file type")
 
-    def delete_file(self, user_id, project_id, filename):
-        """
-        Deletes a file from the specified user and project folder.
+        return file_path if os.path.exists(file_path) else None
 
-        Args:
-            user_id (str): The ID of the user.
-            project_id (str): The ID of the project.
-            filename (str): The filename of the file to be deleted.
-
-        Returns:
-            bool: True if the file was deleted successfully, False otherwise.
-        """
-        # Construct path based on team and project
+    def delete_file(self, user_id, project_id, filename, file_type):
         user_folder = os.path.join(self.base_folder, user_id)
         project_folder = os.path.join(user_folder, project_id)
         file_path = os.path.join(project_folder, filename)
         
-        # Delete the specified file from the upload folder
+        if file_type not in ['draft', 'resource']:
+            raise ValueError("Invalid file type")
+
         if os.path.exists(file_path):
             os.remove(file_path)
-            return True  # File deleted successfully
+            return True
         else:
-            return False  # File not found
+            return False
     
     def publish_project_file(self, publication_data, publication_id=None):
         """

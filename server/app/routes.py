@@ -95,7 +95,7 @@ def get_project_workspace(project_id):
         if action == 'create_draft':
             # Use file_manager.py to upload a new draft
             draft_data = data.get('draft_data')
-            draft_view.post(draft_data)
+            file_manager.upload_file(draft_data['file'], session['user']['id'], project_id, draft_data['filename'], draft_data, 'draft', file_id=None)
         elif action == 'create_task':
             # Use CRUDView to create a new task
             task_data = data.get('task_data')
@@ -103,7 +103,7 @@ def get_project_workspace(project_id):
         elif action == 'create_resource':
             # Use file_manager.py to upload a new resource
             resource_data = data.get('resource_data')
-            file_manager.upload_file(resource_data['file'], session['user']['id'], project_id, resource_data['filename'], resource_data)
+            file_manager.upload_file(resource_data['file'], session['user']['id'], project_id, resource_data['filename'], resource_data, 'resource', file_id=None)
         elif action == 'publish':
             # Use file_manager.py to publish the project
             publication_data = data.get('publication_data')
