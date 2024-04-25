@@ -1,22 +1,40 @@
 <template>
-  <div class="projects-container"
-    ><div class="projects-container1"
-      ><app-header rootClassName="header-root-class-name5"></app-header
-      ><div class="projects-body"
-        ><app-leftsidebar></app-leftsidebar>
+  <div class="projects-container">
+    <div class="projects-container1">
+      <app-header rootClassName="header-root-class-name5"></app-header>
+      <div class="projects-body">
+        <app-leftsidebar></app-leftsidebar>
         <div class="projects-pagemain">
-          <div>
+          <div class="project-list">
             <router-link
               v-for="project in projects"
               :key="project.id"
               :to="`/project_workspace/${project.project_id}`"
-              tag="button">
+              tag="button"
+              class="project-button"
+            >
               {{ project.name }}
             </router-link>
           </div>
+          <div class="create-project">
+            <h2>Create a New Project</h2>
+            <form @submit.prevent="createProject" class="project-form">
+              <div class="form-group">
+                <label for="project-name">Project Name:</label>
+                <input type="text" id="project-name" v-model="newProject.name" required>
+              </div>
+              <div class="form-group">
+                <label for="project-description">Project Description:</label>
+                <textarea id="project-description" v-model="newProject.description" rows="4"></textarea>
+              </div>
+              <button type="submit" class="create-button">Create Project</button>
+            </form>
+          </div>
         </div>
-        <app-rightsidebar></app-rightsidebar></div></div
-  ></div>
+        <app-rightsidebar></app-rightsidebar>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -36,12 +54,36 @@ export default {
   data() {
     return {
       projects: [],
+      newProject: {
+        name: '',
+        description: '',
+      },
     };
+  },
+  methods: {
+    async createProject() {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_FLASK_APP_URL}/projects`,
+          {
+            user_id: this.$store.state.user.id,
+            name: this.newProject.name,
+            description: this.newProject.description,
+          }
+        );
+        // Handle successful project creation (e.g., show a success message, clear form fields)
+        this.newProject.name = '';
+        this.newProject.description = '';
+        this.projects.push(response.data); // Add the new project to the list
+      } catch (error) {
+        console.error('Error creating project:', error);
+        // Handle error (e.g., show an error message)
+      }
+    },
   },
   async created() {
     try {
       const token = this.$store.state.token; // Access the token from the user state
-
       const response = await axios.get(
         `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`
       );
@@ -75,6 +117,7 @@ export default {
   justify-content: center;
   background-color: var(--dl-color-gray-white);
 }
+
 .projects-container1 {
   flex: 1;
   width: 100%;
@@ -84,6 +127,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 }
+
 .projects-body {
   flex: 1;
   width: 100%;
@@ -94,6 +138,7 @@ export default {
   flex-direction: row;
   justify-content: flex-start;
 }
+
 .projects-pagemain {
   flex: 1;
   width: 200px;
@@ -102,5 +147,96 @@ export default {
   align-self: stretch;
   align-items: flex-start;
   flex-direction: column;
+}
+
+.create-project {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.project-list {
+  margin-bottom: 20px;
+}
+
+.project-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: left;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.project-button:hover {
+  background-color: #e0e0e0;
+}
+
+.create-project {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.project-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.create-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-button:hover {
+  background-color: #0056b3;
 }
 </style>
