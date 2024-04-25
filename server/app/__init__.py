@@ -1,7 +1,7 @@
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config
 from flask_cors import CORS
+from dotenv import load_dotenv
 
 db = SQLAlchemy()
 
@@ -28,7 +28,8 @@ app.register_blueprint(routes_bp)
 
 db.init_app(app)
 
-from .views import *  # Import the api blueprint
+# Assuming that views and models modules don't cause circular imports
+from .views import *
 from .models import *
 
 user_view = CRUDView(model=User)
