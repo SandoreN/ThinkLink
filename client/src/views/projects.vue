@@ -73,20 +73,20 @@ export default {
     async createProject() {
       try {
         const response = await axios.post(
-          `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`,
-          {
-            name: this.newProject.name,
-            description: this.newProject.description,
-            resource_dir: this.$store.state.user.id.toString(),
-          }
-        );
-        this.newProject.name = '';
-        this.newProject.description = '';
-        this.fetchProjects(); // Fetch projects after creating a new one
-      } catch (error) {
-        console.error('Error creating project:', error);
+        `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`,
+      {
+        name: this.newProject.name,
+        description: this.newProject.description,
+        resource_dir: this.$store.state.user.id.toString(),
       }
-    },
+    );
+    this.newProject.name = '';
+    this.newProject.description = '';
+    this.projects.unshift(response.data); // Add the newly created project to the beginning of the array
+  } catch (error) {
+    console.error('Error creating project:', error);
+  }
+},
     async fetchProjects() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`);
@@ -157,24 +157,29 @@ export default {
   padding: 40px;
 }
 
+
 .project-list {
   margin-bottom: 60px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .project-list-heading {
   font-size: 36px;
   font-weight: bold;
-  margin-bottom: 40px;
+  margin-right: 40px;
   color: #333;
   text-transform: uppercase;
   letter-spacing: 2px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  grid-gap: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
 }
 
 .project-card {
@@ -185,6 +190,7 @@ export default {
   overflow: hidden;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   cursor: pointer;
+  width: 300px;
 }
 
 .project-card:hover {
