@@ -11,7 +11,7 @@
               <router-link
                 v-for="project in projects"
                 :key="project.id"
-                :to="`/project_workspace/${project.project_id}`"
+                :to="`/project_workspace/${project.id}`"
                 tag="div"
                 class="project-card"
               >
@@ -73,33 +73,31 @@ export default {
     async createProject() {
       try {
         const response = await axios.post(
-          `${process.env.VUE_APP_FLASK_APP_URL}/projects`,
+          `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`,
           {
-            user_id: this.$store.state.user.id,
             name: this.newProject.name,
             description: this.newProject.description,
+            resource_dir: this.$store.state.user.id.toString(),
           }
         );
-        // Handle successful project creation (e.g., show a success message, clear form fields)
         this.newProject.name = '';
         this.newProject.description = '';
-        this.projects.push(response.data); // Add the new project to the list
+        this.fetchProjects(); // Fetch projects after creating a new one
       } catch (error) {
         console.error('Error creating project:', error);
-        // Handle error (e.g., show an error message)
+      }
+    },
+    async fetchProjects() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`);
+        this.projects = response.data;
+      } catch (error) {
+        console.error('Error fetching projects:', error);
       }
     },
   },
-  async created() {
-    try {
-      const token = this.$store.state.token; // Access the token from the user state
-      const response = await axios.get(
-        `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`
-      );
-      this.projects = response.data;
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    }
+  created() {
+    this.fetchProjects(); // Fetch projects when the component is created
   },
   metaInfo: {
     title: 'projects - ThinkLink',
