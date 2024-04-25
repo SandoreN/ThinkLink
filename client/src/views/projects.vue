@@ -9,11 +9,12 @@
             <h2 class="project-list-heading">Your Projects</h2>
             <div class="project-grid">
               <router-link
-                v-for="project in projects"
+                v-for="(project, index) in projects"
                 :key="project.id"
                 :to="`/project_workspace/${project.id}`"
                 tag="div"
                 class="project-card"
+                :style="{ animationDelay: `${index * 0.1}s` }"
               >
                 <div class="project-card-content">
                   <h3 class="project-card-title">{{ project.name }}</h3>
@@ -73,20 +74,20 @@ export default {
     async createProject() {
       try {
         const response = await axios.post(
-        `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`,
-      {
-        name: this.newProject.name,
-        description: this.newProject.description,
-        resource_dir: this.$store.state.user.id.toString(),
+          `${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`,
+          {
+            name: this.newProject.name,
+            description: this.newProject.description,
+            resource_dir: this.$store.state.user.id.toString(),
+          }
+        );
+        this.newProject.name = '';
+        this.newProject.description = '';
+        this.projects.unshift(response.data);
+      } catch (error) {
+        console.error('Error creating project:', error);
       }
-    );
-    this.newProject.name = '';
-    this.newProject.description = '';
-    this.projects.unshift(response.data); // Add the newly created project to the beginning of the array
-  } catch (error) {
-    console.error('Error creating project:', error);
-  }
-},
+    },
     async fetchProjects() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_FLASK_APP_URL}/projects/${this.$store.state.user.id}`);
@@ -97,7 +98,7 @@ export default {
     },
   },
   created() {
-    this.fetchProjects(); // Fetch projects when the component is created
+    this.fetchProjects();
   },
   metaInfo: {
     title: 'projects - ThinkLink',
@@ -165,6 +166,13 @@ export default {
   align-items: center;
 }
 
+.project-list {
+  margin-bottom: 60px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .project-list-heading {
   font-size: 36px;
   font-weight: bold;
@@ -191,6 +199,20 @@ export default {
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   cursor: pointer;
   width: 300px;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .project-card:hover {
