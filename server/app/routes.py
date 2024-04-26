@@ -81,7 +81,7 @@ def get_user_projects(user_id):
 def get_project_workspace(project_id):
     if request.method == 'POST':
         # Get the project
-        project, status = project_view.get({'id': project_id}, serialized=False)
+        project, status = project_view.get(item_id=project_id, serialized=False)
 
         # Check if the logged-in user is the owner of the project
         if session['user']['id'] != project.user_id:

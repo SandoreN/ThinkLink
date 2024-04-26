@@ -5,12 +5,11 @@
       <div class="projectworkspace-body">
         <app-leftsidebar></app-leftsidebar>
         <div class="projectworkspace-pagemain">
-          <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
-          <div v-html="compiledMarkdown" class="markdown-preview"></div>
-          <textarea id="markdown-editor" v-model="markdown"></textarea>
-          <savedraftbuttoncontainer @click="saveDraft"></savedraftbuttoncontainer>
+          <component :is="currentTab" v-bind:project_id="project_id"></component>
         </div>
-        <app-rightsidebar></app-rightsidebar>
+        <app-rightsidebar>
+          <app-projectsidebarinner @change-tab="changeTab"></app-projectsidebarinner>
+        </app-rightsidebar>
       </div>
     </div>
   </div>
@@ -20,10 +19,12 @@
 import AppHeader from '../components/header'
 import AppLeftsidebar from '../components/leftsidebar'
 import AppRightsidebar from '../components/rightsidebar'
-import Savedraftbuttoncontainer from '../components/savedraftbuttoncontainer'
-import { ref, computed } from 'vue';
-import MarkdownIt from 'markdown-it';
-import jsPDF from 'jspdf';
+import AppProjectsidebarinner from '../components/projectsidebarinner'
+import Drafts from '../components/drafts.vue'
+import Tasks from '../components/tasks.vue'
+import Resources from '../components/resources.vue'
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'Projectworkspace',
@@ -31,31 +32,34 @@ export default {
     AppHeader,
     AppLeftsidebar,
     AppRightsidebar,
-    Savedraftbuttoncontainer
+    AppProjectsidebarinner,
+    Drafts,
+    Tasks,
+    Resources
   },
-    setup() {
-    const draftName = ref('');
-    const markdown = ref('');
-    const md = MarkdownIt();
+  setup() {
+    const route = useRoute();
+    const project_id = ref(null);
 
-    const compiledMarkdown = computed(() => {
-      return md.render(markdown.value);
+    onMounted(() => {
+      project_id.value = route.params.project_id;
     });
-
-    const saveDraft = () => {
-      const doc = new jsPDF();
-      doc.text(markdown.value, 10, 10);
-      doc.save(`${draftName.value}.pdf`);
-    };
-
     return {
-      draftName,
-      markdown,
-      compiledMarkdown,
-      saveDraft,
+      project_id,
     };
   },
+  data() {
+    return {
+      currentTab: 'Drafts',
+    }
+  },
+  methods: {
+    changeTab(tab) {
+      this.currentTab = tab;
+    }
+  }
 };
+
 </script>
 
 <style scoped>
@@ -85,32 +89,38 @@ export default {
   height: 100%;
   display: flex;
   align-self: stretch;
-  align-items: stretch;
+  align-items: center;
   flex-direction: row;
-  justify-content: flex-start;
+  /*justify-content: center;*/
 }
 
 .projectworkspace-pagemain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
   justify-content: center;
-  align-items: flex-start;
-  align-self: stretch;
-  flex-direction: row;
   padding-top: 30px;
-  width: 800px;
-  flex: 1;
-  margin: 0 auto; 
+  max-width: 100%;
+  height: 100%;
   position: relative;
-
+  flex-grow: 1;
 }
 
 #markdown-editor {
-  width: 100%; /* fill the parent div */
-  height: 100%; /* fill the parent div */
+  /*flex: 1;*/
+  display: flex;
+  width: 500px; /* fill the parent div */
+  height: 450px; /* fill the parent div */
+  /*align-self: stretch;*/
+  /*position: relative;*/
+  border: 1px solid black;
 }
 
 .projectworkspace-projectsidebar {
   flex: 0 0 auto;
   width: 225px;
+  height: 100%;
   display: flex;
   position: relative;
   align-self: stretch;
@@ -172,8 +182,14 @@ export default {
 .markdown-preview {
   margin-top: 10px; /* Add some space above the preview pane */
   margin-bottom: 10px; /* Add some space below the preview pane */
-  overflow-y: auto; /* Add a scrollbar if the content is too long to fit in the pane */
+  overflow-y: auto;/* Add a scrollbar if the content is too long to fit in the pane */
   height: 200px;
+  width: 500px;
   border: 1px solid black;
+}
+
+.save-button {
+  align-self: center;
+  /* Other CSS properties... */
 }
 </style>

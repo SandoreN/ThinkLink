@@ -1,0 +1,123 @@
+<template>
+    <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
+    <div v-html="compiledMarkdown" class="markdown-preview"></div>
+    <textarea id="markdown-editor" v-model="markdown"></textarea>
+    <savebuttoncontainer class="save-button" @click="save"></savebuttoncontainer>
+</template>
+  
+<script>
+import savebuttoncontainer from '../components/savebuttoncontainer'
+import { ref, computed, watch } from 'vue';
+import MarkdownIt from 'markdown-it';
+import jsPDF from 'jspdf';
+import axios from 'axios';
+
+export default {
+    name: 'Drafts',
+    components: {
+        savebuttoncontainer
+    },
+    props: {
+        project_id: {
+            type: String,
+            required: true,
+        },
+    },
+    setup(props) {
+        const draftName = ref('');
+        const markdown = ref('');
+        const md = new MarkdownIt();
+        const project_id = ref(props.project_id);
+
+        watch(props, (newProps) => {
+            project_id.value = newProps.project_id;
+        });
+
+        const compiledMarkdown = computed(() => {
+            return md.render(markdown.value);
+        });
+
+        const save = async () => {
+            const doc = new jsPDF();
+            doc.text(markdown.value, 10, 10);
+            const pdf = doc.output('blob');
+            /*doc.save(`${draftName.value}.pdf`);       this downloads the file*/
+    
+
+
+            try {
+                const response = await axios.post(`/project_workspace/${props.project_id}`, {
+                    action: 'create_draft',
+                    draft_data: {
+                        file: pdf,
+                        filename: `${draftName.value}.pdf`,
+                        // Add any other data you need to send here
+                    },
+                });
+
+                if (response.status === 200) {
+                    console.log('Draft saved successfully');
+                } else {
+                    console.log('Failed to save draft');
+                }
+            } catch (error) {
+                console.error('An error occurred while saving the draft:', error);
+            }
+        };
+
+        return {
+            draftName,
+            markdown,
+            compiledMarkdown,
+            save,
+    
+        };
+    },
+};
+</script>
+  
+<style scoped>
+.projectworkspace-pagemain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  padding-top: 30px;
+  max-width: 100%;
+  height: 100%;
+  position: relative;
+  flex-grow: 1;
+}
+
+#markdown-editor {
+  display: flex;
+  width: 500px;
+  height: 450px;
+  border: 1px solid black;
+}
+
+.draft-name-input {
+  height: 55px;
+  padding: 10px;
+  font-size: 30px;
+  margin-bottom: 20px;
+  border: 2px solid black;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.markdown-preview {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+  height: 200px;
+  width: 500px;
+  border: 1px solid black;
+}
+
+.save-button {
+  align-self: center;
+}
+</style>

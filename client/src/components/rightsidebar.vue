@@ -1,5 +1,7 @@
 <template>
-  <div class="rightsidebar-rightsidebar"></div>
+  <div class="rightsidebar-rightsidebar">
+    <slot></slot>
+  </div>
 </template>
 
 <script>
