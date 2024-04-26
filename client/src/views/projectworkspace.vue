@@ -112,7 +112,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch; /* Change from 'align-items: flex-start;' to 'align-items: stretch;' */
   flex-direction: column;
   justify-content: flex-start;
 }
@@ -134,10 +134,9 @@ export default {
   flex-direction: row;
   padding-top: 30px;
   width: 800px;
-  height: 1000px; 
+  height: auto; /* Change the height to auto */
   margin: 0 auto; 
   position: relative;
-
 }
 
 #markdown-editor {
@@ -213,4 +212,5 @@ export default {
   height: 200px;
   border: 1px solid black;
 }
+
 </style>
