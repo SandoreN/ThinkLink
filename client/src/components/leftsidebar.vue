@@ -21,7 +21,7 @@ export default {
 <style scoped>
 .leftsidebar-sidebar {
   width: 225px;
-  display: flex;
+  flex-grow: 1;
   position: relative;
   align-self: stretch;
   align-items: stretch;

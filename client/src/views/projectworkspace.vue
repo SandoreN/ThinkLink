@@ -7,7 +7,7 @@
         <div class="projectworkspace-pagemain">
           <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
           <div v-html="compiledMarkdown" class="markdown-preview"></div>
-          <textarea id="markdown-editor"></textarea>
+          <textarea id="markdown-editor" v-model="markdown"></textarea>
           <savedraftbuttoncontainer @click="saveDraft"></savedraftbuttoncontainer>
         </div>
         <app-rightsidebar></app-rightsidebar>
@@ -20,87 +20,50 @@
 import AppHeader from '../components/header'
 import AppLeftsidebar from '../components/leftsidebar'
 import AppRightsidebar from '../components/rightsidebar'
-import EasyMDE from 'easymde'
 import Savedraftbuttoncontainer from '../components/savedraftbuttoncontainer'
-import * as marked from 'marked';
+import { ref, computed } from 'vue';
+import MarkdownIt from 'markdown-it';
+import jsPDF from 'jspdf';
 
 export default {
   name: 'Projectworkspace',
-  data() {
-    return {
-      draftName: '',
-      mde: null,
-    }
-  },
   components: {
     AppHeader,
     AppLeftsidebar,
     AppRightsidebar,
-    Savedraftbuttoncontainer,
+    Savedraftbuttoncontainer
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.mde = new EasyMDE({
-        element: document.getElementById('markdown-editor'),
-        toolbar: [
-          "bold", 
-          "italic", 
-          "heading", "|", 
-          "quote",
-          "unordered-list",
-          "ordered-list", "|",
-          "link",
-          "image", "|",
-          "guide"
-        ],      
-      })
-      this.mde.codemirror.refresh()
-      })
-  },
-  methods: {
-    // Your existing methods here
+    setup() {
+    const draftName = ref('');
+    const markdown = ref('');
+    const md = MarkdownIt();
 
-    saveDraft() {  // Add this method
-      // Get the content of the EasyMDE editor
-      const draftContent = this.easyMDE.value();
-      
-      // Get the draftName= this.draftName;
-      const draftName = this.draftName;
+    const compiledMarkdown = computed(() => {
+      return md.render(markdown.value);
+    });
 
-      // Make a POST request to the server
-      axios.post(process.env.VUE_APP_FLASK_APP_URL + `/project_workspace/${this.projectId}`, {
-        action: 'create_draft',
-        draft_data: {
-          name: draftName,
-          content: draftContent,
-          // Add any other data you need to send to the server here
-        },
-      })
-      .then(response => {
-        // Handle the response from the server
-        console.log(response.data);
-      })
-      .catch(error => {
-        // Handle the error
-        console.error(error);
-      });
-    },
+    const saveDraft = () => {
+      const doc = new jsPDF();
+      doc.text(markdown.value, 10, 10);
+      doc.save(`${draftName.value}.pdf`);
+    };
+
+    return {
+      draftName,
+      markdown,
+      compiledMarkdown,
+      saveDraft,
+    };
   },
-  computed: {
-    compiledMarkdown() {
-      return this.mde ? marked.marked(this.mde.value()) : '';
-    }
-  }
-}
+};
 </script>
 
 <style scoped>
 .projectworkspace-container {
   width: 100%;
   display: flex;
-  overflow: auto;
   min-height: 100vh;
-  align-items: center;
+  align-items: stretch;
   border-color: var(--dl-color-gray-black);
   border-width: 0px;
   flex-direction: column;
@@ -110,9 +73,8 @@ export default {
 .projectworkspace-container1 {
   flex: 1;
   width: 100%;
-  height: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   flex-direction: column;
   justify-content: flex-start;
 }
@@ -123,18 +85,19 @@ export default {
   height: 100%;
   display: flex;
   align-self: stretch;
-  align-items: flex-start;
+  align-items: stretch;
   flex-direction: row;
   justify-content: flex-start;
 }
 
 .projectworkspace-pagemain {
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  align-self: stretch;
   flex-direction: row;
   padding-top: 30px;
   width: 800px;
-  height: 1000px; 
+  flex: 1;
   margin: 0 auto; 
   position: relative;
 
