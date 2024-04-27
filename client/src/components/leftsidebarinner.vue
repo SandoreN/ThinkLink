@@ -3,37 +3,52 @@
     id="sidebar"
     class="leftsidebarinner-sidebar"
     v-bind:class="rootClassName"
-    ><div class="leftsidebarinner-sidebarheader"
-      ><div class="leftsidebarinner-container"
-        ><router-link :to="`/profile/${this.$store.getters.currentUser}`" class="leftsidebarinner-navlink button"
-          ><span id="user.name" class="leftsidebarinner-text"
-            >{{ userFirstName }}</span
-          ><span id="user.username" class="leftsidebarinner-text01"
-            >{{ userUsername }}</span
-          ></router-link
-        ></div
-      ></div
-    ><div class="leftsidebarinner-container1"
-      ><nav class="leftsidebarinner-nav"
-        ><div class="leftsidebarinner-container2"
-          ><router-link :to="`/dashboard/${this.$store.state.user.id}`" class="leftsidebarinner-navlink1 button"
-            ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon">
+  >
+    <div class="leftsidebarinner-sidebarheader">
+      <div class="leftsidebarinner-container">
+        <router-link
+          :to="`/profile/${this.$store.getters.currentUser}`"
+          class="leftsidebarinner-navlink button"
+        >
+          <span id="user.name" class="leftsidebarinner-text">{{ userFirstName }}</span>
+          <span id="user.username" class="leftsidebarinner-text01">{{ userUsername }}</span>
+        </router-link>
+      </div>
+    </div>
+    <div class="leftsidebarinner-container1">
+      <nav class="leftsidebarinner-nav">
+        <div class="leftsidebarinner-container2">
+          <router-link
+            :to="`/dashboard/${this.$store.state.user.id}`"
+            class="leftsidebarinner-navlink1 button"
+          >
+            <svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon">
               <path
                 d="M512 128c0 0-263.936 227.84-411.435 351.232-8.661 7.851-15.232 19.285-15.232 32.768 0 23.595 19.072 42.667 42.667 42.667h85.333v298.667c0 23.595 19.072 42.667 42.667 42.667h128c23.595 0 42.667-19.115 42.667-42.667v-170.667h170.667v170.667c0 23.552 19.072 42.667 42.667 42.667h128c23.595 0 42.667-19.072 42.667-42.667v-298.667h85.333c23.595 0 42.667-19.072 42.667-42.667 0-13.483-6.571-24.917-16.341-32.768-146.475-123.392-410.325-351.232-410.325-351.232z"
-              ></path></svg
-            ><span class="leftsidebarinner-text02">{{ text2 }}</span></router-link
-          ></div
-        ><div class="leftsidebarinner-container3"
-          ><router-link :to="`/messages/${this.$store.state.user.id}`" class="leftsidebarinner-navlink2 button"
-            ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon02">
+              ></path>
+            </svg>
+            <span class="leftsidebarinner-text02">{{ text2 }}</span>
+          </router-link>
+        </div>
+        <div class="leftsidebarinner-container3">
+          <router-link
+            :to="`/messages/${this.$store.state.user.id}`"
+            class="leftsidebarinner-navlink2 button"
+          >
+            <svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon02">
               <path
                 d="M896 298.667h-128c0-70.4-57.6-128-128-128h-512c-70.4 0-128 57.6-128 128v298.667c0 70.4 57.6 128 128 128v128l128-128c0 70.4 57.6 128 128 128h341.333l128 128v-128h42.667c70.4 0 128-57.6 128-128v-298.667c0-70.4-57.6-128-128-128zM128 640c-23.125 0-42.667-19.541-42.667-42.667v-298.667c0-23.125 19.541-42.667 42.667-42.667h512c23.125 0 42.667 19.541 42.667 42.667v42.667h-277.333c-58.837 0-106.667 47.829-106.667 106.667v192h-170.667zM938.667 725.333c0 23.125-19.541 42.667-42.667 42.667h-512c-23.125 0-42.667-19.541-42.667-42.667v-277.333c0-35.285 28.715-64 64-64h490.667c23.125 0 42.667 19.541 42.667 42.667v298.667z"
-              ></path></svg
-            ><span class="leftsidebarinner-text03">Messages</span></router-link
-          ></div
-        ><div class="leftsidebarinner-container4"
-          ><router-link :to="`/teams/${this.$store.state.user.id}`" class="leftsidebarinner-navlink3 button"
-            ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon04">
+              ></path>
+            </svg>
+            <span class="leftsidebarinner-text03">Messages</span>
+          </router-link>
+        </div>
+        <div class="leftsidebarinner-container4">
+          <router-link
+            :to="`/teams/${this.$store.state.user.id}`"
+            class="leftsidebarinner-navlink3 button"
+          >
+            <svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon04">
               <path
                 d="M512 597.333c117.931 0 213.333-95.488 213.333-213.333s-95.403-213.333-213.333-213.333-213.333 95.488-213.333 213.333 95.403 213.333 213.333 213.333zM512 256c70.571 0 128 57.429 128 128s-57.429 128-128 128-128-57.429-128-128 57.429-128 128-128z"
               ></path>
@@ -45,20 +60,30 @@
               ></path>
               <path
                 d="M170.667 640c58.923 0 106.667-47.744 106.667-106.667 0-58.837-47.744-106.667-106.667-106.667-58.965 0-106.667 47.829-106.667 106.667 0 58.923 47.701 106.667 106.667 106.667zM170.667 469.333c35.285 0 64 28.715 64 64s-28.715 64-64 64-64-28.715-64-64 28.715-64 64-64z"
-              ></path></svg
-            ><span class="leftsidebarinner-text04"
-              ><span>Teams</span><br /></span></router-link></div
-        ><div class="leftsidebarinner-container5"
-          ><router-link :to="`/projects/${this.$store.state.user.id}`" class="leftsidebarinner-navlink4 button"
-            ><svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon09">
+              ></path>
+            </svg>
+            <span class="leftsidebarinner-text04">
+              <span>Teams</span>
+              <br />
+            </span>
+          </router-link>
+        </div>
+        <div class="leftsidebarinner-container5">
+          <router-link
+            :to="`/projects/${this.$store.state.user.id}`"
+            class="leftsidebarinner-navlink4 button"
+          >
+            <svg viewBox="0 0 1024 1024" class="leftsidebarinner-icon09">
               <path
                 d="M768 256h-256c0-47.104-38.229-85.333-85.333-85.333h-170.667c-70.571 0-128 57.429-128 128v426.667c0 70.571 57.429 128 128 128h512c70.571 0 128-57.429 128-128v-341.333c0-70.571-57.429-128-128-128zM256 256h170.667c0 47.104 38.229 85.333 85.333 85.333h256c23.552 0 42.667 19.115 42.667 42.667h-597.333v-85.333c0-23.552 19.115-42.667 42.667-42.667zM768 768h-512c-23.552 0-42.667-19.115-42.667-42.667v-298.667h597.333v298.667c0 23.552-19.115 42.667-42.667 42.667z"
-              ></path></svg
-            ><span class="leftsidebarinner-text07">{{ text4 }}</span></router-link
-          ></div
-        ><div class="leftsidebarinner-container6"
-          ><router-link to="/library" class="leftsidebarinner-navlink5 button"
-            ><svg viewBox="0 0 1152 1024" class="leftsidebarinner-icon11">
+              ></path>
+            </svg>
+            <span class="leftsidebarinner-text07">{{ text4 }}</span>
+          </router-link>
+        </div>
+        <div class="leftsidebarinner-container6">
+          <router-link to="/library" class="leftsidebarinner-navlink5 button">
+            <svg viewBox="0 0 1152 1024" class="leftsidebarinner-icon11">
               <path
                 d="M224 128h-192c-17.6 0-32 14.4-32 32v704c0 17.6 14.4 32 32 32h192c17.6 0 32-14.4 32-32v-704c0-17.6-14.4-32-32-32zM192 320h-128v-64h128v64z"
               ></path>
@@ -67,10 +92,17 @@
               ></path>
               <path
                 d="M765.088 177.48l-171.464 86.394c-15.716 7.918-22.096 27.258-14.178 42.976l287.978 571.548c7.918 15.718 27.258 22.098 42.976 14.178l171.464-86.392c15.716-7.92 22.096-27.26 14.178-42.974l-287.978-571.55c-7.92-15.718-27.26-22.1-42.976-14.18z"
-              ></path></svg
-            ><span class="leftsidebarinner-text08"
-              ><span>Library</span><br /></span></router-link></div></nav></div
-  ></section>
+              ></path>
+            </svg>
+            <span class="leftsidebarinner-text08">
+              <span>Library</span>
+              <br />
+            </span>
+          </router-link>
+        </div>
+      </nav>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -78,10 +110,6 @@ export default {
   name: 'Leftsidebarinner',
   props: {
     rootClassName: String,
-    userFirstName: {
-      type: String,
-      default: 'Chadley',
-    },
     text4: {
       type: String,
       default: 'Projects',
@@ -94,9 +122,13 @@ export default {
       type: String,
       default: 'Dashboard',
     },
-    userUsername: {
-      type: String,
-      default: 'RawR_XD_666',
+  },
+  computed: {
+    userFirstName() {
+      return this.$store.state.user.name;
+    },
+    userUsername() {
+      return this.$store.state.user.username;
     },
   },
 }
