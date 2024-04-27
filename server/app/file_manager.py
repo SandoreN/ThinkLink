@@ -1,11 +1,13 @@
 import os
 from werkzeug.utils import secure_filename
 from flask import request
-from app import app
+import flask
+from . import app
 from app.views import CRUDView
 from app.models import Publication, Proposal, Resource, Draft
-import app.config
+from app.config import Config
 from weasyprint import HTML
+import json 
 
 class FileManager:
     """
@@ -32,8 +34,9 @@ class FileManager:
         #--library
         #----publications
         #----proposals
+        
 
-        self.base_folder = app.config.Config.FLASK_APP_FS_ROOT
+        self.base_folder = Config.FLASK_APP_FS_ROOT
         self.drafts_folder = os.path.join(self.base_folder, 'drafts')    
         self.resources_folder = os.path.join(self.base_folder, 'resources')
         self.library_folder = os.path.join(self.base_folder, 'library')
@@ -74,18 +77,19 @@ class FileManager:
         s_filename = secure_filename(filename)
         if file_type == 'draft':
             view = self.draft_view
-            user_folder = os.path.join(self.drafts_folder, user_id)
+            user_folder = os.path.join(self.drafts_folder, str(user_id))
 
         elif file_type == 'resource':
             view = self.resource_view
-            user_folder = os.path.join(self.resources_folder, user_id)   
+            user_folder = os.path.join(self.resources_folder, str(user_id))  
         else:
             raise ValueError("Invalid file type")
-        project_folder = os.path.join(user_folder, project_id)
+        project_folder = os.path.join(user_folder, str(project_id))
         file_path = os.path.join(project_folder, s_filename)
         
         os.makedirs(project_folder, exist_ok=True)
         file.save(file_path)
+
         file_data['file_path'] = file_path
 
         if file_id is None:
@@ -98,8 +102,8 @@ class FileManager:
             self.create_pdf_from_html(file_data['content'], file_path.replace('.html', '.pdf'))  
 
     def download_file(self, user_id, project_id, filename, file_type):
-        user_folder = os.path.join(self.base_folder, user_id)
-        project_folder = os.path.join(user_folder, project_id)
+        user_folder = os.path.join(self.base_folder, str(user_id))
+        project_folder = os.path.join(user_folder, str(project_id))
         file_path = os.path.join(project_folder, filename)
         
         if file_type not in ['draft', 'resource']:
@@ -108,8 +112,8 @@ class FileManager:
         return file_path if os.path.exists(file_path) else None
 
     def delete_file(self, user_id, project_id, filename, file_type):
-        user_folder = os.path.join(self.base_folder, user_id)
-        project_folder = os.path.join(user_folder, project_id)
+        user_folder = os.path.join(self.base_folder, str(user_id))
+        project_folder = os.path.join(user_folder, str(project_id))
         file_path = os.path.join(project_folder, filename)
         
         if file_type not in ['draft', 'resource']:

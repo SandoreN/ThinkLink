@@ -39,11 +39,8 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const project_id = ref(null);
+    const project_id = ref(route.params.project_id);
 
-    onMounted(() => {
-      project_id.value = route.params.project_id;
-    });
     return {
       project_id,
     };

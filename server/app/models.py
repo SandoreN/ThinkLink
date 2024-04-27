@@ -127,6 +127,7 @@ class Draft(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
+    filename = Column(String(255), nullable=False)
     content = Column(Text, default='')
     file_path = Column(Text, default='')
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
@@ -137,6 +138,7 @@ class Draft(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'filename': self.filename,
             'content': self.content,
             'file_path': self.file_path,
             'project_id': self.project_id,
@@ -150,6 +152,7 @@ class Resource(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
+    filename = Column(String(255), nullable=False) 
     file_path = Column(String(255), nullable=False)
     type = Column(String(50), nullable=False)
     project_id = Column(Integer, ForeignKey('Project.id'), nullable=False)
@@ -160,6 +163,7 @@ class Resource(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'filename': self.filename,
             'file_path': self.file_path,
             'type': self.type,
             'project_id': self.project_id,

@@ -3,10 +3,11 @@ from . import app
 from .models import Project, User, Team, Draft, Task, Resource, Message, Publication, Proposal
 from .views import CRUDView
 from .file_manager import FileManager
-import app.config
+from app.config import Config
 import logging
+import json
 
-
+logging.basicConfig(level=logging.DEBUG)
 # Create CRUDView instance for Project model to interact with the database
 project_view = CRUDView(model=Project)
 user_view = CRUDView(model=User)
@@ -23,7 +24,7 @@ routes_bp = Blueprint('routes', __name__)
 
 @routes_bp.route('/files/<path:filename>')
 def serve_file(filename):
-    return send_from_directory(app.config.Config.FLASK_APP_FS_ROOT, filename)
+    return send_from_directory(Config.FLASK_APP_FS_ROOT, filename)
 
 @routes_bp.route('/test', methods=['GET'])
 def test_route():
@@ -84,18 +85,41 @@ def get_project_workspace(project_id):
         project, status = project_view.get(item_id=project_id, serialized=False)
 
         # Check if the logged-in user is the owner of the project
-        if session['user']['id'] != project.user_id:
+        if session['user']['id'] != project.creator_id:
             return jsonify({'message': 'Unauthorized'}), 403
 
-        # Get the data from the request
-        data = request.get_json()
+        # Get the file from the request, if one was included
+        file = request.files['file'] if 'file' in request.files else None
 
-        # Depending on the action specified in the request, perform the appropriate operation
-        action = data.get('action')
+        data = request.form.get('file_data')
+        # Get the data from the request
+        if data is not None:
+            if isinstance(data, str):
+                data = json.loads(data)
+        else:
+            data = request.get_json()
+
+        # Use request.form to parse FormData
+        action = request.form.get('action')
+
+        if action is None:
+            logging.debug('No action specified in request data')
+            return jsonify({'message': 'No action specified in request data'}), 400
+
+        logging.debug(f'action: {action}')
+
         if action == 'create_draft':
+            logging.debug(f'data: {data}')
+            logging.debug(f'file: {file}')
             # Use file_manager.py to upload a new draft
-            draft_data = data.get('draft_data')
-            file_manager.upload_file(draft_data['file'], session['user']['id'], project_id, draft_data['filename'], draft_data, 'draft', file_id=None)
+            file_data = request.form.get('file_data')
+            
+            if file_data is None:
+                return jsonify({'message': 'No file data included in request'}), 666
+            else:
+                #parse file_data back into a dictionary
+                file_data = json.loads(file_data)
+                file_manager.upload_file(file, session['user']['id'], project_id, file_data['filename'], file_data, 'draft', file_id=None)
         elif action == 'create_task':
             # Use CRUDView to create a new task
             task_data = data.get('task_data')
@@ -121,7 +145,7 @@ def get_project_workspace(project_id):
         project, status = project_view.get({'id': project_id}, serialized=False)
 
         # Check if the logged-in user is the owner of the project
-        if session['user']['id'] != project.user_id:
+        if session['user']['id'] != project.creator_id:
             return jsonify({'message': 'Unauthorized'}), 403
 
         # Get all drafts, tasks, and resources for the project

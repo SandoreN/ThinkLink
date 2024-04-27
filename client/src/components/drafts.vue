@@ -41,18 +41,21 @@ export default {
             const doc = new jsPDF();
             doc.text(markdown.value, 10, 10);
             const pdf = doc.output('blob');
-            /*doc.save(`${draftName.value}.pdf`);       this downloads the file*/
-    
-
 
             try {
-                const response = await axios.post(`/project_workspace/${props.project_id}`, {
-                    action: 'create_draft',
-                    draft_data: {
-                        file: pdf,
-                        filename: `${draftName.value}.pdf`,
-                        // Add any other data you need to send here
-                    },
+                const formData = new FormData();
+                formData.append('action', 'create_draft');
+                formData.append('file', pdf, `${draftName.value}.pdf`);
+                formData.append('file_data', JSON.stringify({
+                    content: markdown.value,
+                    filename: `${draftName.value}.pdf`
+                }));
+                console.log('formData:', formData);
+
+                const response = await axios.post(`${process.env.VUE_APP_FLASK_APP_URL}/project_workspace/${props.project_id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 });
 
                 if (response.status === 200) {
