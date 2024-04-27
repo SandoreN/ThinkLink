@@ -185,8 +185,4 @@ export default {
   border: 1px solid black;
 }
 
-.save-button {
-  align-self: center;
-  /* Other CSS properties... */
-}
 </style>

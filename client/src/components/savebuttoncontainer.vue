@@ -46,6 +46,7 @@ export default {
     padding-right: 0px;
     padding-bottom: 0px;
     background-color: transparent;
+    cursor: pointer;
   }
   .savebuttoncontainer-text {
     color: var(--dl-color-custom-primary2);

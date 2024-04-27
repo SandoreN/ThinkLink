@@ -9,7 +9,7 @@
 import savebuttoncontainer from '../components/savebuttoncontainer'
 import { ref, computed, watch } from 'vue';
 import MarkdownIt from 'markdown-it';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import axios from 'axios';
 
 export default {
@@ -36,7 +36,7 @@ export default {
         const compiledMarkdown = computed(() => {
             return md.render(markdown.value);
         });
-
+        
         const save = async () => {
             const doc = new jsPDF();
             doc.text(markdown.value, 10, 10);
@@ -67,7 +67,7 @@ export default {
                 console.error('An error occurred while saving the draft:', error);
             }
         };
-
+        
         return {
             draftName,
             markdown,
@@ -78,7 +78,7 @@ export default {
     },
 };
 </script>
-  
+
 <style scoped>
 .projectworkspace-pagemain {
   display: flex;

@@ -8,6 +8,7 @@ from app.models import Publication, Proposal, Resource, Draft
 from app.config import Config
 from weasyprint import HTML
 import json 
+import markdown 
 
 class FileManager:
     """
@@ -99,7 +100,8 @@ class FileManager:
             with app.app_context():
                 view.put(item_id=file_id, request_data=file_data)
         if file_type == 'draft':
-            self.create_pdf_from_html(file_data['content'], file_path.replace('.html', '.pdf'))  
+            html_content = markdown.markdown(file_data['content']) 
+            self.create_pdf_from_html(html_content, file_path.replace('.html', '.pdf'))
 
     def download_file(self, user_id, project_id, filename, file_type):
         user_folder = os.path.join(self.base_folder, str(user_id))
