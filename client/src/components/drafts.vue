@@ -1,11 +1,6 @@
 <template>
     <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
     <div v-html="compiledMarkdown" class="markdown-preview"></div>
-    <div id="toolbar">
-      <button @click="insertText('**', '**')">Bold</button>
-      <button @click="insertText('*', '*')">Italic</button>
-      <button @click="insertText('# ', '')">Heading</button>
-    </div>
     <textarea id="markdown-editor" v-model="markdown"></textarea>
     <savebuttoncontainer class="save-button" @click="save"></savebuttoncontainer>
 </template>
