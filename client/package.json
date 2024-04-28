@@ -11,15 +11,18 @@
     "@tinymce/tinymce-vue": "^5.1.1",
     "axios": "^1.6.8",
     "easymde": "^2.18.0",
+    "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.1",
     "jspdf": "^2.5.1",
     "markdown-it": "^14.1.0",
     "marked": "^12.0.1",
     "pdf-lib": "^1.17.1",
+    "pdfmake": "^0.2.10",
     "vue": "^3.4.23",
     "vue-meta": "^2.2.1",
     "vue-router": "^4.3.2",
     "vue3-markdown-it": "^1.0.10",
+    "vue3-quill": "^0.3.1",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

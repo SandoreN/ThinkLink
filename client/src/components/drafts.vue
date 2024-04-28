@@ -1,6 +1,11 @@
 <template>
     <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
     <div v-html="compiledMarkdown" class="markdown-preview"></div>
+    <div id="toolbar">
+      <button @click="insertText('**', '**')">Bold</button>
+      <button @click="insertText('*', '*')">Italic</button>
+      <button @click="insertText('# ', '')">Heading</button>
+    </div>
     <textarea id="markdown-editor" v-model="markdown"></textarea>
     <savebuttoncontainer class="save-button" @click="save"></savebuttoncontainer>
 </template>
@@ -39,8 +44,16 @@ export default {
         
         const save = async () => {
             const doc = new jsPDF();
-            doc.text(markdown.value, 10, 10);
+            doc.html(markdown.value, options);
             const pdf = doc.output('blob');
+            const options = {
+                x: 10,
+                y: 10,
+                callback: function () {
+                    // This will be called when the conversion is done
+                }
+            };
+
 
             try {
                 const formData = new FormData();
