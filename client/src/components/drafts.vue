@@ -2,10 +2,18 @@
     <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
     <div v-html="compiledMarkdown" class="markdown-preview"></div>
     <textarea id="markdown-editor" v-model="markdown"></textarea>
+    <!--<loadbuttoncontainer class="load-button" @click="load"></loadbuttoncontainer>
+    <ul>
+        <li v-for="draft in drafts" :key="draft.id">
+            {{ draft.name }}
+        </li>
+    </ul>
     <savebuttoncontainer class="save-button" @click="save"></savebuttoncontainer>
+-->
 </template>
   
 <script>
+import loadbuttoncontainer from '../components/loadbuttoncontainer'
 import savebuttoncontainer from '../components/savebuttoncontainer'
 import { ref, computed, watch } from 'vue';
 import MarkdownIt from 'markdown-it';
@@ -15,7 +23,8 @@ import axios from 'axios';
 export default {
     name: 'Drafts',
     components: {
-        savebuttoncontainer
+        savebuttoncontainer,
+        loadbuttoncontainer
     },
     props: {
         project_id: {
@@ -28,6 +37,7 @@ export default {
         const markdown = ref('');
         const md = new MarkdownIt();
         const project_id = ref(props.project_id);
+        const drafts = ref([]);
 
         watch(props, (newProps) => {
             project_id.value = newProps.project_id;
@@ -37,6 +47,25 @@ export default {
             return md.render(markdown.value);
         });
         
+        const load = async () => {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_FLASK_APP_URL}/project_workspace/${props.project_id}`)
+                console.log('Server response:', response.data);
+                if (response.status === 200) {
+                    console.log('response.data.drafts:', response.data.drafts); 
+                    drafts.value = response.data.drafts;
+                } else {
+                    console.log('Failed to load drafts');
+                }
+            } catch (error) {
+                console.error('An error occurred while loading drafts:', error);
+            }
+        };
+
+        const loadDraft = (draft) => {
+            markdown.value = draft.content;
+        }
+
         const save = async () => {
             const doc = new jsPDF();
             doc.html(markdown.value, options);
@@ -81,7 +110,9 @@ export default {
             markdown,
             compiledMarkdown,
             save,
-    
+            drafts,
+            load,
+            loadDraft
         };
     },
 };
@@ -129,6 +160,10 @@ export default {
 }
 
 .save-button {
+  align-self: center;
+}
+
+.load-button {
   align-self: center;
 }
 </style>
