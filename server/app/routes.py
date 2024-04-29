@@ -119,6 +119,7 @@ def get_project_workspace(project_id):
             else:
                 #parse file_data back into a dictionary
                 file_data = json.loads(file_data)
+                file_data['project_id'] = project_id
                 file_manager.upload_file(file, session['user']['id'], project_id, file_data['filename'], file_data, 'draft', file_id=None)
         elif action == 'create_task':
             # Use CRUDView to create a new task
@@ -147,25 +148,31 @@ def get_project_workspace(project_id):
         # Check if the logged-in user is the owner of the project
         if session['user']['id'] != project.creator_id:
             return jsonify({'message': 'Unauthorized'}), 403
-
+        print(f"getting drafts and task for projects with project_id: {project_id}")
         # Get all drafts, tasks, and resources for the project
         drafts, status = draft_view.get(filters={'project_id': project_id}, all_matches=True)
         tasks, status = task_view.get(filters={'project_id': project_id}, all_matches=True)
-        resources, status = resource_view.get(filters={'project_id': project_id}, all_matches=True)
+        #resources, status = resource_view.get(filters={'project_id': project_id}, all_matches=True)
 
-        for resource in resources:
-            resource['url'] = url_for('serve_file', filename=resource['filename'])
+        #for resource in resources:
+        #    resource['url'] = url_for('serve_file', filename=resource['filename'])
             
         # Get all users in the team the project belongs to
-        team_users = [user.serialize() for user in project.team.users]
-
+        #team_users = [user.serialize() for user in project.team.users]
+        print(f'drafts: {drafts}')
+        # Assuming drafts and tasks are 'Response' objects
+        drafts_data = json.loads(drafts.get_data(as_text=True))
+        tasks_data = json.loads(tasks.get_data(as_text=True))
+        #resource_data = json.loads(resources.get_data(as_text=True))
+        
+        print(f'drafts_data: {drafts_data}')
         # Return the project workspace
         workspace_data = {
             'project': project.serialize(),
-            'drafts': drafts,
-            'tasks': tasks,
-            'resources': resources,
-            'team_users': team_users
+            'drafts': drafts_data,
+            'tasks': tasks_data,
+            #'resources': resources,
+            #'team_users': team_users
         }
         return jsonify(workspace_data)
     

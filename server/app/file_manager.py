@@ -92,7 +92,6 @@ class FileManager:
         file.save(file_path)
 
         file_data['file_path'] = file_path
-
         if file_id is None:
             with app.app_context():
                 view.post(request_data=file_data)
