@@ -26,7 +26,7 @@ export default {
     text: {
       type: String,
       default:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum.',
+        'At ThinkLink, effortlessly share research findings, resources, and insights with peers, using intuitive tools to foster seamless communication and collaboration, breaking down barriers in your academic network.',
     },
   },
 }
