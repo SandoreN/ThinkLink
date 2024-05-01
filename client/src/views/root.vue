@@ -12,11 +12,11 @@
           ></div
         ><div class="root-container01"
           ><div class="root-menu"
-            ><span class="root-text"> </span
-            ><span class="root-text01"> </span
-            ><span class="root-text02"><b>Welcome to ThinkLink</b></span
-            ><span class="root-text03"> </span
-            ><span class="root-text04"> </span></div
+            ><span class="root-text">About</span
+            ><span class="root-text01">Products</span
+            ><span class="root-text02">Pricing</span
+            ><span class="root-text03">Blog</span
+            ><span class="root-text04">Jobs</span></div
           ><div class="root-container02"
             ><div id="register_button_container" class="root-register"
               ><router-link
@@ -33,20 +33,13 @@
         ><div class="root-container03"
           ><h1 class="root-text08 Headline1"
             ><span>Work together.</span><br /><span>Get more done.</span></h1
-            ><div id="register_button_container" class="root-register"
-              ><router-link
-                to="/register"
-                id="register_button"
-                name="register_button"
-
-                ><primary-button
+          ><primary-button
             button="Get Started"
-            class="root-component"           
-          ></primary-button></router-link></div>
-</div   
+            class="root-component"
+          ></primary-button></div
         ><img
           alt="image"
-          src="/Laptop(2).png"
+          src="/external/iphonex-1200w-1500h.png"
           class="root-image1" /></div
       ><img
         alt="image"
@@ -63,9 +56,9 @@
         class="root-right" /></div
     ><div class="root-clients"
       ><div class="root-divider"></div
-      ><img alt="image" src="/SCSU Logo.png" class="root-image2" /><img
+      ><img alt="image" src="/external/logo-1.svg" class="root-image2" /><img
         alt="image"
-        src=/Azure(2).png
+        src="/external/logo-4.svg"
         class="root-image3" /><img
         alt="image"
         src="/external/logo-3.svg"
@@ -74,40 +67,54 @@
         src="/external/logo-5.svg"
         class="root-image5" /><img
         alt="image"
-        src="Chegg.png"
+        src="/external/logo-6.svg"
         class="root-image6" /><div class="root-divider1"></div></div
     ><div class="root-features"
-      ><h2 class="Headline2 root-text12">ThinkLink</h2
+      ><h2 class="Headline2 root-text12">Tailor-made features</h2
       ><span class="root-text13"
         ><span class="root-text14"
-          >At ThinLink, we're dedicated to revolutionizing academic collaboration and research project management. Our platform integrates essential tools into a seamless environment, empowering users to engage in collaborative efforts, manage research projects efficiently, and share knowledge within a dynamic academic ecosystem.</span
+          >Lorem ipsum is common placeholder text used to demonstrate the graphic
+          elements of a document or visual presentation.</span
         ></span
       ><div class="root-features1"
-
+        ><feature-card1 cardTitle="Share"></feature-card1
         ><feature-card1
-          imageSrc="/external/06.svg"
-          cardTitle="Share">
-          </feature-card1
-
-        ><feature-card3
+          imageSrc="/external/02.svg"
+          cardTitle="Collaborate"
+        ></feature-card1
+        ><feature-card1
           imageSrc="/external/03.svg"
           cardTitle="Research"
-        ></feature-card3
-        ></div></div
+        ></feature-card1
+        ><feature-card1
+          imageSrc="/external/04.svg"
+          cardTitle="Navigate"
+        ></feature-card1
+        ><feature-card1
+          imageSrc="/external/05.svg"
+          cardTitle="Visualize"
+        ></feature-card1
+        ><feature-card1
+          imageSrc="/external/06.svg"
+          cardTitle="Organize"
+        ></feature-card1></div></div
     ><div class="root-feature1"
+      ><div class="root-container04"></div
       ><div class="root-container05"
-        ><h3 class="Headline3">Unlock Academic Collaboration with ThinkLink</h3
+        ><h3 class="Headline3">Headline</h3
         ><span class="root-text16 Lead1"
-          >This headline succinctly communicates the platform's focus on enhancing academic collaboration and research project management. It's straightforward and attention-grabbing, inviting users to learn more about how ThinkLink can benefit them. Let me know if you need further adjustments or have any other questions!</span
-        ></div></div>
-
-    <div class="root-achievements"
+          >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum
+          diam orci pretium a pharetra, feugiat cursus. Dictumst risus, sem
+          egestas odio cras adipiscing vulputate. Nisi, risus in suscipit non. Non
+          commodo volutpat, pharetra, vel.</span
+        ><link-icon-button text="Get Started"></link-icon-button></div></div
+    ><div class="root-achievements"
       ><div class="root-container06"
         ><h2 class="root-text17"
           ><span class="root-text18"
-            ><span> <span v-html="raw02rd"></span></span
+            ><span>Our 18 years of <span v-html="raw02rd"></span></span
             ><span> <span v-html="rawh0p7"></span></span></span
-          ><br /><span>Our achievements</span></h2
+          ><br /><span>achievements</span></h2
         ><span class="root-text23"
           >With our super powers we have reached this</span
         ></div
@@ -120,13 +127,11 @@
           ></stats-card
           ><stats-card
             number="2 Milion"
-            imageSrc="/external/02.svg"
+            imageSrc="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/f27319f0-cedd-4361-add8-6a7ccf8673b3/e22438ba-90d0-42f8-858a-c66202411bda?org_if_sml=11388&amp;force_format=original"
             description="Users"
           ></stats-card></div
         ><div class="root-container09"
-          ><stats-card number="500+"
-            imageSrc="/external/05.svg"
-            description="Clients"></stats-card
+          ><stats-card number="500+" description="Clients"></stats-card
           ><div class="root-container10"
             ><div class="root-container11"></div
             ><stats-card
@@ -138,28 +143,33 @@
     ><div class="root-feature2"
       ><div class="root-container13"
         ><h2 class="root-text24"
-          ><span class="Headline2 root-text28">Research with peers </span
+          ><span class="Headline2 root-text25">Research with peers </span
           ><br /></h2
         ><span class="root-text27 Lead1"
-          >Unlock the power of collective intelligence with ThinkLink. Collaborate seamlessly with your peers, exchange ideas, and refine your research projects together. Our platform provides a collaborative environment where you can engage in constructive discussions, receive valuable feedback, and amplify the impact of your research endeavors. Join forces with like-minded individuals and propel your academic pursuits to new heights with ThinkLink.</span
+          >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum
+          diam orci pretium a pharetra, feugiat cursus. Dictumst risus, sem
+          egestas odio cras adipiscing vulputate. Nisi, risus in suscipit non. Non
+          commodo volutpat, pharetra, vel.</span
         ></div
       ></div
     ><div class="root-cta"
       ><div class="root-container14"
         ><div class="root-container15"
           ><h2 class="Headline2 root-text28"
-            >Manage your projects Anywhere</h2
+            >Manage your projects from your mobile</h2
           ><span class="root-text29 Lead1"
-            >Take control of your projects from anywhere, anytime. ThinkLink's responsive web platform allows you to stay connected and organized whether you're at your desk or on the go. Easily access your projects, track progress, and collaborate with your team members seamlessly across desktop and mobile devices. With ThinkLink, your projects are always within reach.</span
+            >Download the app to manage your projects, keep track of the progress
+            and complete tasks without procastinating. Stay on track and complete
+            on time!</span
           ><span class="root-text30 Subtitle2"
-></span></div
-
+            ><span class="root-text31">Get the App</span></span
+          ><store-banner></store-banner></div
         ><div class="root-container16"></div></div></div
     ><div class="root-footer"
       ><footer class="root-container17"
         ><img
           alt="image"
-          src="thinklink-200h.png"
+          src="/external/logotype-light.svg"
           class="root-image7" /><div class="root-container18"
           ><span class="root-text32">About</span
           ><span class="root-text33">Features</span
@@ -170,7 +180,7 @@
         ><div class="root-divider2"></div
         ><div class="root-container19"
           ><span class="root-text38 Body2"
-            >© 2024 ThinkLink. All rights reserved</span
+            >© 2020 Landify UI Kit. All rights reserved</span
           ><div class="root-container20"
             ><div class="root-container21"
               ><svg viewBox="0 0 877.7142857142857 1024" class="root-icon">
@@ -1015,5 +1025,3 @@ export default {
   }
 }
 </style>
-
-
