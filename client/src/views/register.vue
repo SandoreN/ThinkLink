@@ -39,7 +39,7 @@
     />
     <input
       v-model="password"
-      type="text"
+      type="password"
       id="password"
       name="password"
       placeholder="password"

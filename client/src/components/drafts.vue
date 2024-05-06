@@ -2,14 +2,16 @@
     <input class="draft-name-input" v-model="draftName" placeholder="Enter draft name" />
     <div v-html="compiledMarkdown" class="markdown-preview"></div>
     <textarea id="markdown-editor" v-model="markdown"></textarea>
-    <!--<loadbuttoncontainer class="load-button" @click="load"></loadbuttoncontainer>
+    <!--
+    <loadbuttoncontainer class="load-button" @click="load"></loadbuttoncontainer>
     <ul>
         <li v-for="draft in drafts" :key="draft.id">
             {{ draft.name }}
         </li>
     </ul>
+    -->
     <savebuttoncontainer class="save-button" @click="save"></savebuttoncontainer>
--->
+
 </template>
   
 <script>
